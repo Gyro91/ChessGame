@@ -1,0 +1,202 @@
+//Demo 2
+
+/* Include s3d symbols */
+#include <Script3d.h>
+#include <Camera.s3d.h>
+
+/* Set global scene parameters */
+SET SCENE_FOV  = 60;
+SET SCENE_NEAR = 0.5;
+SET SCENE_FAR  = 1000;
+
+
+// TODO: put your global variables here
+
+
+/* Camera globals */
+var CamPos = [0.0, 1.0, 5.0]; 	// camera position
+
+
+/* Function declarations */
+function CameraMoveMouse();
+function DrawGrid(col, size);
+
+
+
+function OnDownload()
+{
+	// TODO: download your resources here
+	// E.g.: FileDownload("resource.ext");
+}
+
+
+
+function OnInit(params)
+{
+	/* initialize camera */
+	CameraGetCurrent().SetPosition(CamPos);
+
+	// TODO: put your initialization code here
+	SetLocalDir("");
+	
+ 	GLOBAL var leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
+	
+	leapDll.__AddFunction( C_VOID, "init_leap_motion",C_VOID);
+	/*
+	
+	
+
+	VideoDll.__AddFunction( C_VOID, "ClearWithColor",C_FLOAT,C_FLOAT,C_FLOAT);
+	VideoDll.__AddFunction( C_VOID, "ActivateTexture",C_VOID);
+	VideoDll.__AddFunction( C_VOID, "ForceTextureID", C_INT)
+	 
+		
+	global var sphere_mesh = CVMNewMesh(VRP_SPHERE,10,1,1.0);
+	global var sphere_obj1 = CVMObj(sphere_mesh);
+	var my_material = CVMMaterial();	
+	my_material.Diffuse = [1,0,0];
+	sphere_mesh.ForceMaterial(my_material);
+	
+	
+	sphere_obj1.SetPosition(0,0,-10);
+	
+	* 
+	*/
+}
+
+function draw_textured_quad(x1,y1,x2,y2);
+function draw_circle();
+function draw_torus();
+
+
+
+
+
+
+function OnFrame()
+{
+	CameraMoveMouse();
+	SceneBegin();	
+	DrawGrid([0.5, 0.5, 0.5], 100);	
+	glDisable(GL_LIGHTING);
+	glColor(1,1,1);
+	glEnable(GL_TEXTURE_2D);
+	leapDll.init_leap_motion();
+	//VideoDll.ActivateTexture();
+	glDisable(GL_CULL_FACE);
+	//draw_circle();
+	//draw_torus();
+	//draw_textured_quad(-1,-1,1,1);
+	//sphere_obj1.draw();
+	// TODO: put your drawing code here
+	SceneEnd();
+}
+
+function draw_textured_quad(x1,y1,x2,y2)
+{
+	glBegin(GL_QUADS);
+	glTexCoord(1,0);
+	glVertex(x2,y2,0);
+	glTexCoord(0,0);
+	glVertex(x1,y2,0);
+	glTexCoord(0,1);
+	glVertex(x1,y1,0);
+	glTexCoord(1,1);
+	glVertex(x2,y1,0);
+	glEnd();	
+}
+
+
+
+function DownloadReady(RequestID)
+{
+	// TODO
+}
+
+
+
+function OnTimer()
+{
+	// TODO:
+}
+
+
+
+function OnExit()
+{
+	// TODO: put your cleanup code here
+}
+
+
+
+// Camera manager (using mouse)
+function CameraMoveMouse()
+{	
+
+	CameraMoveMouse_MBL_LC();
+
+}
+
+
+
+function DrawGrid(col, size)
+{
+	/* let's not mess up current OpenGL status */
+	glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT | GL_CURRENT_BIT);
+	
+	glLineWidth(1);
+	glDisable(GL_LIGHTING);
+	glColor(col);
+	var max = size / 2.0;
+	var min = -max;	
+	var step = size / 10.0;
+	
+	glBegin(GL_LINES);
+		for (var i = min; i <= max; i += step)
+		{
+			glVertex(i, 0, max);
+			glVertex(i, 0, min);
+			
+			glVertex(max, 0, i);
+			glVertex(min, 0, i);
+		}
+	glEnd();
+	
+	/* polite restoration of previous OpenGL status */
+	glPopAttrib();
+}
+
+//////// Utility fnctions
+
+
+
+function draw_circle()
+{
+
+		for(var i= 0; i<36 ; i++)
+		{
+			draw_textured_quad(-1,-1,1,1);
+			glTranslate(2,0,0);
+			glRotate(10,0,1,0);	
+		}
+			
+}
+
+function draw_torus()
+{
+for(var j= 0; j<36 ; j++)
+	{
+		for(var i= 0; i<36 ; i++)
+		{
+			draw_textured_quad(-1,-1,1,1);
+			glTranslate(2,0,0);
+			glRotate(10,0,1,0);
+			
+		}
+			
+		glRotate(10,1,0,0);
+	}
+
+}
+
+
