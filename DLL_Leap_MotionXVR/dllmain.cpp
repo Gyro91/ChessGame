@@ -51,7 +51,6 @@ void draw_textured_quad(float x1, float y1, float x2, float y2)
 extern "C" __declspec(dllexport) void init_leap_motion()
 {	
 	
-	
 		for(int i= 0; i<36 ; i++)
 		{
 			draw_textured_quad(-1,-1,1,1);
