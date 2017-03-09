@@ -1,10 +1,10 @@
-﻿Build started 08/03/2017 16:43:25.
+﻿Build started 09/03/2017 17:22:06.
      1>Project "C:\Users\Matteo\Desktop\XVR_VRProject\DLL_Leap_MotionXVR\DLL_Leap_MotionXVR.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching "Debug\DLL_Leap_MotionXVR.unsuccessfulbuild".
+         Creating "Debug\DLL_Leap_MotionXVR.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          All outputs are up-to-date.
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D DLL_LEAP_MOTIONXVR_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt dllmain.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D DLL_LEAP_MOTIONXVR_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt dllmain.cpp
          dllmain.cpp
      1>c:\users\matteo\desktop\xvr_vrproject\dll_leap_motionxvr\glew\glsl.h(83): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\matteo\desktop\xvr_vrproject\dll_leap_motionxvr\glew\glsl.h(135): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
@@ -18,7 +18,6 @@
          Debug\DLL_Leap_MotionXVR.obj
          Debug\stdafx.obj
          glew\glew32s.lib
-            Creating library C:\Users\Matteo\Desktop\XVR_VRProject\DLL_Leap_MotionXVR\Debug\DLL_Leap_MotionXVR.lib and object C:\Users\Matteo\Desktop\XVR_VRProject\DLL_Leap_MotionXVR\Debug\DLL_Leap_MotionXVR.exp
        Manifest:
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\DLL_Leap_MotionXVR.dll.embed.manifest" /manifest Debug\DLL_Leap_MotionXVR.dll.intermediate.manifest
          All outputs are up-to-date.
@@ -32,4 +31,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.10
+Time Elapsed 00:00:00.99

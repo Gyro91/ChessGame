@@ -40,8 +40,10 @@ function OnInit(params)
 	SetLocalDir("");
 	
  	GLOBAL var leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
-	
+ 	leapDll.__AddFunction( C_FLOAT, "get_palm_x", C_VOID);
+ 	leapDll.__AddFunction( C_PFLOAT, "get_palm", C_VOID);
 	leapDll.__AddFunction( C_VOID, "init_leap_motion",C_VOID);
+	
 	/*
 	
 	
@@ -83,11 +85,9 @@ function OnFrame()
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	
-	glClear();
-	draw_textured_quad(-1,-1,1,1);
-	glTranslate(0.5,0,0);
-	
-	
+
+	var myvar = leapDll.get_palm();
+	outputln(myvar);
 	//leapDll.init_leap_motion();
 	//VideoDll.ActivateTexture();
 	glDisable(GL_CULL_FACE);
