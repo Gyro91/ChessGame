@@ -47,7 +47,7 @@ function OnInit(params)
 	SetLocalDir("");
 	
  	GLOBAL var leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
- 	leapDll.__AddFunction( C_FLOAT, "get_data", C_VOID);
+ 	//leapDll.__AddFunction( C_FLOAT, "get_data", C_VOID);
 	leapDll.__AddFunction( C_VOID, "get_seq_number",C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_right_hand",C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_left_hand",C_PFLOAT);
@@ -94,9 +94,11 @@ function OnFrame()
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	
-
+	/* 
 	var myvar = leapDll.get_data();
 	outputln(myvar);
+	* 
+	*/
 	leapDll.get_seq_number(&seq_number);
 	outputln(seq_number);
 	var is_rh = leapDll.get_right_hand(&right_hand);

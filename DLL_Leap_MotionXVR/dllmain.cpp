@@ -103,17 +103,17 @@ extern "C" __declspec(dllexport) void init_leap_motion()
 			glRotatef(10,0,1,0);	
 		}
 }
-
+/*
 extern "C" __declspec(dllexport) float get_data()
 {		
 	int size =  (4*SIZE_BUFF);
     memcpy(x, mybuffer, size);
 	return size;
 }
-
+*/
 extern "C" __declspec(dllexport) void get_seq_number(float* out)
 {	
-	memcpy(out, &x[0], 4);
+	memcpy(out, &mybuffer[0], 4);
 }
 
 /*
@@ -122,14 +122,18 @@ extern "C" __declspec(dllexport) void get_seq_number(float* out)
 */
 extern "C" __declspec(dllexport) int get_right_hand(float* out)
 {	
-	if (x[2] == 0) return 1;
-	memcpy(out, &x[1], 324);
+	float test;
+	memcpy(&test, &mybuffer[(2*4)], 4);
+	if (test == 0) return 1;
+	memcpy(out, &mybuffer[1], 324);
 	return 0;
 }
 
 extern "C" __declspec(dllexport) int get_left_hand(float* out)
 {	
-	if (x[83] == 0) return 1;
-	memcpy(out, &x[82], 324);
+	float test;
+	memcpy(&test, &mybuffer[(83*4)], 4);
+	if (test == 0) return 1;
+	memcpy(out, &mybuffer[82], 324);
 	return 0;
 }

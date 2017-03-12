@@ -1,4 +1,4 @@
-﻿Build started 3/12/17 22:19:19.
+﻿Build started 3/12/17 22:31:52.
      1>Project "C:\Users\Tonno\Documents\XVR_Project\Leap_MotionC++\Leap_MotionC++\Leap_MotionC++.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\Leap_MotionC++.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -18,4 +18,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.14
+Time Elapsed 00:00:00.10
