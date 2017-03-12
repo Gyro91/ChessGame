@@ -11,6 +11,13 @@ SET SCENE_FAR  = 1000;
 
 
 // TODO: put your global variables here
+/* Hand Variables */
+var seq_number = 0;
+//var right_hand;
+var right_hand = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var left_hand = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+
 
 
 /* Camera globals */
@@ -40,8 +47,10 @@ function OnInit(params)
 	SetLocalDir("");
 	
  	GLOBAL var leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
- 	leapDll.__AddFunction( C_FLOAT, "get_palm_x", C_VOID);
- 	leapDll.__AddFunction( C_PFLOAT, "get_palm", C_VOID);
+ 	leapDll.__AddFunction( C_FLOAT, "get_data", C_VOID);
+	leapDll.__AddFunction( C_VOID, "get_seq_number",C_PFLOAT);
+	leapDll.__AddFunction( C_INT, "get_right_hand",C_PFLOAT);
+	leapDll.__AddFunction( C_INT, "get_left_hand",C_PFLOAT);
 	leapDll.__AddFunction( C_VOID, "init_leap_motion",C_VOID);
 	
 	/*
@@ -86,8 +95,16 @@ function OnFrame()
 	glEnable(GL_TEXTURE_2D);
 	
 
-	var myvar = leapDll.get_palm();
+	var myvar = leapDll.get_data();
 	outputln(myvar);
+	leapDll.get_seq_number(&seq_number);
+	outputln(seq_number);
+	var is_rh = leapDll.get_right_hand(&right_hand);
+	var is_lh = leapDll.get_left_hand(&left_hand);
+	//outputln(right_hand[4]);
+	outputln(is_rh);
+	outputln(is_lh);
+	
 	//leapDll.init_leap_motion();
 	//VideoDll.ActivateTexture();
 	glDisable(GL_CULL_FACE);

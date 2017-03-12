@@ -12,10 +12,13 @@ using namespace std;
 #include "glew/wglew.h"
 #include "glew/glsl.h"
 
+#define SIZE_BUFF 163
 
 #pragma comment(lib,"opengl32.lib")
 #pragma comment(lib,"glu32.lib")
 #pragma comment(lib,"glew/glew32s.lib")
+
+float x[SIZE_BUFF];
 unsigned char* mybuffer;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -69,7 +72,7 @@ extern "C" __declspec(dllexport) char * __XVR_INIT (void *XVR_pointer)
 	//You can use it to do initialisation code, as well as to get internal parameters from the XVR virtual machine
 	
 	
-	mybuffer = OpenSharedMemoryBuffer("LeapBuffer", 12);
+	mybuffer = OpenSharedMemoryBuffer("LeapBuffer", 48);
 
 
 	return(NULL); 
@@ -101,17 +104,32 @@ extern "C" __declspec(dllexport) void init_leap_motion()
 		}
 }
 
-extern "C" __declspec(dllexport) float get_palm_x()
-{	
-	
-	float x = 0;
-
-    memcpy(&x, mybuffer, 4);
-
-	return x;
+extern "C" __declspec(dllexport) float get_data()
+{		
+	int size =  (4*SIZE_BUFF);
+    memcpy(x, mybuffer, size);
+	return size;
 }
 
-extern "C" __declspec(dllexport) float* get_palm()
+extern "C" __declspec(dllexport) void get_seq_number(float* out)
 {	
-	return (float *)mybuffer;
+	memcpy(out, &x[0], 4);
+}
+
+/*
+*	ottimizzo dicendo che y del palmo è sempre maggiore di 0
+*	la funzione restituisce 1 se la mano è assente
+*/
+extern "C" __declspec(dllexport) int get_right_hand(float* out)
+{	
+	if (x[2] == 0) return 1;
+	memcpy(out, &x[1], 324);
+	return 0;
+}
+
+extern "C" __declspec(dllexport) int get_left_hand(float* out)
+{	
+	if (x[83] == 0) return 1;
+	memcpy(out, &x[82], 324);
+	return 0;
 }
