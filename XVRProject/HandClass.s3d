@@ -1,0 +1,131 @@
+#define NUM_FINGERS 5
+#define NUM_COORD 3
+#define NUM_JOINTS 5
+#define LENGTH_RAW_DATA 81
+
+GLOBAL var leapDll;
+
+function write_vector(dest, src, start);
+
+class FingerClass {
+	
+	/* Joint is an array of 5 vector. 
+	 * The 0-element is the metacarpal joint
+	 */
+	var joints;	
+	
+	init();
+	update(raw_data, offset);
+	
+};
+
+class Hand {
+	
+	var palm_position;
+	var palm_normal;
+	var fingers;
+	var is_right; // If true, it is the right hand
+	var is_active; // If true, the hand is recognized
+	
+	init(is_right_param);	
+	update();
+	draw();
+};
+
+/* This function initializes the Hand with zero coordinates */
+
+function Hand::init(is_right_param)
+{
+	palm_position = Vector(NUM_COORD);
+	palm_normal = Vector(NUM_COORD);
+	fingers = Array(NUM_FINGERS);
+	is_right = is_right_param;
+	is_active = 0;
+	
+	for(var i = 0; i < NUM_COORD; i++) {
+		palm_position[i] = 0;
+		palm_normal[i] = 0;
+	}
+	
+	for (var i = 0; i < NUM_FINGERS; i++) {
+		fingers[i] =  FingerClass();
+		fingers[i].init();
+	}
+}
+
+/*
+ * This functions updates the state of the object. It maps the raw data
+ * obtained from the DLL with the XVR Hand class. 
+ * 
+ */
+ 
+function Hand::update()
+{
+	var tmp_raw_data = Vector(LENGTH_RAW_DATA);
+	var is_data;
+	
+	if (is_right == 1) {
+		// If it is the right hand
+		is_data = leapDll.get_right_hand(&tmp_raw_data);
+		
+	}
+	else {
+		// Otherwise it is a left hand
+		is_data = leapDll.get_left_hand(&tmp_raw_data);
+	}
+	
+	// Checking is_data value
+	
+	if (is_data == 1) 
+		is_active = 0; // The hand is not present
+	else {
+		is_active = 1;
+		// Changing frame base
+		write_vector(&palm_position, &tmp_raw_data, 0);
+		write_vector(&palm_normal, &tmp_raw_data, 3);
+		
+		for(var i = 0; i < NUM_FINGERS; i++)
+			fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
+	}		 
+}
+
+/* This function draws the hand in the XVR frame */
+
+function Hand::draw()
+{
+	
+}
+
+/* This function initializes the Finger joints */
+
+function FingerClass::init()
+{
+	joints = Array(NUM_JOINTS);
+	
+	for(var i = 0; i < NUM_JOINTS; i++) {
+		joints[i] = Vector(NUM_COORD);
+		for(var j = 0; j < NUM_COORD; j++)
+			joints[i][j] = 0;	
+	}
+	
+}
+
+/* This function updates the finger data mapping from raw data 
+ * to the Finger class.
+ */
+
+ function FingerClass::update(raw_data, offset)
+ {
+ 	for(var i = 0; i < NUM_JOINTS; i++)
+		write_vector(&joints[i], raw_data, offset + (i * NUM_COORD));
+ }
+ 
+ /* This function write the 3 coordinates in dest from (src + start) */
+ 
+function write_vector(dest, src, start)
+{
+	for(var i = 0; i < NUM_COORD; i++)
+		dest[i] = src[start + i];
+}
+ 
+ 

@@ -12,7 +12,7 @@
 #include <Windows.h>
 #include "Leap.h"
 
-#define SAMPLE_TIME_MS 2000
+#define SAMPLE_TIME_MS 20
 #define INIT_TIME_MS 100
 #define SIZE_BUFF 163
 #define DEBUG_MODE
@@ -29,7 +29,7 @@ HANDLE timer_handle;
 
 
 unsigned char *OpenSharedMemoryBuffer(char *name,int buf_size)
-	{
+{
 
 	//Apre un nmemory buffer. Se non esiste lo crea.
 	HANDLE hMapFile;
@@ -54,7 +54,8 @@ unsigned char *OpenSharedMemoryBuffer(char *name,int buf_size)
 		0,
 		buf_size);
 
-	}
+}
+
 void init_buffer()
 {
 	for (int i=0; i< SIZE_BUFF; i++)
@@ -62,6 +63,7 @@ void init_buffer()
 		buffer[i] = 0;
 	}
 }
+
 void read_frame() 
 {
 	float x = 0, z = 0, y = 0;

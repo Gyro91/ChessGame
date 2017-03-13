@@ -125,7 +125,7 @@ extern "C" __declspec(dllexport) int get_right_hand(float* out)
 	float test;
 	memcpy(&test, &mybuffer[(2*4)], 4);
 	if (test == 0) return 1;
-	memcpy(out, &mybuffer[1], 324);
+	memcpy(out, &mybuffer[1*4], 324);
 	return 0;
 }
 
@@ -134,6 +134,6 @@ extern "C" __declspec(dllexport) int get_left_hand(float* out)
 	float test;
 	memcpy(&test, &mybuffer[(83*4)], 4);
 	if (test == 0) return 1;
-	memcpy(out, &mybuffer[82], 324);
+	memcpy(out, &mybuffer[82*4], 324);
 	return 0;
 }

@@ -1,9 +1,8 @@
-//Demo 2
-//first commit antonio
+
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
-
+#include "HandClass.s3d"
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
 SET SCENE_NEAR = 0.5;
@@ -13,9 +12,13 @@ SET SCENE_FAR  = 1000;
 // TODO: put your global variables here
 /* Hand Variables */
 var seq_number = 0;
+
 //var right_hand;
 var right_hand = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var left_hand = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+var hand_r;
+var hand_l;
 
 
 
@@ -27,6 +30,7 @@ var CamPos = [0.0, 1.0, 5.0]; 	// camera position
 /* Function declarations */
 function CameraMoveMouse();
 function DrawGrid(col, size);
+
 
 
 
@@ -46,33 +50,21 @@ function OnInit(params)
 	// TODO: put your initialization code here
 	SetLocalDir("");
 	
- 	GLOBAL var leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
- 	//leapDll.__AddFunction( C_FLOAT, "get_data", C_VOID);
-	leapDll.__AddFunction( C_VOID, "get_seq_number",C_PFLOAT);
-	leapDll.__AddFunction( C_INT, "get_right_hand",C_PFLOAT);
-	leapDll.__AddFunction( C_INT, "get_left_hand",C_PFLOAT);
-	leapDll.__AddFunction( C_VOID, "init_leap_motion",C_VOID);
-	
-	/*
-	
-	
+ 	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
 
-	VideoDll.__AddFunction( C_VOID, "ClearWithColor",C_FLOAT,C_FLOAT,C_FLOAT);
-	VideoDll.__AddFunction( C_VOID, "ActivateTexture",C_VOID);
-	VideoDll.__AddFunction( C_VOID, "ForceTextureID", C_INT)
-	 
-		
-	global var sphere_mesh = CVMNewMesh(VRP_SPHERE,10,1,1.0);
-	global var sphere_obj1 = CVMObj(sphere_mesh);
-	var my_material = CVMMaterial();	
-	my_material.Diffuse = [1,0,0];
-	sphere_mesh.ForceMaterial(my_material);
+	leapDll.__AddFunction( C_VOID, "get_seq_number", C_PFLOAT);
+	leapDll.__AddFunction( C_INT, "get_right_hand", C_PFLOAT);
+	leapDll.__AddFunction( C_INT, "get_left_hand", C_PFLOAT);
+
+	hand_r = Hand();
+	hand_l = Hand();
 	
+	hand_r.init(1);
+	hand_l.init(0);
 	
-	sphere_obj1.SetPosition(0,0,-10);
+	//right_hand = Array(81);
+	//left_hand = Array(81);
 	
-	* 
-	*/
 }
 
 function draw_textured_quad(x1,y1,x2,y2);
@@ -94,27 +86,25 @@ function OnFrame()
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	
-	/* 
-	var myvar = leapDll.get_data();
-	outputln(myvar);
-	* 
-	*/
-	leapDll.get_seq_number(&seq_number);
-	outputln(seq_number);
+	 
+	
+	//leapDll.get_seq_number(&seq_number);
+//	outputln(seq_number);
+/*
 	var is_rh = leapDll.get_right_hand(&right_hand);
 	var is_lh = leapDll.get_left_hand(&left_hand);
-	//outputln(right_hand[4]);
-	outputln(is_rh);
-	outputln(is_lh);
 	
-	//leapDll.init_leap_motion();
-	//VideoDll.ActivateTexture();
+	outputln(right_hand[1]);
+	outputln(left_hand[1]);
+	outputln(is_rh);
+	outputln(is_lh);*/
+
+	hand_r.update();
+	hand_l.update();
+	
+	
 	glDisable(GL_CULL_FACE);
-	//draw_circle();
-	//draw_torus();
-	//draw_textured_quad(-1,-1,1,1);
-	//sphere_obj1.draw();
-	// TODO: put your drawing code here
+
 	SceneEnd();
 }
 
@@ -226,3 +216,12 @@ for(var j= 0; j<36 ; j++)
 }
 
 
+function OnEvent()
+{
+	
+}
+
+function OnError()
+{
+	
+}
