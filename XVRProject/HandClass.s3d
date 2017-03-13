@@ -1,6 +1,7 @@
 #define NUM_FINGERS 5
 #define NUM_COORD 3
 #define NUM_JOINTS 5
+#define MM_TO_M 0.01
 #define LENGTH_RAW_DATA 81
 
 GLOBAL var leapDll;
@@ -12,10 +13,14 @@ class FingerClass {
 	/* Joint is an array of 5 vector. 
 	 * The 0-element is the metacarpal joint
 	 */
-	var joints;	
+	var joints;
+	var fingers_obj;
+	var fingers_mesh;
+	var fingers_mat;	
 	
 	init();
 	update(raw_data, offset);
+	draw();
 	
 };
 
@@ -26,6 +31,9 @@ class Hand {
 	var fingers;
 	var is_right; // If true, it is the right hand
 	var is_active; // If true, the hand is recognized
+	var palm_mesh;
+	var palm_mat;
+	var hand_obj;
 	
 	init(is_right_param);	
 	update();
@@ -51,6 +59,14 @@ function Hand::init(is_right_param)
 		fingers[i] =  FingerClass();
 		fingers[i].init();
 	}
+
+   palm_mat = CVmMaterial();
+   palm_mat.diffuse =  [1.0,1.0,1.0];
+   // Loading palm mesh
+   palm_mesh = CVmNewMesh(VRP_SPHERE, 10);
+   palm_mesh.SubsetSetMaterial(0, palm_mat);
+   hand_obj = CVmObj(palm_mesh);
+   hand_obj.SetScale(0.1);
 }
 
 /*
@@ -86,14 +102,24 @@ function Hand::update()
 		
 		for(var i = 0; i < NUM_FINGERS; i++)
 			fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
+		
+		// Updating the obj hand position
+		hand_obj.SetPosition(palm_position * MM_TO_M);
+		// Scaling from mm to m
+		outputln(hand_obj.GetPosition());
 	}		 
 }
 
 /* This function draws the hand in the XVR frame */
 
 function Hand::draw()
-{
-	
+{	
+	if (is_active == 1) {
+		hand_obj.draw();
+		
+		for(var i = 0; i < NUM_FINGERS; i++)
+			fingers[i].draw();
+	}
 }
 
 /* This function initializes the Finger joints */
@@ -101,24 +127,43 @@ function Hand::draw()
 function FingerClass::init()
 {
 	joints = Array(NUM_JOINTS);
+	fingers_obj = Array(NUM_FINGERS);
+	
+	fingers_mesh = CVmNewMesh(VRP_SPHERE, 10);
+	fingers_mat = CVmMaterial();
+    fingers_mat.diffuse =  [1.0, 0.0, 0.0];
+    fingers_mesh.SubsetSetMaterial(0, fingers_mat);
 	
 	for(var i = 0; i < NUM_JOINTS; i++) {
 		joints[i] = Vector(NUM_COORD);
 		for(var j = 0; j < NUM_COORD; j++)
 			joints[i][j] = 0;	
-	}
-	
+		
+		fingers_obj[i] = CVmObj(fingers_mesh);
+    	fingers_obj[i].SetScale(0.1);
+	}	
 }
 
 /* This function updates the finger data mapping from raw data 
  * to the Finger class.
  */
 
- function FingerClass::update(raw_data, offset)
- {
- 	for(var i = 0; i < NUM_JOINTS; i++)
+function FingerClass::update(raw_data, offset)
+{
+ 	for(var i = 0; i < NUM_JOINTS; i++) {
 		write_vector(&joints[i], raw_data, offset + (i * NUM_COORD));
- }
+		// Updating the obj fingers position
+		fingers_obj[i].SetPosition(joints[i] * MM_TO_M);	
+	}
+}
+
+/* This function draws the fingers in the XVR frame */
+
+function FingerClass::draw()
+{
+	for (var i = 0; i < NUM_JOINTS; i++)
+		fingers_obj[i].draw();
+} 
  
  /* This function write the 3 coordinates in dest from (src + start) */
  
@@ -128,4 +173,5 @@ function write_vector(dest, src, start)
 		dest[i] = src[start + i];
 }
  
+
  

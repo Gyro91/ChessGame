@@ -101,7 +101,8 @@ function OnFrame()
 
 	hand_r.update();
 	hand_l.update();
-	
+	hand_r.draw();
+	hand_l.draw();
 	
 	glDisable(GL_CULL_FACE);
 
