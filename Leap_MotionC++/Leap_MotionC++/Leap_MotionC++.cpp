@@ -30,7 +30,6 @@ HANDLE timer_handle;
 
 unsigned char *OpenSharedMemoryBuffer(char *name,int buf_size)
 {
-
 	//Apre un nmemory buffer. Se non esiste lo crea.
 	HANDLE hMapFile;
 
@@ -42,11 +41,10 @@ unsigned char *OpenSharedMemoryBuffer(char *name,int buf_size)
 		buf_size,                // maximum object size (low-order DWORD)
 		name);                 // name of mapping object
 
-	if (hMapFile == NULL)
-		{
+	if (hMapFile == NULL) {
 		printf("Could not create file mapping object.\n");
 		return NULL;
-		}
+	}
 
 	return (unsigned char*)MapViewOfFile(hMapFile,   // handle to map object
 		FILE_MAP_ALL_ACCESS, // read/write permission
@@ -59,9 +57,7 @@ unsigned char *OpenSharedMemoryBuffer(char *name,int buf_size)
 void init_buffer()
 {
 	for (int i=0; i< SIZE_BUFF; i++)
-	{
 		buffer[i] = 0;
-	}
 }
 
 void read_frame() 
@@ -89,7 +85,7 @@ void read_frame()
 #endif
 
 	HandList hands;
-    hands = f.hands();
+	hands = f.hands();
 
 	for (HandList::const_iterator hl = hands.begin(); hl != hands.end(); ++hl) {
 		Hand hand = *hl;
@@ -152,36 +148,34 @@ void read_frame()
 
 void CALLBACK timer_function(void* /*lpParameter*/,BOOLEAN /*TimerOrWaitFired*/)
 {
-    /* what happens during periodic task */
+	/* what happens during periodic task */
 	read_frame();
 }
 
 
 void start_timer(DWORD milliseconds_before_first_call, DWORD milliseconds_between_calls)
 {
-
-    //void* parameter; /* passed as lpParameter of timer_function */
-    //DWORD milliseconds_before_first_call=100; /* execute after 100ms */
-    //DWORD milliseconds_between_calls=500; /* and then every 500ms */
-    CreateTimerQueueTimer(&timer_handle,NULL,timer_function,NULL,
-        milliseconds_before_first_call,milliseconds_between_calls,
-        WT_EXECUTELONGFUNCTION /* the function takes a while, and may block */
-    );
+	//void* parameter; /* passed as lpParameter of timer_function */
+	//DWORD milliseconds_before_first_call=100; /* execute after 100ms */
+	//DWORD milliseconds_between_calls=500; /* and then every 500ms */
+	CreateTimerQueueTimer(&timer_handle,NULL,timer_function,NULL,
+		milliseconds_before_first_call,milliseconds_between_calls,
+		WT_EXECUTELONGFUNCTION /* the function takes a while, and may block */
+	);
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {	
 	controller.setPolicy(Leap::Controller::POLICY_BACKGROUND_FRAMES);
+	
 	leap_buffer = OpenSharedMemoryBuffer("LeapBuffer" , (4*SIZE_BUFF));
-	//controller.setPolicy(Leap::Controller::POLICY_ALLOW_PAUSE_RESUME);
-
+	
 	/*
 	*	Manage periodic task
 	*/
 	start_timer(INIT_TIME_MS,SAMPLE_TIME_MS);
 
-	while (true) {
-	}
+	while (true);
 
 	return 0;
 }
