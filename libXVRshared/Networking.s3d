@@ -13,7 +13,9 @@ class Packet_Hand:Packet {
 	var Hand_l;
 	
 	init(); 
+	update(my_hand_r, my_hand_l);
 };
+
 
 class Player {
 	
@@ -50,5 +52,19 @@ function Player::rcv()
 {
 	var pkt = NetVarReceiveFrom(channel, ip);
 	
-	return pkt;
+}
+
+function Packet_Hand::init()
+{
+	id = 0;
+	timestamp = 0;
+	Hand_r = Hand();
+	Hand_l = Hand();
+}
+
+function Packet_Hand::update(my_hand_r, my_hand_l)
+{	
+	id++;
+	Hand_r = my_hand_r;
+	Hand_l = my_hand_l;
 }

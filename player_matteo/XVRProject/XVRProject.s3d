@@ -64,13 +64,11 @@ function OnInit(params)
 	hand_r.init(1);
 	hand_l.init(0);
 	
-	pkt_hand = Packet();
+	pkt_hand = Packet_Hand();
+	pkt_hand.init();
 	p_adversary = Player();
 	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
-	p_adversary.init(1, "10.1.197.54", 50000, my_channel);
-	
-	//right_hand = Array(81);
-	//left_hand = Array(81);
+	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
 	
 }
 
@@ -105,7 +103,7 @@ function OnFrame()
 
 	SceneEnd();
 	
-	pkt_hand.id++;
+	pkt_hand.update(hand_r, hand_l);
 	p_adversary.send(pkt_hand);
 }
 
