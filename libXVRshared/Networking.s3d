@@ -1,0 +1,54 @@
+#include "HandClass.s3d"
+
+
+class Packet {
+	
+	var id;
+	var timestamp;
+};
+
+class Packet_Hand:Packet {
+	
+	var Hand_r;
+	var Hand_l;
+	
+	init(); 
+};
+
+class Player {
+	
+	var id;
+	var port;
+	var ip;
+	var channel;
+	
+	init(id, port, ip, ch);
+	send(pkt);	
+	rcv();
+};
+
+/* Function to initialize the player */
+
+function Player::init(id_p, port_p, ip_p, ch_p)
+{
+	id = id_p;
+	port = port_p;
+	ip = ip_p;
+	channel = ch_p;
+}
+
+/* This function sends the packet passed as argument to the player */
+
+function Player::send(pkt)
+{
+	NetVarSendTo(ip, port, pkt);
+}
+
+/* This function returns the packet from the other player */
+
+function Player::rcv()
+{
+	var pkt = NetVarReceiveFrom(channel, ip);
+	
+	return pkt;
+}

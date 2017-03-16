@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>XVRProject</name>
+	<name>Player1</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -54,4 +54,17 @@
 	<natures>
 		<nature>xvrengine.natures.XVRNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>libXVRshared</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/libXVRshared</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-5-PROJECT_LOC%7D/Desktop/XVR_VRProject</value>
+		</variable>
+	</variableList>
 </projectDescription>

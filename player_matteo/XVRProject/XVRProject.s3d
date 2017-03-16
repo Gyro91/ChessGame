@@ -2,7 +2,8 @@
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
-#include "HandClass.s3d"
+#include "../../libXVRshared/Networking.s3d"
+
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
 SET SCENE_NEAR = 0.5;
@@ -13,12 +14,12 @@ SET SCENE_FAR  = 1000;
 /* Hand Variables */
 var seq_number = 0;
 
-//var right_hand;
-var right_hand = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var left_hand = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 var hand_r;
 var hand_l;
+
+var pkt_hand;
+var p_adversary;
 
 
 
@@ -55,12 +56,18 @@ function OnInit(params)
 	leapDll.__AddFunction( C_VOID, "get_seq_number", C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_right_hand", C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_left_hand", C_PFLOAT);
-
+	
+	
 	hand_r = Hand();
 	hand_l = Hand();
 	
 	hand_r.init(1);
 	hand_l.init(0);
+	
+	pkt_hand = Packet();
+	p_adversary = Player();
+	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
+	p_adversary.init(1, "10.1.197.54", 50000, my_channel);
 	
 	//right_hand = Array(81);
 	//left_hand = Array(81);
@@ -88,16 +95,6 @@ function OnFrame()
 	
 	 
 	
-	//leapDll.get_seq_number(&seq_number);
-//	outputln(seq_number);
-/*
-	var is_rh = leapDll.get_right_hand(&right_hand);
-	var is_lh = leapDll.get_left_hand(&left_hand);
-	
-	outputln(right_hand[1]);
-	outputln(left_hand[1]);
-	outputln(is_rh);
-	outputln(is_lh);*/
 
 	hand_r.update();
 	hand_l.update();
@@ -107,6 +104,9 @@ function OnFrame()
 	glDisable(GL_CULL_FACE);
 
 	SceneEnd();
+	
+	pkt_hand.id++;
+	p_adversary.send(pkt_hand);
 }
 
 function draw_textured_quad(x1,y1,x2,y2)
