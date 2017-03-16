@@ -26,6 +26,7 @@ class FingerClass {
 
 class Hand {
 	
+	var raw_data;
 	var palm_position;
 	var palm_normal;
 	var fingers;
@@ -35,7 +36,9 @@ class Hand {
 	var palm_mat;
 	var hand_obj;
 	
-	init(is_right_param);	
+	init(is_right_param);
+	get_raw_data();
+	push_raw_data();	
 	update();
 	draw();
 };
@@ -97,6 +100,8 @@ function Hand::update()
 	else {
 		is_active = 1;
 		// Changing frame base
+		raw_data = tmp_raw_data;
+		
 		write_vector(&palm_position, &tmp_raw_data, 0);
 		write_vector(&palm_normal, &tmp_raw_data, 3);
 		

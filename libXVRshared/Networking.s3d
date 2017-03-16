@@ -7,6 +7,12 @@ class Packet {
 	var timestamp;
 };
 
+class Packet_hnd {
+	
+	var index;
+
+};
+
 class Packet_Hand:Packet {
 	
 	var Hand_r;

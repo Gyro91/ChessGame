@@ -21,7 +21,7 @@ var hand_l;
 var pkt_hand;
 var p_adversary;
 
-
+var pkt_to_send;
 
 
 /* Camera globals */
@@ -67,6 +67,8 @@ function OnInit(params)
 	pkt_hand = Packet_Hand();
 	pkt_hand.init();
 	p_adversary = Player();
+	pkt_to_send = Packet_hnd();
+	
 	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
 	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
 	
@@ -104,7 +106,11 @@ function OnFrame()
 	SceneEnd();
 	
 	pkt_hand.update(hand_r, hand_l);
-	p_adversary.send(pkt_hand);
+	pkt_to_send.index = 1;
+
+	
+	if (pkt_hand.Hand_r.is_active == 1 || pkt_hand.Hand_l.is_active == 1)
+		p_adversary.send(pkt_to_send);
 }
 
 function draw_textured_quad(x1,y1,x2,y2)
