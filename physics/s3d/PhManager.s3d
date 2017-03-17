@@ -844,8 +844,9 @@ function CVmPhManager::DisableCollision(g1, g2){
  * \return 		the handler of the cooked mesh 
  */ 
 function CVmPhManager::CookConvexMesh(m){
-	var subSetNumber;
-	var vertexCount, triangleCount;
+	var subSetNumber = 0;
+	var vertexCount = 0;
+	var triangleCount = 0;
 	m.getInformation(&subSetNumber, &vertexCount, &triangleCount);
 	var vertex = vector(vertexCount * 3);
 	var index = space(0); // 12 = sizeof(unsigned int) * numero di indici per triangolo
@@ -857,7 +858,7 @@ function CVmPhManager::CookConvexMesh(m){
 	return meshIndex;
 }
 
-extern function UnpackVector;	/* CHE DIAVOLO È QUESTO??? */
+// extern function UnpackVector;	/* CHE DIAVOLO È QUESTO??? */
 
 /*!
  * ERROR - THIS FUNCTION DOESN'T WORK!!
@@ -867,8 +868,9 @@ extern function UnpackVector;	/* CHE DIAVOLO È QUESTO??? */
  * \return 		the handler of the cooked mesh 
  */ 
 function CVmPhManager::CookMesh(m){
-	var subSetNumber;
-   	var vertexCount, triangleCount;
+	var subSetNumber = 0;
+   	var vertexCount = 0; 
+   	var triangleCount = 0;
   	m.getInformation(&subSetNumber, &vertexCount, &triangleCount);
    	var vertex = vector(vertexCount * 3);
    	var index = space(0); // 12 = sizeof(unsigned int) * numero di indici per triangolo
