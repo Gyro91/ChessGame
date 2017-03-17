@@ -1,0 +1,505 @@
+#ifndef __USE_GEOMETRY
+#define __USE_GEOMETRY
+
+#include "util.s3d"
+
+// return true is the value is positive
+function sign(a){
+	return a >= 0;
+}
+
+// check che intersection point between two segment
+// return 0 if no point found
+// return 1 if found a point
+// return 2 if the two segment have infinite point in common
+function segmentCollisionTest2D(pa0, pa1, pb0, pb1, solution){
+	var n = norm(pa1 - pa0);
+	n = n.yx;
+	n.y = -n.y;
+	
+	// both point on the same side, no collision possible
+	if(sign(norm(pb0-pa0) * n) == sign(norm(pb1-pa0) * n))
+		return 0;
+
+	var x, y;
+	if(pa1.x != pa0.x && pb1.x != pb0.x){
+		var mA = (pa1.y - pa0.y) / (pa1.x - pa0.x);
+		var mB = (pb1.y - pb0.y) / (pb1.x - pb0.x);
+	
+		// same slope the lines are coincident or no solution
+		if(mA != mB){
+			x = (pa0.y - pb0.y - ma* pa0.x + mb * pb0.x) / (mB - mA);
+			if(pa0.x < pa1.x){					// bound check
+				if(x < pa0.x || x > pa1.x)
+					return 0;
+			}else{
+				if(x < pa1.x || x > pa0.x)
+					return 0;
+			}
+			y = pb0.y + mB * (x - pb0.x);
+			aadd(solution,[x, y]);
+			return 1;
+		}
+		if(pb0.y == pa0.y + mA*(pb0.x - pa0.x)){
+			var temp;
+			if(pa0.x > pa1.x){
+				temp = pa0;
+				pa0 = pa1;
+				pa1 = temp;
+			}
+			if(pb0.x > pb1.x){
+				temp = pb0;
+				pb0 = pb1;
+				pb1 = temp;
+			}
+			// 2 point bound check
+			if(pa0.x <= pb0.x){
+				if(pa1.x < pb0.x)	//segment are disgiunted
+					return 0;
+				if(pa1.x > pb0.x){
+					if(pa1.x <= pb1.x){
+						aadd(solution, pb0);
+						aadd(solution, pa0);
+						return 2;
+					}else{
+						aadd(solution, pb0);
+						aadd(solution, pb1);
+						return 2;
+					}
+				}
+				//only one point in common
+				aadd(solution, pa1);
+				return 1;
+			}else{
+				if(pb1.x < pa0.x)
+					return 0;
+				if(pb1.x > pa0.x){
+					if(pb1.x <= pa1.x){
+						aadd(solution, pa0);
+						aadd(solution, pb1);
+						return 2;
+					}else{
+						aadd(solution, pa0);
+						aadd(solution, pa1);
+						return 2;
+					}
+				}
+				aadd(solution, pa0);
+				return 1;
+			}
+		}
+		return 0;
+	}else{	// vertical lines
+		if(pa1.x == pa0.x && pb1.x == pb0.x){	// both vertical O_O
+			if(pa1.x == pb1.x){
+				aadd(solution, pa0);
+				aadd(solution, pa1);
+				return 2;
+			}			
+			return 0;
+		}
+		if(pa1.x == pa0.x && pb1.x != pb0.x){	// only the first line vertical
+			var mB = (pb1.y - pb0.y) / (pb1.x - pb0.x);
+			x = pa0.x;
+			y = pb0.y + mB * (x - pb0.x);
+			if(pa0.y < pa1.y){				// bound check
+				if(y < pa0.y || y > pa1.y)
+					return 0;
+			}else{
+				if(y < pa1.y || y > pa0.y)
+					return 0;
+			}
+		}else{
+			var mA = (pa1.y - pa0.y) / (pa1.x - pa0.x);
+			x = pb0.x;
+			y = pa0.y + mA * (x - pa0.x);
+			if(pa0.x < pa1.x){				// bound check
+				if(x < pa0.x || x > pa1.x)
+					return 0;
+			}else{
+				if(x < pa1.x || x > pa0.x)
+					return 0;
+			}
+		}
+		aadd(solution, [x, y]);
+		return 1;
+	}
+}
+
+//Intersezione tra un raggio e una sfera
+// o = origine del raggio
+// d = direzione del raggio (normalizzata)
+// c = centro della sfera
+// r = raggio della sfera
+// ritorna true se il raggio interseca la sfera
+// false altrimenti
+function raySphereIntersection(o, d, c, r)
+{
+	var dist = c - o;
+	var alpha = dist * d;
+	var beta = dist * dist - r * r;
+	if(alpha * alpha > beta)
+		return true;
+	return false;
+}
+
+class entity{
+	var matrix;
+	setPosition(p);
+	getPosition();
+	translate(d);
+};
+
+function entity::setPosition(p)
+{
+	matrix[12] = p.x;
+	matrix[13] = p.y;
+	matrix[14] = p.z;
+}
+
+function entity::getPosition()
+{
+	return [matrix[12], matrix[13], matrix[14]];
+}
+
+function entity::translate(d)
+{
+	matrix[12] += d.x;
+	matrix[13] += d.y;
+	matrix[14] += D.z;
+}
+
+class point : entity
+{
+	var p;
+	var color;
+	var size;
+	
+	draw();
+	diff(b);
+};
+
+function point::point(a, c, s)
+{
+	p = a;
+	if(c == void)
+		c = [0.5, 0.5, 0.5];
+	if(s == void)
+		s = 1;
+	color = c;
+	size = s;
+}
+
+
+function point::draw()
+{
+	glColor(color);
+	glPointSize(size);
+	glBegin(GL_POINTS);
+		glVertex(p);
+	glEnd();
+}
+
+class line : entity
+{
+	var startPoint, endPoint;
+	var color;
+	var size;
+	
+	draw();
+};
+
+function line::line(p1, p2, c, s)
+{
+	startPoint = p1;
+	endPoint = p2;
+	if(c == void)
+		c = [0.5, 0.5, 0.5];
+	if(s == void)
+		s = 1;
+	color = c;
+	size = s;	
+}
+
+function line::draw()
+{
+	glColor(color);
+	glLineWidth(size);
+	glBegin(GL_LINES);
+		glVertex(startPoint);
+		glVertex(endPoint);
+	glEnd();	
+}
+
+
+class triangle : entity
+{
+	var p1, p2, p3;
+	var color;
+	var size;
+	
+	draw();
+};
+
+function triangle::triangle(a, b, c, col, s)
+{
+	p1 = a;
+	p2 = b;
+	p3 = c;
+	if(col == void)
+		col = [0.5, 0.5, 0.5];
+	if(s == void)
+		s = 1;
+	color = col;
+	size = s;	
+}
+
+function triangle::draw()
+{
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrix(matrix);
+	
+	glColor(color);
+	glLineWidth(size);
+	glBegin(GL_LINE_STRIP);
+		glVertex(p1);
+		glVertex(p2);
+		glVertex(p3);
+	glEnd();	
+}
+
+class quad : entity{
+	var p1, p2, p3, p4;
+	var color;
+
+	draw();
+	collision2D(b);
+};
+
+function quad::quad(a, b, c, d, col){
+	p1 = a;
+	p2 = b;
+	p3 = c;
+	p4 = d;
+	if(col == void)
+		color = [1.0, 1.0, 1.0];
+	else
+		color = col;
+	matrix = matrixIdentity_4();
+}
+
+function quad::draw(){
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glMultMatrix(matrix);
+
+	glColor(color);
+	glbegin(GL_QUADS);
+		glVertex(p1);
+		glVertex(p2);
+		glVertex(p3);
+		glVertex(p4);
+	glEnd();
+	glPopMatrix();
+}
+
+// Planar quad Collision, Y is ignored
+function quad::collision2D(b){
+	static var globalPointA = {[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]};
+	static var globalPointB = {[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]};
+	var returnPoint = array(0);
+	var pointFound = 0;
+
+	globalPointA[0] = matrixMultiplyVector_4(matrix, p1);
+	globalPointA[1] = matrixMultiplyVector_4(matrix, p2);
+	globalPointA[2] = matrixMultiplyVector_4(matrix, p3);
+	globalPointA[3] = matrixMultiplyVector_4(matrix, p4);
+
+	globalPointB[0] = matrixMultiplyVector_4(b.matrix, b.p1);
+	globalPointB[1] = matrixMultiplyVector_4(b.matrix, b.p2);
+	globalPointB[2] = matrixMultiplyVector_4(b.matrix, b.p3);
+	globalPointB[3] = matrixMultiplyVector_4(b.matrix, b.p4);
+
+//	var i = 2;
+//	var j = 3;
+	for(var i = 0; i < 4; i++)
+		for(var j = 0; j < 4; ++j)
+			pointFound += segmentCollisionTest2D(globalPointA[i].xz, globalPointA[(i+1)%4].xz, globalPointB[j].xz, globalPointB[(j+1)%4].xz, &returnPoint);
+
+	return returnPoint;
+}
+
+class pointPath{
+	var points;
+	var distances;
+	var directions;
+	var length;
+	
+	addPoint(p, i);
+	clear();
+	distanceToPathPoint(d, dir, r);
+	pointToPath(p, onP, dir);
+};
+
+function pointPath::pointPath(p)
+{
+	length = 0.0;
+	
+	if(p == void)
+	{
+		points = array(0);
+		distances  = array(0);
+		directions = array(0);
+		return;
+	}
+	points = p;
+	distances = array(len(p)-1);
+	directions = array(len(p)-1);
+	
+	var n = vector(3);
+
+	for(var i = 1; i < len(p); ++i)
+	{
+		n = points[i] - points[i-1];
+		distances[i-1] = modulus(n);
+		directions[i-1] = norm(n);
+		length += distances[i-1];
+	}
+}
+
+function pointPath::addPoint(p, i)
+{
+	if(i == void)
+		i = 0;
+	if(i > len(points))
+		quit("Error: Index not valid");
+	if(len(points) == 0)
+	{
+		aadd(points, p);
+		length = 0.0;
+		return;
+	}
+	var n = vector(3);
+
+	if(i == 0)
+	{
+		n = points[0] - p;
+		arrayAddFront(points, p);
+		arrayAddFront(distances, modulus(n));
+		arrayAddFront(directions, norm(n));
+		length += modulus(n);
+		return;
+	}
+	
+	if(i != len(points))
+	{
+		n = points[i] - p;
+		distances[i-1]  = modulus(n);
+		directions[i-1] = norm(n);
+	}
+	n = p - points[i-1];
+	arrayAdd(points, p, i);
+	arrayAdd(distances, modulus(n), i-1);
+	arrayAdd(directions, norm(n), i-1);
+	length += modulus(n);
+}
+
+function pointPath::clear()
+{
+	distances = array(0);
+	directions = array(0);
+	points = array(0);
+	length = 0.0;
+}
+
+function pointPath::distanceToPathPoint(dist, dir, r)
+{
+	var subPath = 0;
+	var subPathIntepolation;
+	var initSubPath;
+	var d = 0;
+	var i;//, angle;
+	
+	if(dist > length)
+		return points[len(points)-1];
+	if(dist < 0.0)
+		return points[0];
+	
+	subPath = 0;
+	do
+	{
+		d += distances[subPath];
+		++subPath;
+	}while(d < dist && subPath < len(distances));
+	subPath--;
+	initSubPath = (d - distances[subPath]);
+	subPathIntepolation = distances[subPath];
+	i = (dist - initSubPath) / subPathIntepolation;
+
+	if(dir != void)
+	{
+		var j = 0;
+		var alpha = d - dist;
+		if(alpha < r)
+		{
+			j = (r - alpha)*0.5;
+			dir = directions[subPath+1] * j + directions[subPath] *(1-j);
+		}else{
+			if(distances[subPath] - alpha < r){
+				j = r - distances[subPath] + alpha;
+				
+			}else
+				dir = directions[subPath];
+		}
+		
+		dir = directions[subPath+1] * j + directions[subPath] *(1-j);
+	}
+	return  points[subPath+1] * i + points[subPath] *(1-i);
+}
+
+#define MAXDISTANCE 5000.0
+
+function pointPath::pointToPath(p, onPath, dir)
+{
+	static var localToSegment = vector(3);
+	static var pointOnSegment = vector(3);
+	var minDistance = MAXDISTANCE;
+	var dist;
+	var segmentProjection = 0.0;
+	var pathDistance = 0.0;
+	var segmentLengthTotal = 0.0;
+
+	for(var i = 0; i < len(distances); ++i)
+	{
+	//compute distance for every segment
+		localToSegment =  p - points[i];
+		segmentProjection = directions[i] * localToSegment;
+		if(segmentProjection < 0)
+		{
+			segmentProjection = 0;
+			dist = modulus(p - points[i]);
+		}
+		if(segmentProjection > distances[i])
+		{
+			segmentProjection = distances[i];
+			dist = modulus(p - points[i+1]);
+		}
+		
+		pointOnSegment = directions[i] * segmentProjection + points[i];
+		dist = modulus(p - pointOnSegment);
+
+		if(dist  < minDistance)
+		{
+			minDistance = dist;
+			if(onPath != void)
+				onPath = pointOnSegment;
+			if(dir != void)
+				dir = directions[i];
+			pathDistance = segmentLengthTotal + segmentProjection;
+		}
+		segmentLengthTotal += distances[i];
+	}
+	return pathDistance;
+}
+
+#endif

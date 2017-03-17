@@ -1,0 +1,20 @@
+#ifndef physics_S3D
+#define physics_S3D
+
+#include ".\s3d\PhManager.s3d"
+
+var manager_psx;
+
+function InitPhysicsEngine(){
+	setLocalDir("..\\..\\physics\\lib");
+	manager_psx = CVmPhManager();  
+	manager_psx.InitPhysics();	
+	setLocalDir();
+}
+
+function RunPhysicsEngine(delta){
+	manager_psx.Simulate(delta);
+	manager_psx.UpdateGraphics();
+}
+
+#endif
