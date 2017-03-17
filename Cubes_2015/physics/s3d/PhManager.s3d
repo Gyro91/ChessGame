@@ -1,0 +1,885 @@
+#ifndef __USE_PYSXVR
+#define __USE_PYSXVR
+
+#include "geometry.s3d"
+#include "PhObj.s3d"
+#include "PhMaterial.s3d"
+#include "PhJoint.s3d"
+
+#define PHX_TIMEVARIABLE 0
+#define PHX_TIMEFIXED 1
+
+#define PHX_DEFAULT_SKIN_WIDTH 0
+#define PHY_ENABLE_HARDWARE 1
+#define PHX_DEBUG_SCALE 2
+#define PHX_DEBUG_VISUALIZE_SHAPES 3
+#define PHX_DEBUG_VISUALIZE_JOINT 4
+#define PHX_DEBUG_VISUALIZE_CONTACT 5
+#define PHX_DEBUG_VISUALIZE_CONTACT_FORCE 6
+
+#define PI_G 3.14159265358979323846264338327950288419716939937510
+
+class CollisionStruct
+{
+	var actor1;				//! Handler of the first actor
+	var actor2;				//! Handler of the second actor
+	var sumForce;			//! Force of the collision
+	var sumFriction;		//! Friction of the collision
+	var type;				//! Type of the collision
+	var numPoints;			//! Number of point involved in the collision
+	var points;				//! Points involved in the collision
+	var impulses;			//! Impulses of the collision
+	var forces;				//! Forces of the collision
+	var normals;			//! Normals of the collision
+};
+
+/*!
+ * Constructor for the class CollisionStruct
+ */
+function CollisionStruct::CollisionStruct()
+{
+	sumForce = vector(3);
+	sumFriction = vector(3);
+	type = 0;
+	numPoints = 0;
+	points = array(128);
+	impulses = array(128);
+	forces = array(128);
+	normals = array(128);
+	for(var i = 0; i < 128; ++i){
+		points[i] = vector(3);
+		impulses[i] = vector(3);
+		forces[i] = vector(3);
+		normals[i] = vector(3);
+	}
+}
+
+class CVmPhManager{
+	var array_PhObj;	//! An array with all the physics object in the scene
+	var array_PhJoint;	//! An array with all the joint in the scene
+	//var array_Wheel;	//! An array with all the wheel in the scene
+	var subSteptime;	//! The lenght of the minimum simulation time
+	var maxSubStep;		//! Maxinum number of sub step in one simulation step
+	var oldTime;		//! Used to compute the simulation step  
+	var deltaSim; 		//! Elapsed time of the last simulation step
+	var phTime;			//! Physical time, used for automatic time step computation
+	var debugMode;		//! Debug mode active
+	var debugRender;	//! Array with debug data
+	
+	Draw(flags, x, y);
+	GetDelta();
+
+	InitPhysics();
+	NewMaterial(restitution, staticFriction, dynamicFriction);
+	AddPhObject(pos, rot, isStatic);
+	AddPhCube(pos, rot, dim, isStatic, density, segs, mat);
+	AddPhSphere(pos, rot, radius, isStatic, density, segs, mat);
+	AddPhPlane(nor, dist, mat);
+	AddPhTerrain(pos, rows, cols, sample, thickness, dimX, dimZ, minY, maxY, mat);
+	AddPhCone(pos, rot, radius, height, isStatic, density, segs, mat);
+	AddPhConeFrustum(pos, rot, minRadius, maxRadius, height, isStatic, density, segs, mat);
+	AddPhPyramid(pos, rot, side, height, isStatic, density, segs, mat);
+	AddPhCylinder(pos, rot, radius, height, isStatic, density, segs, mat);
+	AddPhConvexShape(pos, rot, mesh, isStatic, density, segs, mat);
+	AddPhTriangleShape(pos, rot, mesh, isStatic, density, segs, mat);
+	DeletePhObj(obj);
+	
+	Simulate(delta);
+	UpdateGraphics();
+	SetSceneGravity(gravity);
+	FreeMem();
+	
+	NewCylindricalJoint(a1, a2, posA1, posA2, orA1, orA2);
+	NewFixedJoint(a1, a2, posA1, posA2, orA1, orA2);
+	NewPrismaticJoint(a1, a2, posA1, posA2, orA1, orA2);
+	NewRevoluteJoint(a1, a2, posA1, posA2, orA1, orA2);
+	NewDistanceJoint(a1, a2, posA1, posA2, orA1, orA2);
+	NewSphericalJoint(a1, a2, posA1, posA2, orA1, orA2);
+	NewD6Joint(a1, a2, posA1, posA2, orA1, orA2);
+	DeletePhJoint(joint);
+	
+	SetupCollisionReport(a1, a2, flag, value);
+	InTouch(a1, a2);
+	GetGlobalCollision(collStruct);
+	EnableCollision(g1, g2);
+    DisableCollision(g1, g2);
+	
+	CookConvexMesh(m);
+	CookMesh(m);
+ 
+};
+
+/*!
+ * Manager constructor
+ * This function init the physics parameter to the default valuer and load the 
+ * library ('PhysXVR.dll') or the debug library ('PhysXVRdebug.dll'), the debug
+ * library allow to view the physics scene with the Ageia remote debugger.
+ * /param	debug	bool	if true load the debug library.  
+ */
+function CVmPhManager::CVmPhManager(debug)
+{
+	if(debug == void)
+		debug = false;
+	debugMode = debug;
+	loadLib(debug);
+	
+	//create PhObj list
+	array_PhObj = array(0);
+	array_PhJoint = array(0);
+	//array_Wheel = array(0);
+	
+	ResetPerformanceTimer();
+	phTime = oldTime = GetPerformanceTimer() / 1000000.0;
+	deltaSim=0;
+	subSteptime = 0.01;
+	maxSubStep = 40;
+	//numDebugObject = 0;
+	
+	if(debugMode)
+		debugRender = array(0);
+}	
+
+/*!
+ * Draw all the graphical object linked with the physical object
+ * Note:  call this function into OnFrame after the sceneBegin() * 
+ * \param flags  contains a combination of one or more of the values contained in the Flag Table (see XVR documentation).
+ * \param x  can assume different meanings according to the active flag	
+ * \param y  can assume different meanings according to the active flag	
+ */
+function CVmPhManager::Draw(flags, x, y){
+	foreach(var phObj in array_PhObj){
+//		var act = phObj.GetActor();
+		phObj.Draw(flags, x, y);
+	}
+		
+//	if(debugMode)
+//		debugDraw();
+}
+
+
+/*!
+ * Get the simulation time of the last simulation step
+ * \return	simulation time of the last step
+ */
+function CVmPhManager::GetDelta(){
+	return deltaSim;
+}
+
+/*!
+ * Initialize the Physics
+ */
+function CVmPhManager::InitPhysics(){
+	CheckForErrorMessage(PhysXVR.Init(), "Init");
+}
+
+/*!
+ * Creates a new physic material
+ * \param restitution		float	the coefficient of restitution
+ * \param staticFriction 	float	the coefficient of static friction
+ * \param dynamicFriction 	float	the coefficient of dynamic friction
+ * \return 							material handler
+ */
+function CVmPhManager::NewMaterial(restitution, staticFriction, dynamicFriction){
+	return CVmPhMaterial(restitution, staticFriction, dynamicFriction); 
+} 
+
+/*!
+ * Add an empty Complex Object to the scene.
+ * It could be edited adding several shapes to create a complex object by using:
+ * 		- PhObj.AddBoxShape()
+ * 		- PhObj.AddConvexShape()
+ * 		- PhObj.AddSphereShape()
+ * 		- PhObj.AddTriangleShape()
+ * \param	pos			vector[3]	initial position
+ * \param	rot			vector[3]	initial rotation (in euler angles convention, degrees)
+ * \parm 	isStatic	int			specifies the type of the object
+ * \return							the new CVmPhObj
+ */
+function CVmPhManager::AddPhObject(pos, rot, isStatic){
+	var elem = CVmPhObj();
+	elem.NewCompObject(pos, rot, isStatic);
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Cube Actor to the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	dim			vector[3]		dimension in x, y and z of the cube
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhCube(pos, rot, dim, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewCube(pos, rot, dim, isStatic, density, segs, mat);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Spherical Actor to the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	radius		float			sphere radius
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhSphere(pos, rot, radius, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewSphere(pos, rot, radius, isStatic, density, segs, mat);
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Fixed Plane Actor to the scene.
+ * It will be only physical objects, there will not be created a graphical mesh..
+ * \param	nor			vector[3]		x,y,z-coordinate of  the plane normal
+ * \param	dist		float			distance from the origin
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhPlane(nor, dist, mat){	
+	var elem = CVmPhObj();
+	elem.NewPlane(nor, dist, mat);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Terrain Actor to the scene.
+ * It will be only physical objects, there will not be created a graphical mesh..
+ * \param	pos			vector[3]		position
+ * \param	rows		int				???
+ * \param	cols		int				???
+ * \param	sample		????			???
+ * \param	thickness	float			???
+ * \param	dimX		float			???
+ * \param	dimZ		float			???
+ * \param	minY		float			???
+ * \param	maxY		float			???
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhTerrain(pos, rows, cols, sample, thickness, dimX, dimZ, minY, maxY, mat){	
+	var elem = CVmPhObj();
+	elem.NewTerrain(pos, rows, cols, sample, thickness, dimX, dimZ, minY, maxY, mat);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Cone Actor to the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	radius		float			radius of the cone
+ * \param	height		float			height of the cone
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhCone(pos, rot, radius, height, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewCone(pos, rot, radius, height, isStatic, density, segs, mat, this);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Cone Frustum Actor in the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	minRadius	float			specifies the inside (smaller) radius of the object
+ * \param	maxRadius	float			specifies the outside (greater) radius of the object
+ * \param	height		float			height of the cone
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhConeFrustum(pos, rot, minRadius, maxRadius, height, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewConeFrustum(pos, rot, minRadius, maxRadius, height, isStatic, density, segs, mat, this);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Pyramid Actor in the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	side		float			length of the bottom side of the object (base)
+ * \param	height		float			height of the cone
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \param	mng			CVmPhManager	physical manager for cooking
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhPyramid(pos, rot, side, height, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewPyramid(pos, rot, side, height, isStatic, density, segs, mat, this);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Cylinder Actor to the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	radius		float			radius of the cone
+ * \param	height		float			height of the cone
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhCylinder(pos, rot, radius, height, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewCylinder(pos, rot, radius, height, isStatic, density, segs, mat, this);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Not-Standard Convex Shape Actor in the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	mesh		CVmMesh			new mesh
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \param	mng			CVmPhManager	physical manager for cooking
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhConvexShape(pos, rot, mesh, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewCvShape(pos, rot, mesh, isStatic, density, segs, mat, this);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+/*!
+ * Add a Not-Standard Triangle Shape Actor in the scene.
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	mesh		CVmMesh			new mesh
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	segs		int				the number of polygonal divisions in the graphic mesh
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \param	mng			CVmPhManager	physical manager for cooking
+ * \return								the new CVmPhObj
+ */
+function CVmPhManager::AddPhTriangleShape(pos, rot, mesh, isStatic, density, segs, mat){	
+	var elem = CVmPhObj();
+	elem.NewTriShape(pos, rot, mesh, isStatic, density, segs, mat, this);	
+	var actor_handler = elem.GetActor();
+	if(len(array_PhObj) <= actor_handler)
+        asize(array_PhObj, actor_handler+1);
+    array_PhObj[actor_handler] = elem;	
+	return elem;
+}
+
+
+/*!
+ * Removes an object from the scene.
+ * \param	obj	CVmPhObject	object to remove
+ */
+function CVmPhManager::DeletePhObj(obj){	
+	for(var i = 0; i < len(Array_PhObj); i++){
+		if(Array_PhObj[i].GetActor() == obj.GetActor()){
+			
+			var nActor_p = PhysXVR.GetObjectNumber();
+			var nActor_n = PhysXVR.DeleteObj(obj.GetActor());
+	
+			if(nActor_n != nActor_p - 1)
+				CheckForErrorMessage(nActor_n, "DeleteObj");
+
+			adel(Array_PhObj, i);
+			break;
+		}
+	}		
+}
+
+/*!
+ * Performs a simulation step
+ * Start the physics simulation thread and advance the physics simulation state
+ * of delta second.
+ * \param  delta	float	time step
+ * \return					simulation time step
+ */
+function CVmPhManager::Simulate(delta){
+//	static phTime = 0.0;
+	if(valtype(delta) == ""){
+		
+		var k = 0;
+		var t = GetPerformanceTimer()/ 1000000.0;
+		deltaSim = (t - phTime);
+		oldTime = t;
+		
+		while((k+1) * subSteptime < deltaSim)
+			++k;
+			
+		if(k > maxSubStep)
+			k = maxSubStep;
+			
+		//deltaSim = k*subSteptime;
+		phTime += deltaSim;
+		
+	} else {
+		deltaSim=delta;
+	}
+		
+	if(deltaSim > 0){
+//		for(var i = 0; i < len(Array_Wheel); i++)
+//			Array_Wheel[i].step(deltaSim);
+		PhysXVR.StartPhysics(deltaSim);
+	}
+	
+	return deltaSim;
+}
+
+/*!
+ * Update the graphical objects in the XVR scene with respect of their pose in PhySX.
+ * N.B. It must be used after PhManager.Simulate() function.
+ */
+function CVmPhManager::UpdateGraphics(){
+	PhysXVR.GetPhysicsResults();	
+	for(var i = 0; i < len(Array_PhObj); i++){		
+		if(Array_PhObj[i].type != PHX_FIXED){
+			var pos = vector(3);
+			pos = Array_PhObj[i].GetPosition();
+			array_PhObj[i].GetObj().SetPosition(pos);
+			
+	//		var rot = vector(16);
+	//		rot = Array_PhObj[i].GetTransformationMatrix();
+	//		rot[12] = 0;	rot[13] = 0;	rot[14] = 0;
+	//		Array_PhObj[i].GetObj().SetRotationMatrix(rot);
+	
+//			var rot3 = vector(9);
+//			rot3 = Array_PhObj[i].GetRotationMatrix();
+//			var rot = vector(16);
+//			rot[0] = rot3[0];	rot[1] = rot3[1];	rot[2] = rot3[2];	rot[3] = 0;
+//			rot[4] = rot3[3];	rot[5] = rot3[4];	rot[6] = rot3[5];	rot[7] = 0;
+//			rot[8] = rot3[6];	rot[9] = rot3[7];	rot[10] = rot3[8];	rot[11] = 0;
+//			rot[12] = 0;		rot[13] = 0;		rot[14] = 0;		rot[15] = 1;
+//			Array_PhObj[i].GetObj().SetRotationMatrix(rot);
+	
+			var angle = 0.0;
+			var axis = vector(3);
+			Array_PhObj[i].GetRotation(&angle, &axis);
+			Array_PhObj[i].GetObj().SetRotation(angle, axis);	
+		} else {
+//			outputln("Warning: FIXED object don't support \"UpdateGraphics\" function");
+		}
+	}		
+}
+
+/*!
+* Sets the gravity of the scene.
+* \param	gravity	vector[3]	gravity vector	 
+*/
+function CVmPhManager::SetSceneGravity(gravity){
+	PhysXVR.SetSceneGravity(gravity);
+}
+
+/*!
+ * Destroy the scene, close the simulation and free the memory
+ * Call this function into OnExit() 
+ */
+function CVmPhManager::FreeMem(){
+  PhysXVR.ShutDown();
+}
+
+/*!
+ * Creates a cylindrical joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewCylindricalJoint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhCylindricalJoint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*!
+ * Creates a fixed joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewFixedJoint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhFixedJoint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*!
+ * Creates a prismatic joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewPrismaticJoint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhPrismaticJoint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*!
+ * Creates a revolute joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewRevoluteJoint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhRevoluteJoint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*!
+ * Creates a distance joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewDistanceJoint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhDistanceJoint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*!
+ * Creates a spherical joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewSphericalJoint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhSphericalJoint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*!
+ * Creates a D6 joint between two object
+ * Note: at least one actor must be dynamic
+ * \param	a1 		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	posA1	vector(3)	the position of the joint relative to the first actor (tern)
+ * \param	posA2	vector(3)	the position of the joint relative to the second actor (tern)
+ * \param	orA1	vector(3)	the orientation of the joint relative to the first actor (in euler angles convention, degrees)
+ * \param	orA2	vector(3)	the orientation of the joint relative to the second actor (in euler angles convention, degrees)
+ * \return			joint
+ */
+function CVmPhManager::NewD6Joint(a1, a2, posA1, posA2, orA1, orA2){
+	var elem = CVmPhD6Joint(a1, a2, posA1, posA2, orA1, orA2);	
+	var joint_handler = elem.GetHandler();
+	if(len(array_PhJoint) <= joint_handler)
+        asize(array_PhJoint, joint_handler+1);
+    array_PhJoint[joint_handler] = elem;
+	return elem;
+}
+
+/*! 
+ * Deletes a joint
+ * \param	jh	CVmPhJoint	joint to remove
+ */
+function CVmPhManager::DeletePhJoint(joint){
+	for(var i = 0; i < len(array_PhJoint); i++){
+		if(array_PhJoint[i].GetHandler() == joint.GetHandler()){
+			
+			var nJoint_p = PhysXVR.GetJointNumber();
+			var nJoint_n = PhysXVR.DeleteJoint(joint.GetHandler());
+	
+			if(nJoint_n != nJoint_p - 1)
+				CheckForErrorMessage(nJoint_n, "DeleteJoint");
+
+			adel(array_PhJoint, i);
+			break;
+		}
+	}	
+}
+ 
+/*!
+ * Tells to PhySX to check if a pair of actors collided.
+ * Setting the flag on true, the CollisionReport Struct will be filled with the information of the involved actors when the collision specified in "flag" will be retrived.
+ * \param	a1		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \param	flag	int			specified which type of collision should be retrived
+ * 								- TOUCH_FOUND
+ * 								- TOUCH_PERSISTS
+ * 								- TOUCH_LOST
+ * \param	value	bool		value of the flag
+ */
+function CVMPhManager::SetupCollisionReport(a1, a2, flag, value){
+	if(valtype(value) == "")
+		value = true;	
+	var iValue = 0;
+	if(value)
+		iValue = 1;
+	CheckForErrorMessage(PhysXVR.SetupCollisionReport(a1.GetActor(), a2.GetActor(), flag, iValue), "CookConvexMesh");
+}
+
+/*!
+ * Checks if two actors are touching each other.
+ * \param	a1		CVmPhObj	first object
+ * \param	a2 		CVmPhObj	second object
+ * \return			bool		true if the actors are in touch
+ */
+function CVMPhManager::InTouch(a1, a2){
+	var resultBool = false;
+	var result = PhysXVR.InTouch(a1.GetActor(), a2.GetActor());
+	if(result == 1){
+		resultBool = true;
+	}
+	else{
+		resultBool = false;
+	}
+	return resultBool;
+}
+ 
+/*!
+ * ????
+ * \param  collStruct	???
+ * return 	number of collision in the array
+ */
+function CVMPhManager::GetGlobalCollision(collStruct){
+	
+	static var a = vector(32676);
+	var j = 0;
+
+	var n = PhysXVR.GetGlobalCollision(&a);
+	
+	for(var i= 0; i < n && i < len(collStruct); ++i)	{
+		collStruct[i].actor1 = Array_PhObj[a[j++]];
+		collStruct[i].actor2 = Array_PhObj[a[j++]];
+		switch(a[j++]){
+			case 0:
+				collStruct[i].type = TOUCH_FOUND; 
+				break;
+			case 1:
+				collStruct[i].type = TOUCH_PERSISTS;
+				break;
+			case 2:
+				collStruct[i].type = TOUCH_LOST;
+				break;
+		}
+		//force
+		collStruct[i].sumForce.x = a[j++];
+		collStruct[i].sumForce.y = a[j++];
+		collStruct[i].sumForce.z = a[j++];
+		//friction
+		collStruct[i].sumFriction.x = a[j++];
+		collStruct[i].sumFriction.y = a[j++];
+		collStruct[i].sumFriction.z = a[j++];
+		//numPoint
+		collStruct[i].numPoints = a[j++];
+		for(var p = 0; p < collStruct[i].numPoints; ++p){
+			//point
+			collStruct[i].points[p].x = a[j++];
+			collStruct[i].points[p].y = a[j++];
+			collStruct[i].points[p].z = a[j++];
+			//impulsi
+			collStruct[i].impulses[p].x = a[j++];
+			collStruct[i].impulses[p].y = a[j++];
+			collStruct[i].impulses[p].z = a[j++];
+			//forza
+			collStruct[i].forces[p].x = a[j++];
+			collStruct[i].forces[p].y = a[j++];
+			collStruct[i].forces[p].z = a[j++];
+			//normali
+			collStruct[i].normals[p].x = a[j++];
+			collStruct[i].normals[p].y = a[j++];
+			collStruct[i].normals[p].z = a[j++];
+		}
+	}
+	return n;
+}
+
+/*!
+ * Enable the collision between the collision groups specified
+ * \param	g1	int	first collision group
+ * \param	g2	int	second collision group
+ */
+function CVmPhManager::EnableCollision(g1, g2){
+	PhysXVR.EnableCollision(g1, g2);
+}
+
+/*!
+ * Disable the collision between the collision groups specified
+ * \param	g1	int	first collision group
+ * \param	g2	int	second collision group
+ */
+function CVmPhManager::DisableCollision(g1, g2){
+	PhysXVR.DisableCollision(g1, g2);
+}
+
+/*!
+ * Create an hull of the mesh for fast collision detection
+ * Create a hull of the mesh to allow the engine to perform an efficient
+ * collision detection.
+ * The resulting convex mesh must be less then 256 polygons or can give
+ * unpredictable result.
+ * If all the point in the mesh are in the same plane the mesh is discarded.
+ * \param	m	mesh to cook
+ * \return 		the handler of the cooked mesh 
+ */ 
+function CVmPhManager::CookConvexMesh(m){
+	var subSetNumber;
+	var vertexCount, triangleCount;
+	m.getInformation(&subSetNumber, &vertexCount, &triangleCount);
+	var vertex = vector(vertexCount * 3);
+	var index = space(0); // 12 = sizeof(unsigned int) * numero di indici per triangolo
+	m.GetMeshData(&vertex, &index);
+	
+	var meshIndex = PhysXVR.CookConvexMesh(vertex, vertexCount);
+	CheckForErrorMessage(meshIndex, "CookConvexMesh");
+			
+	return meshIndex;
+}
+
+extern function UnpackVector;	/* CHE DIAVOLO È QUESTO??? */
+
+/*!
+ * ERROR - THIS FUNCTION DOESN'T WORK!!
+ * Prepare a mesh for the use in the simulation 
+ * Analyze the mesh to allow the engine collision detection.
+ * \param 	m	mesh to cook
+ * \return 		the handler of the cooked mesh 
+ */ 
+function CVmPhManager::CookMesh(m){
+	var subSetNumber;
+   	var vertexCount, triangleCount;
+  	m.getInformation(&subSetNumber, &vertexCount, &triangleCount);
+   	var vertex = vector(vertexCount * 3);
+   	var index = space(0); // 12 = sizeof(unsigned int) * numero di indici per triangolo
+   	m.GetMeshData(&vertex, &index);
+   	var ppip = UnpackVector("hhhhhhhhh", index);
+   	trace(ppip);
+	
+	var meshIndex = PhysXVR.CookMesh(vertex, vertexCount, ppip, triangleCount);
+	CheckForErrorMessage(meshIndex, "CookMesh");
+		
+   return meshIndex;
+}
+
+#endif

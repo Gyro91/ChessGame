@@ -1,0 +1,339 @@
+#define HELP_REQUIRED	0
+#define CHECK_Y			1
+#define Y_REACHED		2
+#define XZ_REACHED		3
+#define TARGET_REACHED	4
+
+#define MULTIPLY_Y			2.10 
+#define BIAS_Y				0.5
+#define DISTANCE_THRESHOLD	0.5
+#define MULTIPLY_FINAL_Y	1.5
+
+
+
+class ResultObj{
+	var target;
+	var reach;
+};
+
+function ResultObj::ResultObj(){
+	target = vector(3);
+	reach = false;
+}
+
+class Help{
+	var status;
+	var firstTarget_pos;
+	var secondTarget_pos;
+	var finalTarget_pos;
+	var getTargets;
+	var move;
+	var duringGrasping;
+	
+	var cube_num;
+	var cube_size;
+	
+	var puzzle_target;
+	var basket_target;
+	var clock_target;
+	
+	GetEuclideanDistance(a, b);
+	FindClosestCube(EE_pos, cubes, free_cubes);
+	FindClosestCubePosition(EE_pos, cubes, free_cubes);
+	FindCubePosition(cubes, cubeToReach);
+	FindFinalPosition(sel_obj, session);
+	GetPositionY_toReach(EE_pos);
+	GetPositionXZ_toReach(EE_pos, target_pos);
+	RunHelp(required, grasp_on, sel_obj, session, EE_pos, cubes, free_cubes, hSet, cubeToReach);
+};
+
+function Help::Help(num, size, puzzle_target, basket_target, clock_target){
+	status = HELP_REQUIRED;
+	firstTarget_pos = vector(3);
+	secondTarget_pos = vector(3);
+	finalTarget_pos = vector(3);
+	getTargets = true;
+	move = false;
+	duringGrasping = false;
+	
+	cube_num = num;
+	cube_size = size;
+	
+	this.puzzle_target = puzzle_target;
+	this.basket_target = basket_target;
+	this.clock_target = clock_target;	
+}
+
+/*!
+ * Returns the eculidean distance between two 3D points
+ * \param	a	vector[3]	point 1
+ * \param	b	vector[3]	point 2
+ * \return		distance
+ */
+function Help::GetEuclideanDistance(a, b){
+	return sqrt((a[0] - b[0])*(a[0] - b[0]) + (a[1] - b[1])*(a[1] - b[1]) + (a[2] - b[2])*(a[2] - b[2]));
+}
+
+/*!
+ * Finds the cloesest cube to the end effector and returns its index
+ * \param	EE_pos		vector[3]	position of the end effector
+ * \param	cubes		vector[?]	cubes in the environment
+ * \param	free_cubes	vactor[?]	
+ * \return				int			cube index
+ */
+function Help::FindClosestCube(EE_pos, cubes, free_cubes){
+	var min = -1.0;		//Minimum distance between the cube and the end effector
+	var min_index = -1;	//Index of the closest cube
+	for(var i=0; i<len(free_cubes); i++){
+		var index_free = free_cubes[i] - 1;
+		var cube_pos = cubes[index_free].GetPosition();
+		var dist = GetEuclideanDistance(cube_pos, EE_pos);
+		if(min == -1.0){
+			min = dist;
+			min_index = index_free;
+		}				
+		if(dist < min ){
+			min = dist;
+			min_index = index_free;
+		}
+	}
+	return min_index;
+}
+
+/*!
+ * Finds the cloesest cube to the end effector and returns its position
+ * \param	EE_pos		vector[3]	position of the end effector
+ * \param	cubes		vector[?]	cubes in the environment
+ * \param	free_cubes	vactor[?]	
+ * \return				vector[3]	position to reach
+ */
+function Help::FindClosestCubePosition(EE_pos, cubes, free_cubes){
+	var min = -1.0;		//Minimum distance between the cube and the end effector
+	var min_index = -1;	//Index of the closest cube
+	for(var i=0; i<len(free_cubes); i++){
+		var index_free = free_cubes[i] - 1;
+		var cube_pos = cubes[index_free].GetPosition();
+		var dist = GetEuclideanDistance(cube_pos, EE_pos);
+		if(min == -1.0){
+			min = dist;
+			min_index = index_free;
+		}				
+		if(dist < min ){
+			min = dist;
+			min_index = index_free;
+		}
+	}
+//	for(var i=0; i<cube_num; i++){
+//		var cube_pos = cubes[i].GetPosition();
+//		var dist = GetEuclideanDistance(cube_pos, EE_pos);
+//		if(min == -1.0){
+//			min = dist;
+//			min_index = i;
+//		}				
+//		if(dist < min ){
+//			min = dist;
+//			min_index = i;
+//		}							
+//	}
+	var cubePosition = vector(3);
+	cubePosition = cubes[min_index].GetPosition();
+	var delta = (cube_size/2) + 0.03;
+	cubePosition[1] = cubePosition[1] + delta;
+	return cubePosition;
+} 
+
+function Help::FindCubePosition(cubes, cubeToReach){	
+	var cubePosition = vector(3);
+	cubePosition = cubes[cubeToReach].GetPosition();
+	var delta = (cube_size/2) + 0.03;
+	cubePosition[1] = cubePosition[1] + delta;
+	return cubePosition;
+} 
+
+function Help::FindFinalPosition(sel_obj, session){
+	var pos_x = 0.0;
+	var pos_z = 0.0;
+	var position = vector(3);
+	switch (session){
+		case "Puzzle":		
+			pos_x = ((sel_obj - 1) % 3) - 1;
+			pos_z = 1 - (floor((8 - (sel_obj - 1)) / 3));
+			position = [pos_x, MULTIPLY_FINAL_Y, pos_z] * cube_size;
+			break;
+		case "Basket":		
+			position = basket_target;
+			position[1] = MULTIPLY_FINAL_Y * cube_size;
+			break;
+		case "Clock":			
+			position = clock_target[sel_obj -1];		
+			position[1] = MULTIPLY_FINAL_Y * cube_size; 
+			break;		
+	}
+	
+	return position;
+}
+
+
+function Help::GetPositionY_toReach(EE_pos){
+	var newPosition = vector(3);
+	newPosition[0] = EE_pos[0];
+	if(duringGrasping)
+		newPosition[1] = cube_size * MULTIPLY_Y * 1.5;
+	else
+		newPosition[1] = cube_size * MULTIPLY_Y;
+	newPosition[2] = EE_pos[2];
+	return newPosition;
+}
+
+function Help::GetPositionXZ_toReach(EE_pos, target_pos){
+	var newPosition = vector(3);
+	newPosition[0] = target_pos[0];
+	newPosition[1] = EE_pos[1];
+	newPosition[2] = target_pos[2];
+	return newPosition;
+}
+
+/*!
+ * Help for reaching the target
+ * \param 	required		bool		true if the help has been required
+ * \param 	grasp_on		bool		true if the object is grasped
+ * \param	sel_obj			int			index of the grasped object, if an object is currently grasped (the correct index is sel_obj - 1)
+ * \param	session			string		session of the game ("Puzzle", "Basket", "Clock")
+ * \param 	EE_pos			vector[3]	current position of the end effector
+ * \param	cubes			vector[?]	cubes in the environment
+ * \param	free_cubes		vector[?]	contains the indices of the free cubes in the environment
+ * \param	hSet			int			if equal 1 disable set to Off the button "ASSIST", if equal 0 set to On the button "ASSIST"
+ * \param	cubeToReach		int			index of the cube to reach
+ */
+function Help::RunHelp(required, grasp_on, sel_obj, session, EE_pos, cubes, free_cubes, hSet, cubeToReach){
+
+	var result = ResultObj();
+	var dist_target = 0.0;
+	var dist_th  = 0.0;
+		
+	if(required){
+		
+		if(grasp_on == 0 && duringGrasping == true){			
+			status = TARGET_REACHED;	//Se durante l'esecuzione dell'aiuto mentre il grasping è attivo l'utente rilascia il grasping, cambia lo status in quello finale per terminare l'aiuto
+		}
+		
+		switch (status){
+			
+			case HELP_REQUIRED:
+				
+				if(grasp_on == 0){
+					//If no object is grasped
+					//finalTarget_pos = FindClosestCubePosition(EE_pos, cubes, free_cubes);
+					finalTarget_pos = FindCubePosition(cubes, cubeToReach);
+					duringGrasping = false;					
+				} else {
+					//If an object is grasped
+					if(sel_obj>0){
+						var cubPosSel = cubes[sel_obj-1].GetPosition();
+						var diff_x = cubPosSel[0] - EE_pos[0];
+						var diff_z = cubPosSel[2] - EE_pos[2];
+						
+						finalTarget_pos = FindFinalPosition(sel_obj, session);
+	//					trace(cubPosSel, EE_pos, diff_x, diff_z, finalTarget_pos);
+						finalTarget_pos[0] = finalTarget_pos[0] - diff_x;
+						finalTarget_pos[2] = finalTarget_pos[2] - diff_z;	
+						duringGrasping = true;						
+					} else {
+						finalTarget_pos = FindCubePosition(cubes, cubeToReach);
+						duringGrasping = false;	
+					}				
+				}
+				status = CHECK_Y;
+				getTargets = true;
+				move = false;
+				break;
+			
+			case CHECK_Y:
+				
+				if(getTargets){					
+					firstTarget_pos = GetPositionY_toReach(EE_pos, cube_size);
+					getTargets = false;
+					move = true;				
+				}			
+				
+				dist_th = cube_size * BIAS_Y;
+				if(EE_pos[1] >= (firstTarget_pos[1] - dist_th)){
+					status = Y_REACHED; 
+					getTargets = true;
+					move = false;
+				} 
+				
+				if(move){
+					//INSERISCI QUA IL COMANDO DI POSIZIONE PER RAGGIUNGERE firstTarget_pos
+					result.target = firstTarget_pos;
+					result.reach = true;
+					move = false;
+				}
+				
+				break;
+				
+			case Y_REACHED:
+				
+				if(getTargets){
+					secondTarget_pos = GetPositionXZ_toReach(EE_pos, finalTarget_pos);
+					getTargets = false;
+					move = true;
+				}
+								
+				dist_target = GetEuclideanDistance(EE_pos, secondTarget_pos);
+				dist_th = cube_size * DISTANCE_THRESHOLD;
+				if(dist_target <= dist_th){
+//				if(EE_pos[0] == secondTarget_pos[0] && EE_pos[1] == secondTarget_pos[1] && EE_pos[2] == secondTarget_pos[2]){
+ 					status = XZ_REACHED; 
+					getTargets = true;
+					move = false;
+				} 
+				
+				if(move){
+					//INSERISCI QUA IL COMANDO DI POSIZIONE PER RAGGIUNGERE secondTarget_pos
+					result.target = secondTarget_pos;
+					result.reach = true;
+					move = false;
+				}
+				
+				break;
+				
+			case XZ_REACHED:
+				
+				if(getTargets){
+					getTargets = false;
+					move = true;
+				}
+				
+				dist_target = GetEuclideanDistance(EE_pos, finalTarget_pos);
+				dist_th = cube_size * DISTANCE_THRESHOLD;
+				if(dist_target <= dist_th){
+					status = TARGET_REACHED; 
+					getTargets = false;
+					move = false;
+				} 
+				
+				if(move){
+					//INSERISCI QUA IL COMANDO DI POSIZIONE PER RAGGIUNGERE finalTarget_pos
+					result.target = finalTarget_pos;
+					result.reach = true;
+					move = false;
+				}						
+				
+				break;
+				
+			case TARGET_REACHED:
+				
+				status = HELP_REQUIRED;
+				required = false;
+				duringGrasping = false;
+				hSet = 1;		
+				break;			
+				
+		}		
+	} else {
+		status = HELP_REQUIRED;
+	}
+	
+	return result;	
+}

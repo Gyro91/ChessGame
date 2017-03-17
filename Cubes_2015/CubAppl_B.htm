@@ -1,0 +1,174 @@
+<HTML>
+<HEAD>
+<TITLE>
+	DEMO REACHING
+</TITLE>
+</HEAD>
+
+
+<SCRIPT language=JavaScript>
+
+	function leadingZero(nr)
+	{
+		if (nr < 10) nr = "0" + nr;
+		return nr;
+	}
+
+	function date()
+	{
+		var dataoggi=new Date();
+		var oggianno = leadingZero(dataoggi.getYear()-2000);
+		var oggimese = leadingZero(dataoggi.getMonth()+1);
+		var oggigiorno = leadingZero(dataoggi.getDate());
+		hapticxvr.DataIn(oggigiorno+"-"+oggimese+"-"+oggianno);
+	}
+
+
+	function resolution()
+	{
+		width = screen.width;
+		height = screen.height;
+		Presencia.DataIn(width+"."+height);
+	}
+
+	function nomefile()
+	{
+		var cognome;
+		var dataoggi=new Date();
+		var oggianno = leadingZero(dataoggi.getYear()-2000);
+		var oggimese = leadingZero(dataoggi.getMonth()+1);
+		var oggigiorno = leadingZero(dataoggi.getDate());
+		cognome = prompt("Inserire cognome paziente","Cognome...");
+		hapticxvr.DataIn(cognome+"_y"+oggianno+"m"+oggimese+"d"+oggigiorno);
+	}
+
+
+	function attiva()
+	{
+		hapticxvr.DataOut(checkapp);
+		if (!checkapp)	alert("DISPOSITIVO NON ATTIVATO\CONTROLLA IL COLLEGAMENTO ETHERNET!");
+	}
+
+</SCRIPT>
+
+<BODY bgcolor = "#000000" onLoad=date() margin:0px padding:0px scroll="no">  <!-- onLoad=nomefile()> -->
+<OBJECT ID="hapticxvr"
+WIDTH=100%
+HEIGHT=100%
+CLASSID="CLSID:5D589287-1496-4223-AE64-65FA078B5EAB"
+TYPE="application/x-oleobject"
+CODEBASE="http://client.vrmedia.it/XVRPlayer.cab#Version=1,0,0,900">
+<PARAM NAME="ScriptName" VALUE="Cubetti.s3d.bin">
+<PARAM NAME="EngineVersion" VALUE="0153">
+<PARAM NAME="EngineParam" VALUE="STEREO">
+<PARAM NAME="BackgroundColor" VALUE="#000000">
+
+
+</OBJECT>
+<SCRIPT LANGUAGE="VBScript">
+Sub Document_onKeyPress()
+    if(window.event.keyCode=27) then
+	window.close()
+    End If
+End Sub
+</SCRIPT>
+</BODY>
+</HTML>
+
+<!--
+
+<html>
+	<HEAD>
+		<TITLE>CUBETTI</TITLE>
+		<META name="keywords" Content="PERCRO, Cubetti, XVR">
+		<META name="description" content="Gioco didattico di ricostruzione immagini">
+		<META name="author" content="PERCRO">
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	</HEAD>
+
+	<SCRIPT language="JavaScript">
+	<!--
+	function Riavvia()
+	{
+		Cubetti.DataIn("1");
+	}
+	</SCRIPT>
+	
+	<BODY bgColor="#000000" marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" onLoad=nomefile()>
+
+
+<SCRIPT language=JavaScript>
+function nomefile()
+{
+var cognome;
+var dataoggi=new Date();
+var oggianno = leadingZero(dataoggi.getYear()-2000);
+var oggimese = leadingZero(dataoggi.getMonth()+1);
+var oggigiorno = leadingZero(dataoggi.getDate());
+cognome = prompt("Inserire cognome paziente","Cognome...");
+Cubetti.DataIn(cognome+"_"+oggianno+""+oggimese+""+oggigiorno);
+}
+
+function leadingZero(nr)
+{
+	if (nr < 10) nr = "0" + nr;
+	return nr;
+}
+
+</SCRIPT>
+
+
+		<TABLE align="center" width="100%" height="100%" cellpadding="0" cellspacing="0">
+		<tr>
+			<td align="center" valign="middle">
+				<table align"center" width="990" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="30" height="30" bgcolor="#1F545D" background="Img\Sfondo_TL.jpg">
+						</td>
+						<td width="800" height="30" bgcolor="#1F545D" background="Img\Sfondo_TT.jpg">
+						</td>
+						<td width="160" height="30" bgcolor="#1F545D" background="Img\Sfondo_TR.jpg">
+						</td>
+					</tr>
+					<tr>
+						<td width="30" height="600" bgcolor="#1F545D" background="Img\Sfondo_LL.jpg">
+						</td>
+						<td width="800" height="600">
+							<OBJECT id="Cubetti" codeBase="http://client.vrmedia.it/XVRPlayer.cab#Version=1,0,0,800"
+								type="application/x-oleobject" height="600" width="800" classid="CLSID:5D589287-1496-4223-AE64-65FA078B5EAB"
+								VIEWASTEXT>
+								<PARAM NAME="ScriptName" VALUE="Cubetti.s3d.bin">
+								<PARAM NAME="EngineVersion" VALUE="0150">
+								<PARAM NAME="BackgroundColor" VALUE="#000000">
+								<PARAM NAME="EngineParam" VALUE="Depth=24">
+							</OBJECT>
+						</td>
+						<td align="left" valign="top" width="160" height="600" bgcolor="#1F545D" background="Img\Sfondo_RR.jpg">
+							<table align="left" width="160" height="64" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="30">
+								</td>
+								<td>
+									<a href="javascript:Riavvia()"><img src="Img\BtnRiavvia.jpg" border="0"></a>
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="30" height="30" bgcolor="#1F545D" background="Img\Sfondo_BL.jpg">
+						</td>
+						<td width="800" height="30" bgcolor="#1F545D" background="Img\Sfondo_BB.jpg">
+						</td>
+						<td width="160" height="30" bgcolor="#1F545D" background="Img\Sfondo_BR.jpg">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		</TABLE>
+		
+	</BODY>
+
+</html>
+	-->
