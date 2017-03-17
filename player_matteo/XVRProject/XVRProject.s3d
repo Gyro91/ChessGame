@@ -3,6 +3,10 @@
 #include <Script3d.h>
 #include <Camera.s3d.h>
 #include "../../libXVRshared/Networking.s3d"
+#include "../../physics/physics.s3d"
+
+#define CUBE_DENSITY 100
+
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
@@ -23,6 +27,11 @@ var p_adversary;
 
 var pkt_to_send;
 
+/* PHYSICS TEST */
+var psx_cube;
+var rigidMaterial;
+var delta_t = 0.001;
+
 
 /* Camera globals */
 var CamPos = [0.0, 1.0, 5.0]; 	// camera position
@@ -31,8 +40,6 @@ var CamPos = [0.0, 1.0, 5.0]; 	// camera position
 /* Function declarations */
 function CameraMoveMouse();
 function DrawGrid(col, size);
-
-
 
 
 function OnDownload()
@@ -48,8 +55,9 @@ function OnInit(params)
 	/* initialize camera */
 	CameraGetCurrent().SetPosition(CamPos);
 
-	// TODO: put your initialization code here
+	
 	SetLocalDir("");
+	
 	
  	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
 
@@ -57,6 +65,14 @@ function OnInit(params)
 	leapDll.__AddFunction( C_INT, "get_right_hand", C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_left_hand", C_PFLOAT);
 	
+	/* PHYSICS TEST */
+	InitPhysicsEngine();
+	
+	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
+	/* pos, rot(euler), size  */
+	psx_cube = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 1, 1], PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
+	psx_cube.SetVelocity([10, 10, 0]);
 	
 	hand_r = Hand();
 	hand_l = Hand();
@@ -101,6 +117,9 @@ function OnFrame()
 	hand_r.draw();
 	hand_l.draw();
 	
+	/* PSYSICS TEST */
+	manager_psx.Draw();
+	
 	glDisable(GL_CULL_FACE);
 
 	SceneEnd();
@@ -138,14 +157,15 @@ function DownloadReady(RequestID)
 
 function OnTimer()
 {
-	// TODO:
+	RunPhysicsEngine(delta_t);
 }
 
 
 
 function OnExit()
 {
-	// TODO: put your cleanup code here
+	/* PHYSICS TEST */
+	manager_psx.FreeMem();
 }
 
 

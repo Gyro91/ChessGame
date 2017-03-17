@@ -60,6 +60,11 @@
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/libXVRshared</locationURI>
 		</link>
+		<link>
+			<name>physics</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/physics</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
