@@ -470,6 +470,8 @@ class CVmPhObj{
 	
 	AssignCollisionGroup(cg, shape);
 	
+	AddFromGivenMesh(m, pos, rot, isStatic,density, mat, mng);	
+	
 };
 
  
@@ -783,7 +785,7 @@ function CVmPhObj::NewCone(pos, rot, radius, height, isStatic, density, segs, ma
 		actor = PhysXVR.NewCompObject(pos, quat, type, 0);	
 		CheckForErrorMessage(actor, "NewCompObject");
 	}
-		
+	
 	mesh = CVmNewMesh(VRP_CONE, segs, radius, height, 1);
 	mesh.CenterBoundingBox();
 	cookIndex = mng.CookConvexMesh(mesh);
@@ -2288,5 +2290,52 @@ function CVmPhObj::AssignCollisionGroup(cg, shape){
 	else	
 		CheckForErrorMessage(PhysXVR.AssignCollisionGroup(actor, shape, cg),"AssignCollisionGroup");
 }
+
+
+function CVmPhObj::AddFromGivenMesh(m, pos, rot, isStatic, density, mat, mng) {
+	var quat = vector(4);	
+	var cookIndex;
+	
+	if(valtype(pos) == "")
+		pos = [0,0,0];
+		
+	if(valtype(rot) == "")
+		rot = [0,0,0];
+		
+	quat = EulerToQuaternion(rot);
+		
+	if(valtype(isStatic) == "")
+		type = PHX_DYNAMIC;
+	else
+		type = isStatic;
+		
+	if(type != PHX_FIXED){	
+		actor = PhysXVR.NewCompObject(pos, quat, type, 0);	
+		CheckForErrorMessage(actor, "NewCompObject");
+	}
+	mesh = m;
+	//mesh.CenterBoundingBox();
+	cookIndex = mng.CookConvexMesh(mesh);
+	if(type == PHX_FIXED){
+		actor = PhysXVR.NewStaticConvexShape(cookIndex, pos, quat, mat.handler);
+		CheckForErrorMessage(actor, "NewStaticConvexShape");		
+		var matrix3 = vector(9);
+		matrix3 = QuaternionToMatrix3(quat); 
+		var matrix4 = vector(16);
+		matrix4[0] = matrix3[0];	matrix4[1] = matrix3[1];	matrix4[2] = matrix3[2];	matrix4[3] = 0.0;
+		matrix4[4] = matrix3[3];	matrix4[5] = matrix3[4];	matrix4[6] = matrix3[5];	matrix4[7] = 0.0;
+		matrix4[8] = matrix3[6];	matrix4[9] = matrix3[7];	matrix4[10] = matrix3[8];	matrix4[11] = 0.0;
+		matrix4[12] = 0.0;			matrix4[13] = 0.0;			matrix4[14] = 0.0;			matrix4[15] = 1.0;
+		obj.SetPosition(pos);
+		obj.SetRotationMatrix(matrix4);
+	} else {
+		var shapeIndex = PhysXVR.AddConvexShape(actor, cookIndex, [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], density, mat.handler);
+		CheckForErrorMessage(shapeIndex, "AddConvexShape");
+	}
+	
+	if(mesh != void){
+		obj.LinkToMesh(mesh);
+	}	
+}	
 
 #endif

@@ -34,7 +34,6 @@ var delta_t = 0.01;
 
 var lat_obj;
 var lat_mesh;
-var lat_hull;
 
 
 /* Camera globals */
@@ -72,20 +71,24 @@ function OnInit(params)
 	/* PHYSICS TEST */
 	InitPhysicsEngine();
 	SetLocalDir("..\\..\\libXVRshared\\");
-	lat_mesh = CVmNewMesh("7up46x80.aam");
+	//lat_mesh = CVmNewMesh("7up46x80.aam");
+	lat_mesh = CVmNewMesh(VRP_SPHERE, 10);
 	SetLocalDir("");
-	lat_obj = CVmObj(lat_mesh);
-	lat_obj.SetPosition([0.0,0.0,0.0]);
+	//lat_obj = CVmObj(lat_mesh);
+	//lat_obj.SetPosition([0.0,0.0,0.0]);
 	
-	lat_hull = manager_psx.CookConvexMesh(lat_mesh);
-	outputln(lat_hull);
 	
-	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+	//manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+	manager_psx.SetSceneGravity([0.0,0,0.0]);
+	
 	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
 	/* pos, rot(euler), size  */
-	psx_cube = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 1, 1], PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
-	psx_cube.SetVelocity([10, 10, 0]);
-	
+	//(pos, rot, dim, isStatic, density, segs, mat)
+	//psx_cube = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 1, 1], PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
+	//psx_cube.SetVelocity([0, 10, 0]);
+	//lat_obj = manager_psx.AddPhCone([0.0,10.0,0.0], [0.0,0.0,0.0], 10, 10, PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
+	//lat_obj.SetVelocity([0, 10, 0]);
+	lat_obj = manager_psx.AddPhFromGivenMesh(lat_mesh, [0.0,0.0,0.0], [0.0,0.0,0.0], PHX_DYNAMIC, CUBE_DENSITY, rigidMaterial);
 	hand_r = Hand();
 	hand_l = Hand();
 	
@@ -117,13 +120,12 @@ function OnFrame()
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	
-	 
 	hand_r.update();
 	hand_l.update();
 	hand_r.draw();
 	hand_l.draw();
 	
-	lat_obj.Draw();
+	//lat_obj.Draw();
 	
 	/* PSYSICS TEST */
 	manager_psx.Draw();
