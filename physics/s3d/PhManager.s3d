@@ -107,6 +107,7 @@ class CVmPhManager{
 	CookConvexMesh(m);
 	CookMesh(m);
 	
+	/* Member function added for the project */
 	AddPhFromGivenMesh(mesh, pos, rot, isStatic, density, mat);
  
 };
