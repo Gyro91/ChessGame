@@ -470,7 +470,7 @@ class CVmPhObj{
 	
 	AssignCollisionGroup(cg, shape);
 	
-	AddFromGivenMesh(m, pos, rot, isStatic,density, mat, mng);	
+	NewFromGivenMesh(m, pos, rot, isStatic,density, mat, mng);	
 	
 };
 
@@ -2291,8 +2291,21 @@ function CVmPhObj::AssignCollisionGroup(cg, shape){
 		CheckForErrorMessage(PhysXVR.AssignCollisionGroup(actor, shape, cg),"AssignCollisionGroup");
 }
 
+/*!
+ * Add a m - Actor in the scene.
+ * \param	m			mesh			used mesh
+ * \param	pos			vector[3]		initial position
+ * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
+ * \param	isStatic	int				specifies the type of the object
+ * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
+ * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
+ * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
+ * \param	density		float			object density, this parameter is ignored if the object is FIXED
+ * \param	mat			CVmPhMaterial	material to set to the shape
+ * \param	mng			CVmPhManager	physical manager for cooking
+ */
 
-function CVmPhObj::AddFromGivenMesh(m, pos, rot, isStatic, density, mat, mng) {
+function CVmPhObj::NewFromGivenMesh(m, pos, rot, isStatic, density, mat, mng) {
 	var quat = vector(4);	
 	var cookIndex;
 	

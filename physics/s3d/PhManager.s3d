@@ -905,7 +905,7 @@ function CVmPhManager::CookMesh(m){
  function CVmPhManager::AddPhFromGivenMesh(mesh, pos, rot, isStatic, density, mat) {
 
 	var elem = CVmPhObj();
-	elem.AddFromGivenMesh(mesh, pos, rot, isStatic, density, mat, this);	
+	elem.NewFromGivenMesh(mesh, pos, rot, isStatic, density, mat, this);	
 	var actor_handler = elem.GetActor();
 	if(len(array_PhObj) <= actor_handler)
         asize(array_PhObj, actor_handler+1);
