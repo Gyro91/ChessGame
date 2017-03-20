@@ -30,7 +30,11 @@ var pkt_to_send;
 /* PHYSICS TEST */
 var psx_cube;
 var rigidMaterial;
-var delta_t = 0.001;
+var delta_t = 0.01;
+
+var lat_obj;
+var lat_mesh;
+var lat_hull;
 
 
 /* Camera globals */
@@ -67,6 +71,14 @@ function OnInit(params)
 	
 	/* PHYSICS TEST */
 	InitPhysicsEngine();
+	SetLocalDir("..\\..\\libXVRshared\\");
+	lat_mesh = CVmNewMesh("7up46x80.aam");
+	SetLocalDir("");
+	lat_obj = CVmObj(lat_mesh);
+	lat_obj.SetPosition([0.0,0.0,0.0]);
+	
+	lat_hull = manager_psx.CookConvexMesh(lat_mesh);
+	outputln(lat_hull);
 	
 	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
 	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
@@ -95,10 +107,6 @@ function draw_circle();
 function draw_torus();
 
 
-
-
-
-
 function OnFrame()
 {	
 	static var i = 0;
@@ -110,12 +118,12 @@ function OnFrame()
 	glEnable(GL_TEXTURE_2D);
 	
 	 
-	
-
 	hand_r.update();
 	hand_l.update();
 	hand_r.draw();
 	hand_l.draw();
+	
+	lat_obj.Draw();
 	
 	/* PSYSICS TEST */
 	manager_psx.Draw();
