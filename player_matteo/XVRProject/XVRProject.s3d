@@ -74,8 +74,8 @@ function OnInit(params)
 	/* PHYSICS TEST */
 	InitPhysicsEngine();
 	SetLocalDir("..\\..\\libXVRshared");
-	lat_mesh = CVmNewMesh("redbull04x104.aam");
-	lat_mesh.Scale(7, 7, 7);
+	lat_mesh = CVmNewMesh("pawnTut17old.aam");
+	lat_mesh.Scale(1, 1, 1);
 	sphere_mesh = CVmNewMesh(VRP_SPHERE, 10);
 	SetLocalDir("");
 	lat_obj = CVmObj(lat_mesh);
