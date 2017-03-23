@@ -79,9 +79,9 @@ function OnInit(params)
 	sphere_mesh = CVmNewMesh(VRP_SPHERE, 10);
 	SetLocalDir("");
 	lat_obj = CVmObj(lat_mesh);
-	lat_obj.SetPosition([3.0,0.0,0.0]);
+	lat_obj.SetPosition([20.0,0.0,0.0]);
 
-	manager_psx.SetSceneGravity([0.0,0.0,0.0]);
+	manager_psx.SetSceneGravity([0.0,-0.2,0.0]);
 	
 	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
 	/* pos, rot(euler), size  */
@@ -91,6 +91,7 @@ function OnInit(params)
 	//lat_obj = manager_psx.AddPhCone([0.0,10.0,0.0], [0.0,0.0,0.0], 10, 10, PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
 	//lat_obj.SetVelocity([0, 10, 0]);
 	sphere_obj = manager_psx.AddPhFromGivenMesh(sphere_mesh, [-3.0,0.0,0.0], [0.0,0.0,0.0], PHX_DYNAMIC, SPHERE_DENSITY, rigidMaterial);
+	//lat_psx = manager_psx.AddPhTriangleShape([2.0,0.0,0.0], [0.0,0.0,0.0], lat_mesh, PHX_DYNAMIC, LAT_DENSITY, 10, rigidMaterial);
 	lat_psx = manager_psx.AddPhConvexShape([2.0,0.0,0.0], [0.0,0.0,0.0], lat_mesh, PHX_DYNAMIC, LAT_DENSITY, 10, rigidMaterial);
 	sphere_obj.SetVelocity([5, 0.0, 0.0]);
 	lat_psx.SetVelocity([-1, 0.0, 0.0]);
