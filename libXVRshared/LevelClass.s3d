@@ -1,0 +1,160 @@
+#include "../physics/physics.s3d"
+
+var my_level;
+
+#define CHESSBOARD_ID	0
+#define KING_ID			1
+#define QUEEN_ID		2
+#define ROOK_ID			3
+#define KNIGHT_ID		4
+#define BISHOP_ID		5
+#define PAWN_ID			6
+
+#define PIECE_DENSITY	1
+
+#define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
+#define KING_MESH		"../../meshes/king.aam"
+#define QUEEN_MESH		"../../meshes/queen.aam"
+#define ROOK_MESH		"../../meshes/rook.aam"
+#define KNIGHT_MESH		"../../meshes/knight.aam"
+#define BISHOP_MESH		"../../meshes/bishop.aam"
+#define PAWN_MESH		"../../meshes/pawn.aam"
+
+/* Actually the chessboard mesh has a size of 10x10 meters, 
+ * we scale it in order to have a 30x30 centimeters chessboard.
+ */
+#define CHESSBOARD_SCALE	[0.03, 0.03, 0.03]
+/* The pawn has a diameter of about 5 meters. usually
+ * a square in the chessboard has a side size which is
+ * twice the pawn base diameter. So, in our case we want
+ * a pawn with a base diameter of 1.87 centimeters.
+ */
+#define PIECE_SCALE	[0.00374, 0.00374, 0.00374]
+#define Y_OFFSET	0.01875
+#define CHESSBOARD_SIZE	0.3
+#define SQUARE_SIZE	0.0375
+
+class Level {
+	var my_pieces;
+	var opp_pieces;
+	var chessboard;
+	
+	Draw();
+};
+
+class Piece {
+	var piece_id;
+	var piece_mesh;
+	var piece_psx;
+	var pos;
+	var rot;
+
+	GetId();
+	Draw();
+};
+
+function level_init() {
+	my_level = Level();
+}
+
+function Piece::Piece(id, mesh, init_pos, init_rot) {
+	piece_id = id;
+	pos = init_pos;
+	rot = init_rot;
+	
+	switch(id) {
+		case CHESSBOARD_ID: 
+			piece_mesh = CVmNewMesh(CHESSBOARD_MESH);
+			piece_mesh.Scale(CHESSBOARD_SCALE);
+			break;
+		case KING_ID:
+			piece_mesh = CVmNewMesh(KING_MESH);
+			piece_mesh.Scale(PIECE_SCALE);
+			break;
+		case QUEEN_ID:
+			piece_mesh = CVmNewMesh(QUEEN_MESH);
+			piece_mesh.Scale(PIECE_SCALE);
+			break;
+		case ROOK_ID:
+			piece_mesh = CVmNewMesh(ROOK_MESH);
+			piece_mesh.Scale(PIECE_SCALE);
+			break;
+		case KNIGHT_ID:
+			piece_mesh = CVmNewMesh(KNIGHT_MESH);
+			piece_mesh.Scale(PIECE_SCALE);
+			break;
+		case BISHOP_ID:
+			piece_mesh = CVmNewMesh(BISHOP_MESH);
+			piece_mesh.Scale(PIECE_SCALE);
+			break;
+		case PAWN_ID:
+			piece_mesh = CVmNewMesh(PAWN_MESH);
+			piece_mesh.Scale(PIECE_SCALE);
+			break;
+		default:
+			outputln("Invalid ID when creating Piece object!");
+			break;
+	}
+	
+	if (id == CHESSBOARD_ID)
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
+	else
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);	
+}
+
+function Piece::Draw() {
+	piece_psx.Draw();
+}
+
+function Level::Level() {
+	my_pieces = Array(16);
+	opp_pieces = Array(16);
+	var pos = [0, 0, 0];
+	var rot = [0.0, 0.0, 0.0];
+	/* Instanciate the chessboard */
+	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, pos, rot);
+	/* Instanciate the king */
+	pos.x += SQUARE_SIZE;
+	pos.y += Y_OFFSET;
+	my_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
+	opp_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
+	/* Instanciate the queen */
+	pos.x += SQUARE_SIZE;
+	my_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
+	opp_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
+	/* Instanciate 2 rooks */
+	pos.x += SQUARE_SIZE;
+	my_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+	opp_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+	pos.x += SQUARE_SIZE;
+	my_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+	opp_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+	/* Instanciate 2 knights */
+	pos.x += SQUARE_SIZE;
+	my_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+	opp_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+	pos.x += SQUARE_SIZE;
+	my_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+	opp_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+	/* Instanciate 2 bishops */
+	pos.x += SQUARE_SIZE;
+	my_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+	opp_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+	pos.x += SQUARE_SIZE;
+	my_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+	opp_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+	/* Instanciate 8 pawns */
+	pos = [0, Y_OFFSET, 0];
+	for(var i=8; i<=15; i++) {
+		pos.x += SQUARE_SIZE;
+		my_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
+		opp_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
+	}
+		
+}
+
+function Level::Draw() {
+	manager_psx.Draw();
+//	foreach (var piece in my_pieces)
+//		piece.Draw();
+}

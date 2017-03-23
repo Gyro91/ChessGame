@@ -3,12 +3,16 @@
 
 #include ".\s3d\PhManager.s3d"
 
+#define DELTA_T 0.02
+
 var manager_psx;
+var rigidMaterial;
 
 function InitPhysicsEngine(){
 	setLocalDir("..\\..\\physics\\lib");
 	manager_psx = CVmPhManager();  
 	manager_psx.InitPhysics();	
+	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
 	setLocalDir();
 }
 
