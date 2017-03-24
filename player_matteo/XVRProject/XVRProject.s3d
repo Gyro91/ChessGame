@@ -4,6 +4,7 @@
 #include <Camera.s3d.h>
 #include "../../libXVRshared/Networking.s3d"
 #include "../../physics/physics.s3d"
+#define TIMESTEP_ON_TIMER 20
 
 #define SPHERE_DENSITY 100
 #define LAT_DENSITY 1
@@ -23,10 +24,10 @@ var seq_number = 0;
 var hand_r;
 var hand_l;
 
-var pkt_hand;
-var p_adversary;
+/* COMMUNICATION VARIABLES */
 
-var pkt_to_send;
+var p_adversary;
+var pkt;
 
 /* PHYSICS TEST */
 var psx_cube;
@@ -84,30 +85,28 @@ function OnInit(params)
 	manager_psx.SetSceneGravity([0.0,-0.2,0.0]);
 	
 	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
-	/* pos, rot(euler), size  */
-	//(pos, rot, dim, isStatic, density, segs, mat)
-	//psx_cube = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 1, 1], PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
-	//psx_cube.SetVelocity([0, 10, 0]);
-	//lat_obj = manager_psx.AddPhCone([0.0,10.0,0.0], [0.0,0.0,0.0], 10, 10, PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
-	//lat_obj.SetVelocity([0, 10, 0]);
+
 	sphere_obj = manager_psx.AddPhFromGivenMesh(sphere_mesh, [-3.0,0.0,0.0], [0.0,0.0,0.0], PHX_DYNAMIC, SPHERE_DENSITY, rigidMaterial);
-	//lat_psx = manager_psx.AddPhTriangleShape([2.0,0.0,0.0], [0.0,0.0,0.0], lat_mesh, PHX_DYNAMIC, LAT_DENSITY, 10, rigidMaterial);
+
 	lat_psx = manager_psx.AddPhConvexShape([2.0,0.0,0.0], [0.0,0.0,0.0], lat_mesh, PHX_DYNAMIC, LAT_DENSITY, 10, rigidMaterial);
 	sphere_obj.SetVelocity([5, 0.0, 0.0]);
 	lat_psx.SetVelocity([-1, 0.0, 0.0]);
+	
 	hand_r = Hand();
 	hand_l = Hand();
 	
 	hand_r.init(1);
 	hand_l.init(0);
 	
-	pkt_hand = Packet_Hand();
-	pkt_hand.init();
+	
+
 	p_adversary = Player();
-	pkt_to_send = Packet_hnd();
+	pkt = Packet();
 	
 	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
-	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
+	p_adversary.init(1, 50000, "192.168.1.71", my_channel);
+	
+	setTimeStep(TIMESTEP_ON_TIMER);
 	
 }
 
@@ -123,6 +122,11 @@ function OnFrame()
 	
 	hand_r.update();
 	hand_l.update();
+	
+	if (hand_l.is_active == 1) {
+		update_pkt(hand_l, pkt);
+		p_adversary.send(pkt);	
+	}
 	hand_r.draw();
 	hand_l.draw();
 	
@@ -135,12 +139,8 @@ function OnFrame()
 
 	SceneEnd();
 	
-	pkt_hand.update(hand_r, hand_l);
-	pkt_to_send.index = 1;
-
 	
-	if (pkt_hand.Hand_r.is_active == 1 || pkt_hand.Hand_l.is_active == 1)
-		p_adversary.send(pkt_to_send);
+
 }
 
 
@@ -154,6 +154,9 @@ function DownloadReady(RequestID)
 function OnTimer()
 {
 	RunPhysicsEngine(delta_t);
+	
+
+	
 }
 
 
