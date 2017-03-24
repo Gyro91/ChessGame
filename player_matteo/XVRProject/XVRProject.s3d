@@ -67,7 +67,7 @@ function OnInit(params)
 	/* Initlialize Physx engine */
 	InitPhysicsEngine();
 	/* Set the scene gravity */
-	manager_psx.SetSceneGravity([0.0,0.0,0.0]);
+	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
 	/* Initialize the level */
 	level_init();
 	
