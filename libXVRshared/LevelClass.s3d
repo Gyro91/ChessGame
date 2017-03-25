@@ -5,10 +5,20 @@ var my_level;
 #define CHESSBOARD_ID	0
 #define KING_ID			1
 #define QUEEN_ID		2
-#define ROOK_ID			3
-#define KNIGHT_ID		4
-#define BISHOP_ID		5
-#define PAWN_ID			6
+#define ROOK0_ID		3
+#define ROOK1_ID		4
+#define KNIGHT0_ID		5
+#define KNIGHT1_ID		6
+#define BISHOP0_ID		7
+#define BISHOP1_ID		8
+#define PAWN0_ID		9
+#define PAWN1_ID		10
+#define PAWN2_ID		11
+#define PAWN3_ID		12
+#define PAWN4_ID		13
+#define PAWN5_ID		14
+#define PAWN6_ID		15
+#define PAWN7_ID		16
 
 #define PIECE_DENSITY	1
 
@@ -26,6 +36,7 @@ var my_level;
 #define CHESSBOARD_SCALE	[0.01875, 0.01875, 0.01875]
 #define CHESSBOARD_SIZE	0.3
 #define SQUARE_SIZE	0.0375
+#define SQUARE_VECT	[SQUARE_SIZE, 0.0, 0.0]
 /* The pawn has a diameter of about 2 meters. usually
  * a square in the chessboard has a side size which is
  * twice the pawn base diameter. So, in our case we want
@@ -41,6 +52,8 @@ var my_level;
 #define CHESSBOARD_POS	[CHESSBOARD_SIZE/2, SQUARE_SIZE/2, CHESSBOARD_SIZE/2]
 #define OPP_PAWN_Z		SQUARE_SIZE*3
 #define OPP_OTHER_Z		SQUARE_SIZE*5
+#define OPP_PAWN_VECT	[0.0, 0.0, OPP_PAWN_Z]
+#define OPP_OTHER_VECT	[0.0, 0.0, OPP_OTHER_Z]
 #define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*2.5]
 #define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
 #define ROOK1_POS		[SQUARE_SIZE*7.5, Y_OFFSET, SQUARE_SIZE*1.5]
@@ -94,19 +107,29 @@ function Piece::Piece(id, mesh, init_pos, init_rot) {
 			piece_mesh = CVmNewMesh(QUEEN_MESH);
 			piece_mesh.Scale(PIECE_SCALE);
 			break;
-		case ROOK_ID:
+		case ROOK0_ID:
+		case ROOK1_ID:
 			piece_mesh = CVmNewMesh(ROOK_MESH);
 			piece_mesh.Scale(PIECE_SCALE);
 			break;
-		case KNIGHT_ID:
+		case KNIGHT0_ID:
+		case KNIGHT1_ID:
 			piece_mesh = CVmNewMesh(KNIGHT_MESH);
 			piece_mesh.Scale(PIECE_SCALE);
 			break;
-		case BISHOP_ID:
+		case BISHOP0_ID:
+		case BISHOP1_ID:
 			piece_mesh = CVmNewMesh(BISHOP_MESH);
 			piece_mesh.Scale(PIECE_SCALE);
 			break;
-		case PAWN_ID:
+		case PAWN0_ID:
+		case PAWN1_ID:
+		case PAWN2_ID:
+		case PAWN3_ID:
+		case PAWN4_ID:
+		case PAWN5_ID:
+		case PAWN6_ID:
+		case PAWN7_ID:
 			piece_mesh = CVmNewMesh(PAWN_MESH);
 			piece_mesh.Scale(PIECE_SCALE);
 			break;
@@ -128,56 +151,74 @@ function Piece::Draw() {
 function Level::Level() {
 	my_pieces = Array(16);
 	opp_pieces = Array(16);
-	var pos = [CHESSBOARD_SIZE/2, SQUARE_SIZE/2, CHESSBOARD_SIZE/2];
+	var mesh_pieces = Array(16);
+	var pos;
 	var rot = [0.0, 0.0, 0.0];
+	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
+		BISHOP0_POS, BISHOP1_POS};
+	var pos_pawns = { PAWN0_POS, PAWN0_POS+SQUARE_VECT, PAWN0_POS+SQUARE_VECT*2,
+		PAWN0_POS+SQUARE_VECT*3, PAWN0_POS+SQUARE_VECT*4, PAWN0_POS+SQUARE_VECT*5,
+		PAWN0_POS+SQUARE_VECT*6, PAWN0_POS+SQUARE_VECT*7};
+	mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH, BISHOP_MESH, BISHOP_MESH};
 	/* Instanciate the chessboard */
 	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, rot);
-	/* Instanciate the king */
-	pos = KING_POS;
-	my_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
-	/* Instanciate the queen */
-	pos = QUEEN_POS;
-	my_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
-	/* Instanciate 2 rooks */
-	pos = ROOK0_POS;
-	my_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-	pos = ROOK1_POS;
-	my_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-	/* Instanciate 2 knights */
-	pos = KNIGHT0_POS;
-	my_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-	pos = KNIGHT1_POS;
-	my_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-	/* Instanciate 2 bishops */
-	pos = BISHOP0_POS;
-	my_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-	pos = BISHOP1_POS;
-	my_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-	pos.z += OPP_OTHER_Z;
-	opp_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-	/* Instanciate 8 pawns */
-	pos = PAWN0_POS;
-	for(var i=8; i<=15; i++) {
-		pos.z = PAWN_Z;
-		my_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
-		pos.z += OPP_PAWN_Z;
-		opp_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
-		pos.x += SQUARE_SIZE;
-	}	
+	/* Instaciate all the other pieces */
+	for (var i=0; i<=15; i++) {
+		if (i <= 7) {
+			/* It's not a pawn. */
+			my_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i], rot);
+			opp_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, rot);
+		} else {
+			my_pieces[i] = Piece(i+1, PAWN_MESH, pos_pawns[i-8], rot);
+			opp_pieces[i] = Piece(i+1, PAWN_MESH, pos_pawns[i-8] + OPP_PAWN_VECT, rot);
+		}
+	}
+//	/* Instanciate the king */
+//	pos = KING_POS;
+//	my_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
+//	/* Instanciate the queen */
+//	pos = QUEEN_POS;
+//	my_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
+//	/* Instanciate 2 rooks */
+//	pos = ROOK0_POS;
+//	my_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+//	pos = ROOK1_POS;
+//	my_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
+//	/* Instanciate 2 knights */
+//	pos = KNIGHT0_POS;
+//	my_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+//	pos = KNIGHT1_POS;
+//	my_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
+//	/* Instanciate 2 bishops */
+//	pos = BISHOP0_POS;
+//	my_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+//	pos = BISHOP1_POS;
+//	my_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+//	pos.z += OPP_OTHER_Z;
+//	opp_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
+//	/* Instanciate 8 pawns */
+//	pos = PAWN0_POS;
+//	for(var i=8; i<=15; i++) {
+//		pos.z = PAWN_Z;
+//		my_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
+//		pos.z += OPP_PAWN_Z;
+//		opp_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
+//		pos.x += SQUARE_SIZE;
+//	}	
 }
 
 function Level::Draw() {

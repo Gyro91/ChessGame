@@ -6,9 +6,11 @@
 #include "../../physics/physics.s3d"
 
 
+#define CAM_STEP	0.005
+
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
-SET SCENE_NEAR = 0.05;
+SET SCENE_NEAR = 0.005;
 SET SCENE_FAR  = 1000;
 
 
@@ -33,6 +35,7 @@ var PosL = [0.0, 10.0, 10.0];	// default light position
 
 /* Function declarations */
 function CameraMoveMouse();
+function CameraMoveKeyboard();
 function DrawGrid(col, size);
 
 
@@ -93,6 +96,7 @@ function OnFrame()
 {	
 	static var i = 0;
 	CameraMoveMouse();
+	CameraMoveKeyboard();
 	SceneBegin();	
 	DrawGrid([0.5, 0.5, 0.5], 100);	
 	
@@ -143,6 +147,43 @@ function CameraMoveMouse()
 
 	CameraMoveMouse_MBL_LC();
 
+}
+
+/* Camera Manager (Using Keyboard) */
+function CameraMoveKeyboard() {
+	var cam;
+	var x_trasl, y_trasl, z_trasl;
+	
+	/* Get the actual camera. */
+	cam = CameraGetCurrent();
+	
+	/* Get the actual camera axes. */
+	x_trasl = cam.GetXAxis()*CAM_STEP;
+	y_trasl = cam.GetYAxis()*CAM_STEP;
+	z_trasl = cam.GetZAxis()*CAM_STEP;
+	
+	/* W,A,S,D keys control the camera movements as in FPS games.
+	 * Keys Q and Z are used to adjust the camera height (w.r.t.
+	 * the camera Y axis).
+	 */
+	if (keypressed("W")) {
+		cam.SetPosition(cam.GetPosition() - z_trasl);
+	}
+	if (keypressed("S")) {
+		cam.SetPosition(cam.GetPosition() + z_trasl);
+	}
+	if (keypressed("A")) {
+		cam.SetPosition(cam.GetPosition() - x_trasl);
+	}
+	if (keypressed("D")) {
+		cam.SetPosition(cam.GetPosition() + x_trasl);
+	}
+	if (keypressed("Q")) {
+		cam.SetPosition(cam.GetPosition() + y_trasl);
+	}
+	if (keypressed("Z")) {
+		cam.SetPosition(cam.GetPosition() - y_trasl);
+	}
 }
 
 
