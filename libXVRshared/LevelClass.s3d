@@ -44,7 +44,7 @@ var my_level;
  */
 #define PIECE_SCALE		[0.00935, 0.00935, 0.00935]
 #define X_OFFSET		SQUARE_SIZE*0.5
-#define Y_OFFSET		SQUARE_SIZE+0.01
+#define Y_OFFSET		SQUARE_SIZE
 #define Z_OFFSET		SQUARE_SIZE*0.5
 #define PAWN_Z			SQUARE_SIZE*2.5		
 
@@ -139,7 +139,7 @@ function Piece::Piece(id, mesh, init_pos, init_rot) {
 	}
 	
 	if (id == CHESSBOARD_ID)
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 100, rigidMaterial);
 	else
 		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);	
 }
@@ -151,15 +151,10 @@ function Piece::Draw() {
 function Level::Level() {
 	my_pieces = Array(16);
 	opp_pieces = Array(16);
-	var mesh_pieces = Array(16);
-	var pos;
 	var rot = [0.0, 0.0, 0.0];
 	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
 		BISHOP0_POS, BISHOP1_POS};
-	var pos_pawns = { PAWN0_POS, PAWN0_POS+SQUARE_VECT, PAWN0_POS+SQUARE_VECT*2,
-		PAWN0_POS+SQUARE_VECT*3, PAWN0_POS+SQUARE_VECT*4, PAWN0_POS+SQUARE_VECT*5,
-		PAWN0_POS+SQUARE_VECT*6, PAWN0_POS+SQUARE_VECT*7};
-	mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH, BISHOP_MESH, BISHOP_MESH};
+	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH, BISHOP_MESH, BISHOP_MESH};
 	/* Instanciate the chessboard */
 	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, rot);
 	/* Instaciate all the other pieces */
@@ -169,60 +164,12 @@ function Level::Level() {
 			my_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i], rot);
 			opp_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, rot);
 		} else {
-			my_pieces[i] = Piece(i+1, PAWN_MESH, pos_pawns[i-8], rot);
-			opp_pieces[i] = Piece(i+1, PAWN_MESH, pos_pawns[i-8] + OPP_PAWN_VECT, rot);
+			my_pieces[i] = Piece(i+1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot);
+			opp_pieces[i] = Piece(i+1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, rot);
 		}
 	}
-//	/* Instanciate the king */
-//	pos = KING_POS;
-//	my_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[0] = Piece(KING_ID, KING_MESH, pos, rot);
-//	/* Instanciate the queen */
-//	pos = QUEEN_POS;
-//	my_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[1] = Piece(QUEEN_ID, QUEEN_MESH, pos, rot);
-//	/* Instanciate 2 rooks */
-//	pos = ROOK0_POS;
-//	my_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[2] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-//	pos = ROOK1_POS;
-//	my_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[3] = Piece(ROOK_ID, ROOK_MESH, pos, rot);
-//	/* Instanciate 2 knights */
-//	pos = KNIGHT0_POS;
-//	my_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[4] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-//	pos = KNIGHT1_POS;
-//	my_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[5] = Piece(KNIGHT_ID, KNIGHT_MESH, pos, rot);
-//	/* Instanciate 2 bishops */
-//	pos = BISHOP0_POS;
-//	my_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[6] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-//	pos = BISHOP1_POS;
-//	my_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-//	pos.z += OPP_OTHER_Z;
-//	opp_pieces[7] = Piece(BISHOP_ID, BISHOP_MESH, pos, rot);
-//	/* Instanciate 8 pawns */
-//	pos = PAWN0_POS;
-//	for(var i=8; i<=15; i++) {
-//		pos.z = PAWN_Z;
-//		my_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
-//		pos.z += OPP_PAWN_Z;
-//		opp_pieces[i] = Piece(PAWN_ID, PAWN_MESH, pos, rot);
-//		pos.x += SQUARE_SIZE;
-//	}	
 }
 
 function Level::Draw() {
 	manager_psx.Draw();
-//	foreach (var piece in my_pieces)
-//		piece.Draw();
 }

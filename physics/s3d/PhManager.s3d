@@ -106,9 +106,6 @@ class CVmPhManager{
 	
 	CookConvexMesh(m);
 	CookMesh(m);
-	
-	/* Member function added for the project */
-	AddPhFromGivenMesh(mesh, pos, rot, isStatic, density, mat);
  
 };
 
@@ -886,32 +883,6 @@ function CVmPhManager::CookMesh(m){
 	CheckForErrorMessage(meshIndex, "CookMesh");
 		
    return meshIndex;
-}
-
-/*
- * Antonio 20/03/2017
- * Add a Object Actor to the scene.
- * \param	mesh		mesh			mesh to add to the object
- * \param	pos			vector[3]		initial position
- * \param	rot			vector[3]		initial rotation (in euler angles convention, degrees)
- * \param	isStatic	int				specifies the type of the object
- * 										- PHX_DYNAMIC (default): the object is affected by gravity and collision
- * 										- PHX_KINEMATIC: the object is not affected by forces but can be moved with the SetPosition
- * 										- PHX_FIXED: the object is static and can't be moved. Other objects collide with it.
- * \param	density		float			object density, this parameter is ignored if the object is FIXED
- * \param	mat			CVmPhMaterial	material to set to the shape
- * \return		
- */
- 
- function CVmPhManager::AddPhFromGivenMesh(mesh, pos, rot, isStatic, density, mat) {
-
-	var elem = CVmPhObj();
-	elem.NewFromGivenMesh(mesh, pos, rot, isStatic, density, mat, this);	
-	var actor_handler = elem.GetActor();
-	if(len(array_PhObj) <= actor_handler)
-        asize(array_PhObj, actor_handler+1);
-    array_PhObj[actor_handler] = elem;	
-	return elem;
 }
 
 #endif
