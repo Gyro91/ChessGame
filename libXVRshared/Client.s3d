@@ -1,0 +1,45 @@
+/*
+ *  This library implements all the classes and functions for the Client side
+ * 
+ */
+ #include "Networking.s3d"
+ 
+ class Client {
+ 	
+ 	var TCP_socket_id;
+ 	var server_address;
+ 	var TCP_server_port;
+ 	
+ 	conf(address, port);
+ 	connect();
+ 	step();
+ 	recv_status();
+ 	
+ };
+ 
+ 
+ function Client::conf(address, port)
+ {
+ 	server_address = address;
+ 	TCP_server_port = port;		
+ }
+ 
+ function Client::connect()
+ {
+ 	TCP_socket_id = NetConnectTCP(server_address, TCP_server_port, VR_NO_BLOCKING);
+ 	if (TCP_socket_id == 0) 
+ 		outputln("Error NetConnectTCP");
+ }
+ 
+ function Client::recv_status()
+ {	
+ 	var status_s = Status();
+ 	status_s = NetVarReceiveFromTCP(TCP_socket_id);
+ 	if (status_s != NULL)
+ 		outputln(status_s);
+ }
+ 
+ function Client::step()
+ {
+ 	this.recv_status();
+ }

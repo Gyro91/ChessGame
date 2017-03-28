@@ -2,7 +2,7 @@
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
-#include "../../libXVRshared/Networking.s3d"
+#include "../../libXVRshared/Server.s3d"
 #include "../../physics/physics.s3d"
 #define TIMESTEP_ON_TIMER 20
 
@@ -25,6 +25,12 @@ var hand_r;
 var hand_l;
 
 /* COMMUNICATION VARIABLES */
+var server_t;
+var status_server;
+var pieces;
+
+
+
 
 var p_adversary;
 var pkt;
@@ -57,7 +63,7 @@ function OnDownload()
 	// E.g.: FileDownload("resource.ext");
 }
 
-
+var a = 1010;
 
 function OnInit(params)
 {
@@ -98,13 +104,15 @@ function OnInit(params)
 	hand_r.init(1);
 	hand_l.init(0);
 	
+	server_t = Server();
+	server_t.conf("127.0.0.1", 35001, 0, 0 ,0);
+	server_t.init();
 	
+	status_server = Status();
+	status_server.hand_l_status = 0;
+ 	status_server.hand_r_status = 0;
+ 	status_server.pieces = 0;
 
-	p_adversary = Player();
-	pkt = Packet();
-	
-	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
-	p_adversary.init(1, 50000, "192.168.1.71", my_channel);
 	
 	setTimeStep(TIMESTEP_ON_TIMER);
 	
@@ -122,11 +130,11 @@ function OnFrame()
 	
 	hand_r.update();
 	hand_l.update();
-	
+/* 	
 	if (hand_l.is_active == 1) {
 		update_pkt(hand_l, pkt);
 		p_adversary.send(pkt);	
-	}
+	}*/
 	hand_r.draw();
 	hand_l.draw();
 	
@@ -139,7 +147,7 @@ function OnFrame()
 
 	SceneEnd();
 	
-	
+	server_t.step(hand_l, hand_r, status_server, pieces);
 
 }
 

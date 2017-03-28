@@ -5,7 +5,14 @@
  */
  
 #include "HandClass.s3d"
-  
+
+class Status {
+ 	
+ 	var hand_l_status;
+ 	var hand_r_status;
+ 	var pieces;
+};
+
 var local_tx_seq_number = 0; /* This index rappresents the id used from the trasnmitter 
 							  * for the sequencing control 
  							  */  
