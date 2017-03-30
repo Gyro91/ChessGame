@@ -105,8 +105,7 @@ function OnFrame()
 	hand_r.draw();
 	hand_l.draw();
 	
-	/* PSYSICS TEST */
-	manager_psx.Draw();
+	my_level.Draw();
 
 	SceneEnd();
 	

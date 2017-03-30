@@ -10,7 +10,7 @@ var rigidMaterial;
 
 function InitPhysicsEngine(){
 	setLocalDir("..\\..\\physics\\lib");
-	manager_psx = CVmPhManager();  
+	manager_psx = CVmPhManager(true);  
 	manager_psx.InitPhysics();	
 	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
 	setLocalDir();

@@ -28,21 +28,23 @@ var my_level;
 #define ROOK_MESH		"../../meshes/rook.aam"
 #define KNIGHT_MESH		"../../meshes/knight.aam"
 #define BISHOP_MESH		"../../meshes/bishop.aam"
-#define PAWN_MESH		"../../meshes/pawn.aam"
+#define PAWN_MESH		"../../meshes/pawn2.aam"
 
 /* Actually the chessboard mesh has a size of 16x16 meters, 
  * we scale it in order to have a 30x30 centimeters chessboard.
  */
-#define CHESSBOARD_SCALE	[0.01875, 0.01875, 0.01875]
-#define CHESSBOARD_SIZE	0.3
-#define SQUARE_SIZE	0.0375
-#define SQUARE_VECT	[SQUARE_SIZE, 0.0, 0.0]
+ 
+#define SIM_SCALE			100
+#define CHESSBOARD_SCALE	SIM_SCALE * [0.01875, 0.01875, 0.01875]
+#define CHESSBOARD_SIZE		SIM_SCALE * 0.3
+#define SQUARE_SIZE			SIM_SCALE * 0.0375
+#define SQUARE_VECT			[SQUARE_SIZE, 0.0, 0.0]
 /* The pawn has a diameter of about 2 meters. usually
  * a square in the chessboard has a side size which is
  * twice the pawn base diameter. So, in our case we want
  * a pawn with a base diameter of 1.87 centimeters.
  */
-#define PIECE_SCALE		[0.00935, 0.00935, 0.00935]
+#define PIECE_SCALE		SIM_SCALE * [0.00935, 0.00935, 0.00935]
 #define X_OFFSET		SQUARE_SIZE*0.5
 #define Y_OFFSET		SQUARE_SIZE
 #define Z_OFFSET		SQUARE_SIZE*0.5
@@ -81,6 +83,7 @@ class Piece {
 	var rot;
 
 	GetId();
+	GetPsx();
 	Draw();
 };
 
@@ -138,10 +141,31 @@ function Piece::Piece(id, mesh, init_pos, init_rot) {
 			break;
 	}
 	
-	if (id == CHESSBOARD_ID)
+	if (id == CHESSBOARD_ID) {
 		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 100, rigidMaterial);
+		//piece_psx = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 0.10, 1], PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
+		piece_psx.SetContactOffset(0.005);
+		
+	} else if (id == KING_ID) {
+		//piece_psx = manager_psx.AddPhSphere(pos, rot, 0.005, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		piece_psx = manager_psx.AddPhObject(pos, rot, PHX_DYNAMIC);
+		piece_psx.LinkToMesh(piece_mesh);
+		// piece_psx.AddConeFrustumShape([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 0.005, 0.019, 0.06, PIECE_DENSITY, rigidMaterial,
+		//	 manager_psx, 10, true);
+		//piece_psx.AddBoxShape([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.019, 0.05, 0.019], PIECE_DENSITY, rigidMaterial, 10, true);
+		piece_psx.AddCylinderShape([0.0, 0.019, 0.0], [0.0, 0.0, 0.0], 0.019, 0.019, PHX_DYNAMIC, rigidMaterial, manager_psx, 10, true);
+	} else if (id == QUEEN_ID) {
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		piece_psx.AddBoxShape([0.0, -0.03, 0.0], [0.0, 0.0, 0.0], [0.019, 0.005, 0.019], PIECE_DENSITY, rigidMaterial, 10, true);
+	}
 	else
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);	
+		// piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		//piece_psx.SetContactOffset(0.005);	
+}
+
+function Piece::GetPsx() {
+	return piece_psx;
 }
 
 function Piece::Draw() {
