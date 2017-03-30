@@ -6,7 +6,7 @@
 #include "../../physics/physics.s3d"
 
 
-#define CAM_STEP	0.005
+#define CAM_STEP	0.05
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
@@ -26,11 +26,11 @@ var p_adversary;
 var pkt_to_send;
 
 /* Camera globals */
-var CamPos = [0.0, 0.3, 1.0]; 	// camera position
+var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
 
 /* Light globals */
 var Light0;
-var PosL = [0.0, 10.0, 10.0];	// default light position
+var PosL = [13, 13.0, 10];	// default light position
 
 
 /* Function declarations */
@@ -115,6 +115,9 @@ function OnFrame()
 	
 	if (pkt_hand.Hand_r.is_active == 1 || pkt_hand.Hand_l.is_active == 1)
 		p_adversary.send(pkt_to_send);
+		
+	var cam = CameraGetCurrent();
+	outputln(cam.GetPosition());
 }
 
 

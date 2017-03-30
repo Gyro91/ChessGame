@@ -28,7 +28,7 @@ var my_level;
 #define ROOK_MESH		"../../meshes/rook.aam"
 #define KNIGHT_MESH		"../../meshes/knight.aam"
 #define BISHOP_MESH		"../../meshes/bishop.aam"
-#define PAWN_MESH		"../../meshes/pawn2.aam"
+#define PAWN_MESH		"../../meshes/pawn.aam"
 
 /* Actually the chessboard mesh has a size of 16x16 meters, 
  * we scale it in order to have a 30x30 centimeters chessboard.
@@ -52,21 +52,21 @@ var my_level;
 
 /* Macros for pieces positions. */
 #define CHESSBOARD_POS	[CHESSBOARD_SIZE/2, SQUARE_SIZE/2, CHESSBOARD_SIZE/2]
-#define OPP_PAWN_Z		SQUARE_SIZE*3
-#define OPP_OTHER_Z		SQUARE_SIZE*5
+#define OPP_PAWN_Z		SQUARE_SIZE*5
+#define OPP_OTHER_Z		SQUARE_SIZE*7
 #define OPP_PAWN_VECT	[0.0, 0.0, OPP_PAWN_Z]
 #define OPP_OTHER_VECT	[0.0, 0.0, OPP_OTHER_Z]
-#define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*2.5]
-#define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define ROOK1_POS		[SQUARE_SIZE*7.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define KNIGHT0_POS		[SQUARE_SIZE*1.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define KNIGHT1_POS		[SQUARE_SIZE*6.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define BISHOP0_POS		[SQUARE_SIZE*2.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define BISHOP1_POS		[SQUARE_SIZE*5.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET, SQUARE_SIZE*1.5]
-#define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET, SQUARE_SIZE*1.5]
+#define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
+#define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define ROOK1_POS		[SQUARE_SIZE*7.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define KNIGHT0_POS		[SQUARE_SIZE*1.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define KNIGHT1_POS		[SQUARE_SIZE*6.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define BISHOP0_POS		[SQUARE_SIZE*2.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define BISHOP1_POS		[SQUARE_SIZE*5.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET, SQUARE_SIZE*0.5]
 
-
+/* Level class definition. */
 class Level {
 	var my_pieces;
 	var opp_pieces;
@@ -75,6 +75,7 @@ class Level {
 	Draw();
 };
 
+/* Piece class definition. */
 class Piece {
 	var piece_id;
 	var piece_mesh;
@@ -141,27 +142,10 @@ function Piece::Piece(id, mesh, init_pos, init_rot) {
 			break;
 	}
 	
-	if (id == CHESSBOARD_ID) {
+	if (id == CHESSBOARD_ID)
 		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 100, rigidMaterial);
-		//piece_psx = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 0.10, 1], PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
-		piece_psx.SetContactOffset(0.005);
-		
-	} else if (id == KING_ID) {
-		//piece_psx = manager_psx.AddPhSphere(pos, rot, 0.005, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
-		piece_psx = manager_psx.AddPhObject(pos, rot, PHX_DYNAMIC);
-		piece_psx.LinkToMesh(piece_mesh);
-		// piece_psx.AddConeFrustumShape([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 0.005, 0.019, 0.06, PIECE_DENSITY, rigidMaterial,
-		//	 manager_psx, 10, true);
-		//piece_psx.AddBoxShape([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.019, 0.05, 0.019], PIECE_DENSITY, rigidMaterial, 10, true);
-		piece_psx.AddCylinderShape([0.0, 0.019, 0.0], [0.0, 0.0, 0.0], 0.019, 0.019, PHX_DYNAMIC, rigidMaterial, manager_psx, 10, true);
-	} else if (id == QUEEN_ID) {
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
-		piece_psx.AddBoxShape([0.0, -0.03, 0.0], [0.0, 0.0, 0.0], [0.019, 0.005, 0.019], PIECE_DENSITY, rigidMaterial, 10, true);
-	}
 	else
-		// piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
-		//piece_psx.SetContactOffset(0.005);	
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);	
 }
 
 function Piece::GetPsx() {
