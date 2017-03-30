@@ -115,9 +115,6 @@ function OnFrame()
 	
 	if (pkt_hand.Hand_r.is_active == 1 || pkt_hand.Hand_l.is_active == 1)
 		p_adversary.send(pkt_to_send);
-		
-	var cam = CameraGetCurrent();
-	outputln(cam.GetPosition());
 }
 
 
