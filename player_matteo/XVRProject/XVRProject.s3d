@@ -63,7 +63,7 @@ function OnDownload()
 	// E.g.: FileDownload("resource.ext");
 }
 
-var a = 1010;
+
 
 function OnInit(params)
 {
@@ -105,7 +105,7 @@ function OnInit(params)
 	hand_l.init(0);
 	
 	server_t = Server();
-	server_t.conf("127.0.0.1", 35001, 0, 0 ,0);
+	server_t.conf("127.0.0.1", 35002);
 	server_t.init();
 	
 	status_server = Status();
@@ -162,9 +162,6 @@ function DownloadReady(RequestID)
 function OnTimer()
 {
 	RunPhysicsEngine(delta_t);
-	
-
-	
 }
 
 

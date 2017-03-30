@@ -13,10 +13,6 @@ class Status {
  	var pieces;
 };
 
-var local_tx_seq_number = 0; /* This index rappresents the id used from the trasnmitter 
-							  * for the sequencing control 
- 							  */  
-
 var last_rx_seq_number = 0; /* This is the id sequence number for the last packet received */ 							  
 
 /*
@@ -25,9 +21,11 @@ var last_rx_seq_number = 0; /* This is the id sequence number for the last packe
  */
  
 class Packet {	
-	
+	var hand_l_status;
+ 	var hand_r_status;
 	var sequence_remote_id;
-	var data;
+	var data_hand_l;
+	var data_hand_r;
 };
 
 /* This packet is derived from the Packet and allows an error handling for the receiver */
@@ -97,9 +95,20 @@ function Player::rcv()
  * and retrieving the raw data from the Hand object.
  */
 
-function update_pkt(hand, pkt)
+function update_pkt(hand_l, hand_r, pkt)
 {
-	local_tx_seq_number++;
-	pkt.sequence_remote_id = local_tx_seq_number;
-	pkt.data = hand.get_raw_data();
+	pkt.sequence_remote_id++;
+	
+	if (hand_l.is_active == 1)
+		pkt.hand_l_status = 1;
+ 	else
+ 		pkt.hand_l_status = 0;
+ 		
+ 	if (hand_r.is_active == 1)
+		pkt.hand_r_status = 1;
+ 	else
+ 		pkt.hand_r_status = 0;
+ 		
+	pkt.data_hand_r = hand_r.get_raw_data();
+	pkt.data_hand_l = hand_l.get_raw_data();	
 }

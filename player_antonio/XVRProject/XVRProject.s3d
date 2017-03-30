@@ -67,7 +67,7 @@ function OnInit(params)
 	
 	
 	client_t = Client();
-	client_t.conf("127.0.0.1", 35001);
+	client_t.conf("127.0.0.1", 35002);
 	client_t.connect();
 //	setTimeStep(TIMESTEP_ON_TIMER);
 }
@@ -91,19 +91,14 @@ function OnFrame()
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	
-/*	 
-	var pkt = p_adversary.rcv();
-	if (pkt.type_error != -1 && pkt.type_error != -2) {
-		hand_l.push_raw_data(pkt.data);
-		hand_l.draw();
-	}
-	outputln(hand_l.is_active);*/
+	
+	client_t.step(hand_l, hand_r);
 	
 	glDisable(GL_CULL_FACE);
 
 	SceneEnd();
 	
-	client_t.step();
+	
 }
 
 
