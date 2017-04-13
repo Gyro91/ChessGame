@@ -56,6 +56,7 @@ var my_level;
 #define OPP_OTHER_Z		SQUARE_SIZE*7
 #define OPP_PAWN_VECT	[0.0, 0.0, OPP_PAWN_Z]
 #define OPP_OTHER_VECT	[0.0, 0.0, OPP_OTHER_Z]
+#define OPP_ROT			[0.0, 180, 0.0]
 #define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
 #define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define ROOK1_POS		[SQUARE_SIZE*7.5, Y_OFFSET, SQUARE_SIZE*0.5]
@@ -66,16 +67,22 @@ var my_level;
 #define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET, SQUARE_SIZE*0.5]
 
-/* Level class definition. */
+/*
+ * CLASS DECLARATIONS
+ */
+
+/* Level class declaration. */
 class Level {
 	var my_pieces;
 	var opp_pieces;
 	var chessboard;
 	
+	GetMyPiece(id);
+	GetOppPiece(id);
 	Draw();
 };
 
-/* Piece class definition. */
+/* Piece class declaration. */
 class Piece {
 	var piece_id;
 	var piece_mesh;
@@ -83,14 +90,61 @@ class Piece {
 	var pos;
 	var rot;
 
-	GetId();
 	GetPsx();
+	GetPosition();
+	GetRotation();
 	Draw();
 };
+
+/*
+ * Utility Functions
+ */
 
 function level_init() {
 	my_level = Level();
 }
+
+/*
+ * Level Class Member Functions
+ */
+ 
+function Level::Level() {
+	my_pieces = Array(16);
+	opp_pieces = Array(16);
+	var rot = [0.0, 0.0, 0.0];
+	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
+		BISHOP0_POS, BISHOP1_POS};
+	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH, BISHOP_MESH, BISHOP_MESH};
+	/* Instanciate the chessboard */
+	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, rot);
+	/* Instaciate all the other pieces */
+	for (var i=0; i<=15; i++) {
+		if (i <= 7) {
+			/* It's not a pawn. */
+			my_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i], rot);
+			opp_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT);
+		} else {
+			my_pieces[i] = Piece(i+1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot);
+			opp_pieces[i] = Piece(i+1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT);
+		}
+	}
+}
+
+function Level::GetMyPiece(id) {
+	return my_pieces[id];
+}
+
+function Level::GetOppPiece(id) {
+	return opp_pieces[id];
+}
+
+function Level::Draw() {
+	manager_psx.Draw();
+}
+
+/*
+ * Piece Class Member Functions
+ */
 
 function Piece::Piece(id, mesh, init_pos, init_rot) {
 	piece_id = id;
@@ -143,7 +197,7 @@ function Piece::Piece(id, mesh, init_pos, init_rot) {
 	}
 	
 	if (id == CHESSBOARD_ID)
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 100, rigidMaterial);
+		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
 	else
 		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);	
 }
@@ -152,32 +206,14 @@ function Piece::GetPsx() {
 	return piece_psx;
 }
 
+function Piece::GetPosition() {
+	return pos;
+}
+
+function Piece::GetRotation() {
+	return rot;
+}
+
 function Piece::Draw() {
 	piece_psx.Draw();
-}
-
-function Level::Level() {
-	my_pieces = Array(16);
-	opp_pieces = Array(16);
-	var rot = [0.0, 0.0, 0.0];
-	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
-		BISHOP0_POS, BISHOP1_POS};
-	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH, BISHOP_MESH, BISHOP_MESH};
-	/* Instanciate the chessboard */
-	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, rot);
-	/* Instaciate all the other pieces */
-	for (var i=0; i<=15; i++) {
-		if (i <= 7) {
-			/* It's not a pawn. */
-			my_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i], rot);
-			opp_pieces[i] = Piece(i+1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, rot);
-		} else {
-			my_pieces[i] = Piece(i+1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot);
-			opp_pieces[i] = Piece(i+1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, rot);
-		}
-	}
-}
-
-function Level::Draw() {
-	manager_psx.Draw();
 }

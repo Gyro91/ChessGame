@@ -38,7 +38,7 @@ class Hand {
 	
 	init(is_right_param);
 	get_raw_data();
-	push_raw_data();	
+	push_raw_data(tmp_raw_data);	
 	update();
 	draw();
 };
@@ -111,7 +111,6 @@ function Hand::update()
 		// Updating the obj hand position
 		hand_obj.SetPosition(palm_position * MM_TO_M);
 		// Scaling from mm to m
-		outputln(hand_obj.GetPosition());
 	}		 
 }
 
@@ -166,17 +165,43 @@ function FingerClass::update(raw_data, offset)
 
 function FingerClass::draw()
 {
-	for (var i = 0; i < NUM_JOINTS; i++)
+	for(var i = 0; i < NUM_JOINTS; i++)
 		fingers_obj[i].draw();
 } 
  
- /* This function write the 3 coordinates in dest from (src + start) */
+ /* This function writes the 3 coordinates in dest from (src + start) */
  
 function write_vector(dest, src, start)
 {
 	for(var i = 0; i < NUM_COORD; i++)
 		dest[i] = src[start + i];
 }
- 
 
+/* This function returns raw_data vector is the hand is active */
+ 
+function Hand::get_raw_data() {
+	if (is_active == 1)
+		return raw_data;
+	else
+		return NULL;
+}
+
+/* This function updates hand with input data */
+
+function Hand::push_raw_data(tmp_raw_data) {
+	is_active = 1;
+	// Changing frame base
+	raw_data = tmp_raw_data;
+	
+	write_vector(&palm_position, &tmp_raw_data, 0);
+	write_vector(&palm_normal, &tmp_raw_data, 3);
+	
+	for(var i = 0; i < NUM_FINGERS; i++)
+		fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
+	
+	// Updating the obj hand position
+	hand_obj.SetPosition(palm_position * MM_TO_M);
+	// Scaling from mm to m
+	// outputln(hand_obj.GetPosition());
+}
  

@@ -30,7 +30,7 @@ var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
 
 /* Light globals */
 var Light0;
-var PosL = [13, 13.0, 10];	// default light position
+var PosL = [15, 10, 15];	// default light position
 
 
 /* Function declarations */
@@ -58,7 +58,6 @@ function OnInit(params)
 	Light0.SetDiffuse(1, 1, 1);
 	Light0.Enable();
 	
-
 	SetLocalDir("");
 	
  	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
@@ -80,16 +79,13 @@ function OnInit(params)
 	hand_r.init(1);
 	hand_l.init(0);
 	
-	pkt_hand = Packet_Hand();
-	pkt_hand.init();
-	p_adversary = Player();
-	pkt_to_send = Packet_hnd();
 	
 	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
 	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
 	
-	glEnable(GL_LIGHTING);
+	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
+	glEnable(GL_NORMALIZE);
 }
 
 function OnFrame()
@@ -108,13 +104,7 @@ function OnFrame()
 	my_level.Draw();
 
 	SceneEnd();
-	
-	pkt_hand.update(hand_r, hand_l);
-	pkt_to_send.index = 1;
 
-	
-	if (pkt_hand.Hand_r.is_active == 1 || pkt_hand.Hand_l.is_active == 1)
-		p_adversary.send(pkt_to_send);
 }
 
 
