@@ -1,12 +1,16 @@
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
+
+#define CAM_STEP	0.05
+// #define HI_RES
+
+/* Include shared libraries */
 #include "../../libXVRshared/Networking.s3d"
 #include "../../libXVRshared/LevelClass.s3d"
 #include "../../physics/physics.s3d"
 
 
-#define CAM_STEP	0.05
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
@@ -73,15 +77,17 @@ function OnInit(params)
 	/* Initialize the level */
 	level_init();
 	
-	hand_r = Hand();
-	hand_l = Hand();
+	outputln(GetTime());
 	
-	hand_r.init(1);
-	hand_l.init(0);
-	
-	
-	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
-	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
+//	hand_r = Hand();
+//	hand_l = Hand();
+//	
+//	hand_r.init(1);
+//	hand_l.init(0);
+//	
+//	
+//	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
+//	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
 	
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
@@ -93,13 +99,13 @@ function OnFrame()
 	static var i = 0;
 	CameraMoveMouse();
 	CameraMoveKeyboard();
-	SceneBegin();	
+	SceneBegin(VR_SHOW_STATS);	
 	DrawGrid([0.5, 0.5, 0.5], 100);	
 	
-	hand_r.update();
-	hand_l.update();
-	hand_r.draw();
-	hand_l.draw();
+//	hand_r.update();
+//	hand_l.update();
+//	hand_r.draw();
+//	hand_l.draw();
 	
 	my_level.Draw();
 
