@@ -1,7 +1,6 @@
 #include "../physics/physics.s3d"
 
-var my_level;
-
+/* Pieces IDs */
 #define CHESSBOARD_ID	0
 #define KING_ID			1
 #define QUEEN_ID		2
@@ -22,9 +21,11 @@ var my_level;
 
 #define PIECE_DENSITY	1
 
+/* Pieces meshes */
+#define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
+
 #ifdef	HI_RES
 
-#define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
 #define KING_MESH		"../../meshes/king.aam"
 #define QUEEN_MESH		"../../meshes/queen.aam"
 #define ROOK_MESH		"../../meshes/rook.aam"
@@ -32,9 +33,8 @@ var my_level;
 #define BISHOP_MESH		"../../meshes/bishop.aam"
 #define PAWN_MESH		"../../meshes/pawn.aam"
 
-#else
-
-#define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
+#else 
+/* LOW_RES */
 #define KING_MESH		"../../meshes/king_low.aam"
 #define QUEEN_MESH		"../../meshes/queen_low.aam"
 #define ROOK_MESH		"../../meshes/rook_low.aam"
@@ -44,15 +44,10 @@ var my_level;
 
 #endif
 
-/* Actually the chessboard mesh has a size of 16x16 meters, 
- * we scale it in order to have a 30x30 centimeters chessboard.
- */
 /* Actually the chessboard mesh has a size of 9.6x9.6x1.2 meters, 
  * we scale it in order to have a 30x30 centimeters chessboard.
  */
- 
 #define SIM_SCALE			100
-//#define CHESSBOARD_SCALE	SIM_SCALE * [0.01875, 0.01875, 0.01875]
 #define CHESSBOARD_SCALE	SIM_SCALE * [0.03125, 0.03125, 0.03125]
 #define CHESSBOARD_SIZE		SIM_SCALE * 0.3
 #define SQUARE_SIZE			SIM_SCALE * 0.0375
@@ -87,6 +82,9 @@ var my_level;
 #define BISHOP1_POS		[SQUARE_SIZE*5.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET*2, SQUARE_SIZE*0.5]
 #define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET*1.6, SQUARE_SIZE*0.5]
+
+/* Global Level object */
+var my_level;
 
 /*
  * CLASS DECLARATIONS
