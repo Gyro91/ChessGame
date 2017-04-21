@@ -83,6 +83,9 @@
 #define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET*2, SQUARE_SIZE*0.5]
 #define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET*1.6, SQUARE_SIZE*0.5]
 
+#define PHYSICAL_LVL	0
+#define GRAPHICAL_LVL	1
+
 /* Global Level object */
 var my_level;
 
@@ -92,8 +95,9 @@ var my_level;
 
 /* Level class declaration. */
 class Level {
-	var my_pieces;
-	var opp_pieces;
+	var type;
+	var p1_pieces;
+	var p2_pieces;
 	var chessboard;
 	
 	GetMyPiece(id);
@@ -103,102 +107,107 @@ class Level {
 
 /* Piece class declaration. */
 class Piece {
-	var piece_id;
-	var piece_mesh;
-	var piece_psx;
+	var id;
+	var obj;
+	var mesh;
+	var psx;
 	var pos;
 	var rot;
+	
+	GetObj();
+	Update(pos, rot);
 
-	GetMesh();
-	GetPsx();
-	GetPosition();
-	GetRotation();
-	Draw();
 };
 
 /*
  * Utility Functions
  */
 
-function level_init() {
-	my_level = Level();
+function level_init(type) {
+	if (type == PHYSICAL_LVL) {
+	/* Initlialize Physx engine */
+	InitPhysicsEngine();
+	/* Set the gravity */
+	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+	}
+	
+	/* Initialize the level */
+	my_level = Level(type);
 }
 
 /*
  * Level Class Member Functions
  */
  
-function Level::Level() {
-	my_pieces = Array(16);
-	opp_pieces = Array(16);
+function Level::Level(level_t) {
+	type = level_t;
+	p1_pieces = Array(16);
+	p2_pieces = Array(16);
+	/* Initial piece positions */
 	var rot = [0.0, 0.0, 0.0];
 	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
 		BISHOP0_POS, BISHOP1_POS};
-	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH, BISHOP_MESH, BISHOP_MESH};
-	/* Instanciate the chessboard */
-	chessboard = Piece(CHESSBOARD_ID, 0, CHESSBOARD_MESH, CHESSBOARD_POS, rot);
-	/* Instaciate all the other pieces */
+	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH,
+		BISHOP_MESH, BISHOP_MESH};
+	/* Instantiate the chessboard */
+	chessboard = Piece(CHESSBOARD_ID, 0, CHESSBOARD_MESH, CHESSBOARD_POS, rot, type);
+	/* Instantiate all the other pieces */
 	for (var i=0; i<=15; i++) {
 		if (i <= 7) {
 			/* It's not a pawn. */
-			my_pieces[i] = Piece(i+1, 0, mesh_pieces[i], pos_other[i], rot);
-			opp_pieces[i] = Piece(i+1, 1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT);
+			p1_pieces[i] = Piece(i+1, 0, mesh_pieces[i], pos_other[i], rot, type);
+			p2_pieces[i] = Piece(i+1, 1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT, type);
 		} else {
-			my_pieces[i] = Piece(i+1, 0, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot);
-			opp_pieces[i] = Piece(i+1, 1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT);
+			p1_pieces[i] = Piece(i+1, 0, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot, type);
+			p2_pieces[i] = Piece(i+1, 1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT, type);
 		}
 	}
 }
 
-function Level::GetMyPiece(id) {
-	return my_pieces[id];
-}
-
-function Level::GetOppPiece(id) {
-	return opp_pieces[id];
-}
-
 function Level::Draw() {
-	manager_psx.Draw();
+	for (var i=0; i<=15; i++) {
+		p1_pieces[i].GetObj().Draw();
+		p2_pieces[i].GetObj().Draw();
+	}
+	chessboard.GetObj().Draw();
 }
 
 /*
  * Piece Class Member Functions
  */
 
-function Piece::Piece(id, opp, mesh, init_pos, init_rot) {
-	piece_id = id;
+function Piece::Piece(p_id, opp, p_mesh, init_pos, init_rot, type) {
+	id = p_id;
 	pos = init_pos;
 	rot = init_rot;
 	
 	switch(id) {
 		case CHESSBOARD_ID: 
-			piece_mesh = CVmNewMesh(CHESSBOARD_MESH);
-			//piece_mesh.Normalize(0.3);
-			piece_mesh.Scale(CHESSBOARD_SCALE);
+			mesh = CVmNewMesh(CHESSBOARD_MESH);
+			mesh.Scale(CHESSBOARD_SCALE);
 			break;
 		case KING_ID:
-			piece_mesh = CVmNewMesh(KING_MESH);
-			piece_mesh.Scale(PIECE_SCALE);
+			mesh = CVmNewMesh(KING_MESH);
+			mesh.Scale(PIECE_SCALE);
 			break;
 		case QUEEN_ID:
-			piece_mesh = CVmNewMesh(QUEEN_MESH);
-			piece_mesh.Scale(PIECE_SCALE);
+			mesh = CVmNewMesh(QUEEN_MESH);
+			mesh.Scale(PIECE_SCALE);
 			break;
 		case ROOK0_ID:
 		case ROOK1_ID:
-			piece_mesh = CVmNewMesh(ROOK_MESH);
-			piece_mesh.Scale(PIECE_SCALE);
+			mesh = CVmNewMesh(ROOK_MESH);
+			mesh.Scale(PIECE_SCALE);
 			break;
 		case KNIGHT0_ID:
 		case KNIGHT1_ID:
-			piece_mesh = CVmNewMesh(KNIGHT_MESH);
-			piece_mesh.Scale(PIECE_SCALE);
+			mesh = CVmNewMesh(KNIGHT_MESH);
+			mesh.Scale(PIECE_SCALE);
 			break;
 		case BISHOP0_ID:
 		case BISHOP1_ID:
-			piece_mesh = CVmNewMesh(BISHOP_MESH);
-			piece_mesh.Scale(BISHOP_SCALE);
+			mesh = CVmNewMesh(BISHOP_MESH);
+			mesh.Scale(BISHOP_SCALE);
 			break;
 		case PAWN0_ID:
 		case PAWN1_ID:
@@ -208,8 +217,8 @@ function Piece::Piece(id, opp, mesh, init_pos, init_rot) {
 		case PAWN5_ID:
 		case PAWN6_ID:
 		case PAWN7_ID:
-			piece_mesh = CVmNewMesh(PAWN_MESH);
-			piece_mesh.Scale(PIECE_SCALE);
+			mesh = CVmNewMesh(PAWN_MESH);
+			mesh.Scale(PIECE_SCALE);
 			break;
 		default:
 			outputln("Invalid ID when creating Piece object!");
@@ -217,30 +226,41 @@ function Piece::Piece(id, opp, mesh, init_pos, init_rot) {
 	}
 	
 	if (opp == 1)
-		piece_mesh.ModulateMaterials([1,0.0,0.0]);
+		mesh.ModulateMaterials([1,0.0,0.0]);
+	if (type == PHYSICAL_LVL) {
+		/* Instanciate the physical object */
+		obj = NULL;
+		if (id == CHESSBOARD_ID) {
+			psx = manager_psx.AddPhConvexShape(pos, rot, mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
+		} else {
+			psx = manager_psx.AddPhConvexShape(pos, rot, mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		}
+	} else {
+		psx = NULL;
+		obj = CVmObj(mesh);
+		this.Update(pos,rot);
+	}
+}
+
+function Piece::GetObj() {
+	return obj;
+}
+
+function Piece::Update(p_pos, p_rot) {
+	var quat = EulerToQuaternion(rot);
+	var matrix3 = vector(9);
+	var matrix4 = vector(16);
+		
+	p_pos = pos;
+	p_rot = rot;
 	
-	if (id == CHESSBOARD_ID)
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
-	else
-		piece_psx = manager_psx.AddPhConvexShape(pos, rot, piece_mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);	
-}
-
-function Piece::GetMesh() {
-	return piece_mesh;
-}
-
-function Piece::GetPsx() {
-	return piece_psx;
-}
-
-function Piece::GetPosition() {
-	return pos;
-}
-
-function Piece::GetRotation() {
-	return rot;
-}
-
-function Piece::Draw() {
-	piece_psx.Draw();
+	obj.SetPosition(pos);
+	
+	matrix3 = QuaternionToMatrix3(quat); 
+	matrix4[0] = matrix3[0];	matrix4[1] = matrix3[1];	matrix4[2] = matrix3[2];	matrix4[3] = 0.0;
+	matrix4[4] = matrix3[3];	matrix4[5] = matrix3[4];	matrix4[6] = matrix3[5];	matrix4[7] = 0.0;
+	matrix4[8] = matrix3[6];	matrix4[9] = matrix3[7];	matrix4[10] = matrix3[8];	matrix4[11] = 0.0;
+	matrix4[12] = 0.0;			matrix4[13] = 0.0;			matrix4[14] = 0.0;			matrix4[15] = 1.0;
+	
+	obj.SetRotationMatrix(matrix4);
 }

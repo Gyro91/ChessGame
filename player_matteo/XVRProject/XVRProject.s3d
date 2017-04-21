@@ -9,7 +9,6 @@
 #include "../../libXVRshared/Networking.s3d"
 #include "../../libXVRshared/LevelClass.s3d"
 #include "../../libXVRshared/Server.s3d"
-#include "../../physics/physics.s3d"
 #define TIMESTEP_ON_TIMER 20
 
 
@@ -30,10 +29,6 @@ var hand_l;
 var server_t;
 var status_server;
 var pieces;
-
-
-
-
 var p_adversary;
 var pkt;
 
@@ -73,18 +68,11 @@ function OnInit(params)
 	SetLocalDir("");
 	
  	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
-
 	leapDll.__AddFunction( C_VOID, "get_seq_number", C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_right_hand", C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_left_hand", C_PFLOAT);
 	
-	/* Initlialize Physx engine */
-	InitPhysicsEngine();
-
-	/* Set the scene gravity */
-	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
-	/* Initialize the level */
-	level_init();
+	level_init(GRAPHICAL_LVL);
 	
 	outputln(GetTime());
 	
@@ -144,15 +132,14 @@ function DownloadReady(RequestID)
 
 function OnTimer()
 {
-	RunPhysicsEngine(DELTA_T);
+	//RunPhysicsEngine(DELTA_T);
 }
 
 
 
 function OnExit()
 {
-	/* PHYSICS TEST */
-	manager_psx.FreeMem();
+
 }
 
 
