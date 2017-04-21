@@ -1,0 +1,74 @@
+/*
+ *  This library implements all the classes and functions for the Server side
+ * 
+ */
+#include "Networking.s3d"
+ 
+ var status_new = 0;
+
+ 
+ /* This class has 4 ports for the communication:
+  * - A TCP port for the status of the communication and data;
+  * - 3 UDP ports, two for the hand (left and right) and one for the chess pieces;
+  * 
+  * It is provided:
+  * - an conf function to set the ports;
+  * - an init function for the initilization operations (accept, ...)
+  * - a function to send the status;
+  * - a function to receive the status from the other client;
+  * - a function to receive the objects from the client;
+  * - a function to send the updated objects;
+  * 
+  */
+ 
+ class Server {
+ 	
+ 	var addr_client;	
+ 	var UDP_client_port;
+ 	var pkt_hand;
+ 	
+ 	
+ 	conf(address, port1);
+ 	init();
+ 	send_status(status_server);
+ 	send_pkt(pkt, port);
+ 	recv_objects();
+ 	step(hand_l, hand_r, pieces, status_server);
+ 	
+ };
+ 
+ /* This function is used to configure the Server. */
+ 
+ function Server::conf(address, port1)
+ {	
+ 	addr_client = address;
+ 	UDP_client_port = port1;
+ }
+ 
+ /* All the operations for the Server initialization 
+  * are encapsulated in this function.
+  */
+  
+ function Server::init()
+ {
+ 		
+ 	pkt_hand = Packet();
+ 	pkt_hand.sequence_remote_id = 0;
+ 
+ }
+ 
+  
+ function Server::send_pkt(pkt, port)
+ {
+ 	NetVarSendTo(addr_client, port, pkt);
+ }
+ 
+ function Server::step(hand_l, hand_r, status_server, pieces)
+ {
+ 	
+ 	if (hand_l.is_active == 1 || hand_r.is_active == 1) {
+ 		update_pkt(hand_l, hand_r, pkt_hand);
+ 		send_pkt(pkt_hand, UDP_client_port);
+ 	}	
+ 		
+ }	

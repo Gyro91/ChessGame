@@ -188,7 +188,6 @@ function Hand::get_raw_data() {
 
 /* This function updates hand with input data */
 
-
 function Hand::push_raw_data(tmp_raw_data) {
 	is_active = 1;
 	// Changing frame base

@@ -2,8 +2,9 @@
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
-#include "../../libXVRshared/Networking.s3d"
+#include "../../libXVRshared/Client.s3d"
 
+#define TIMESTEP_ON_TIMER 20
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
 SET SCENE_NEAR = 0.5;
@@ -21,7 +22,9 @@ var hand_l;
 var pkt_hand;
 var p_adversary;
 
+/* Communication variables */
 
+var client_t;
 
 /* Camera globals */
 var CamPos = [0.0, 1.0, 5.0]; 	// camera position
@@ -62,12 +65,11 @@ function OnInit(params)
 	hand_r.init(1);
 	hand_l.init(0);
 	
-	pkt_hand = Packet();
-	p_adversary = Player();
-	var my_channel = NetCreateChannel(50000, 0, VR_NO_BLOCKING);
-	p_adversary.init(1, "10.1.194.129", 50001, my_channel);
 	
-	
+	client_t = Client();
+	client_t.conf("127.0.0.1", 35002);
+	client_t.connect();
+//	setTimeStep(TIMESTEP_ON_TIMER);
 }
 
 function draw_textured_quad(x1,y1,x2,y2);
@@ -89,35 +91,17 @@ function OnFrame()
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	
-	 
 	
-
-	hand_r.update();
-	hand_l.update();
-	hand_r.draw();
-	hand_l.draw();
+	client_t.step(hand_l, hand_r);
 	
 	glDisable(GL_CULL_FACE);
 
 	SceneEnd();
-
-	pkt_hand = p_adversary.rcv();
-	outputln(pkt_hand);
+	
+	
 }
 
-function draw_textured_quad(x1,y1,x2,y2)
-{
-	glBegin(GL_QUADS);
-	glTexCoord(1,0);
-	glVertex(x2,y2,0);
-	glTexCoord(0,0);
-	glVertex(x1,y2,0);
-	glTexCoord(0,1);
-	glVertex(x1,y1,0);
-	glTexCoord(1,1);
-	glVertex(x2,y1,0);
-	glEnd();	
-}
+
 
 
 
@@ -131,6 +115,10 @@ function DownloadReady(RequestID)
 function OnTimer()
 {
 	// TODO:
+	
+	
+  
+	//outputln(pkt_hand.sequence_remote_id);
 }
 
 
@@ -179,38 +167,6 @@ function DrawGrid(col, size)
 	glPopAttrib();
 }
 
-//////// Utility fnctions
-
-
-
-function draw_circle()
-{
-
-		for(var i= 0; i<36 ; i++)
-		{
-			draw_textured_quad(-1,-1,1,1);
-			glTranslate(2,0,0);
-			glRotate(10,0,1,0);	
-		}
-			
-}
-
-function draw_torus()
-{
-for(var j= 0; j<36 ; j++)
-	{
-		for(var i= 0; i<36 ; i++)
-		{
-			draw_textured_quad(-1,-1,1,1);
-			glTranslate(2,0,0);
-			glRotate(10,0,1,0);
-			
-		}
-			
-		glRotate(10,1,0,0);
-	}
-
-}
 
 
 function OnEvent()

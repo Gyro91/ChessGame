@@ -8,7 +8,9 @@
 /* Include shared libraries */
 #include "../../libXVRshared/Networking.s3d"
 #include "../../libXVRshared/LevelClass.s3d"
+#include "../../libXVRshared/Server.s3d"
 #include "../../physics/physics.s3d"
+#define TIMESTEP_ON_TIMER 20
 
 
 
@@ -24,10 +26,16 @@ var seq_number = 0;
 var hand_r;
 var hand_l;
 
-var pkt_hand;
-var p_adversary;
+/* COMMUNICATION VARIABLES */
+var server_t;
+var status_server;
+var pieces;
 
-var pkt_to_send;
+
+
+
+var p_adversary;
+var pkt;
 
 /* Camera globals */
 var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
@@ -80,16 +88,23 @@ function OnInit(params)
 	
 	outputln(GetTime());
 	
-//	hand_r = Hand();
-//	hand_l = Hand();
-//	
-//	hand_r.init(1);
-//	hand_l.init(0);
-//	
-//	
-//	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
-//	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
+	hand_r = Hand();
+	hand_l = Hand();
+	
+	hand_r.init(1);
+	hand_l.init(0);
+	
+	server_t = Server();
+	server_t.conf("127.0.0.1", 35002);
+	server_t.init();
+	
+	status_server = Status();
+	status_server.hand_l_status = 0;
+ 	status_server.hand_r_status = 0;
+ 	status_server.pieces = 0;
 
+	
+	setTimeStep(TIMESTEP_ON_TIMER);
 	
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
@@ -104,14 +119,21 @@ function OnFrame()
 	SceneBegin(VR_SHOW_STATS);	
 	DrawGrid([0.5, 0.5, 0.5], 100);	
 	
-//	hand_r.update();
-//	hand_l.update();
-//	hand_r.draw();
-//	hand_l.draw();
+	hand_r.update();
+	hand_l.update();
+/* 	
+	if (hand_l.is_active == 1) {
+		update_pkt(hand_l, pkt);
+		p_adversary.send(pkt);	
+	}*/
+	hand_r.draw();
+	hand_l.draw();
 	
 	my_level.Draw();
 
 	SceneEnd();
+	
+	server_t.step(hand_l, hand_r, status_server, pieces);
 
 }
 
