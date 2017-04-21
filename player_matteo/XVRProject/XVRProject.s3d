@@ -1,24 +1,25 @@
-
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
+
+#define CAM_STEP	0.05
+// #define HI_RES
+
+/* Include shared libraries */
 #include "../../libXVRshared/Networking.s3d"
+#include "../../libXVRshared/LevelClass.s3d"
 #include "../../physics/physics.s3d"
 
-#define SPHERE_DENSITY 100
-#define LAT_DENSITY 1
 
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
-SET SCENE_NEAR = 0.5;
+SET SCENE_NEAR = 0.005;
 SET SCENE_FAR  = 1000;
 
 
-// TODO: put your global variables here
 /* Hand Variables */
 var seq_number = 0;
-
 
 var hand_r;
 var hand_l;
@@ -28,25 +29,17 @@ var p_adversary;
 
 var pkt_to_send;
 
-/* PHYSICS TEST */
-var psx_cube;
-var rigidMaterial;
-var delta_t = 0.01;
-
-var lat_obj;
-var lat_mesh;
-var lat_psx;
-
-var sphere_obj;
-var sphere_mesh;
-
-
 /* Camera globals */
-var CamPos = [0.0, 1.0, 5.0]; 	// camera position
+var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
+
+/* Light globals */
+var Light0;
+var PosL = [15, 10, 15];	// default light position
 
 
 /* Function declarations */
 function CameraMoveMouse();
+function CameraMoveKeyboard();
 function DrawGrid(col, size);
 
 
@@ -62,7 +55,13 @@ function OnInit(params)
 {
 	/* initialize camera */
 	CameraGetCurrent().SetPosition(CamPos);
-
+	
+	/* initialize light */
+	Light0 = CVmLight();
+	Light0.SetPosition(PosL);
+	Light0.SetDiffuse(1, 1, 1);
+	Light0.Enable();
+	
 	SetLocalDir("");
 	
  	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
@@ -71,76 +70,49 @@ function OnInit(params)
 	leapDll.__AddFunction( C_INT, "get_right_hand", C_PFLOAT);
 	leapDll.__AddFunction( C_INT, "get_left_hand", C_PFLOAT);
 	
-	/* PHYSICS TEST */
+	/* Initlialize Physx engine */
 	InitPhysicsEngine();
-	SetLocalDir("..\\..\\libXVRshared");
-	lat_mesh = CVmNewMesh("pawnTut17old.aam");
-	lat_mesh.Scale(1, 1, 1);
-	sphere_mesh = CVmNewMesh(VRP_SPHERE, 10);
-	SetLocalDir("");
-	lat_obj = CVmObj(lat_mesh);
-	lat_obj.SetPosition([20.0,0.0,0.0]);
 
-	manager_psx.SetSceneGravity([0.0,-0.2,0.0]);
+	/* Set the scene gravity */
+	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+	/* Initialize the level */
+	level_init();
 	
-	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
-	/* pos, rot(euler), size  */
-	//(pos, rot, dim, isStatic, density, segs, mat)
-	//psx_cube = manager_psx.AddPhCube([0.0,0.0,0.0], [0.0,0.0,0.0], [1, 1, 1], PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
-	//psx_cube.SetVelocity([0, 10, 0]);
-	//lat_obj = manager_psx.AddPhCone([0.0,10.0,0.0], [0.0,0.0,0.0], 10, 10, PHX_DYNAMIC, CUBE_DENSITY, 10, rigidMaterial);
-	//lat_obj.SetVelocity([0, 10, 0]);
-	sphere_obj = manager_psx.AddPhFromGivenMesh(sphere_mesh, [-3.0,0.0,0.0], [0.0,0.0,0.0], PHX_DYNAMIC, SPHERE_DENSITY, rigidMaterial);
-	//lat_psx = manager_psx.AddPhTriangleShape([2.0,0.0,0.0], [0.0,0.0,0.0], lat_mesh, PHX_DYNAMIC, LAT_DENSITY, 10, rigidMaterial);
-	lat_psx = manager_psx.AddPhConvexShape([2.0,0.0,0.0], [0.0,0.0,0.0], lat_mesh, PHX_DYNAMIC, LAT_DENSITY, 10, rigidMaterial);
-	sphere_obj.SetVelocity([5, 0.0, 0.0]);
-	lat_psx.SetVelocity([-1, 0.0, 0.0]);
-	hand_r = Hand();
-	hand_l = Hand();
+	outputln(GetTime());
 	
-	hand_r.init(1);
-	hand_l.init(0);
+//	hand_r = Hand();
+//	hand_l = Hand();
+//	
+//	hand_r.init(1);
+//	hand_l.init(0);
+//	
+//	
+//	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
+//	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
+
 	
-	pkt_hand = Packet_Hand();
-	pkt_hand.init();
-	p_adversary = Player();
-	pkt_to_send = Packet_hnd();
-	
-	var my_channel = NetCreateChannel(50001, 0, VR_NO_BLOCKING);
-	p_adversary.init(1, 50000, "10.1.197.54", my_channel);
-	
+	glDisable(GL_LIGHTING);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_NORMALIZE);
 }
 
 function OnFrame()
 {	
 	static var i = 0;
 	CameraMoveMouse();
-	SceneBegin();	
+	CameraMoveKeyboard();
+	SceneBegin(VR_SHOW_STATS);	
 	DrawGrid([0.5, 0.5, 0.5], 100);	
-	glDisable(GL_LIGHTING);
-	glColor(1,1,1);
-	glEnable(GL_TEXTURE_2D);
 	
-	hand_r.update();
-	hand_l.update();
-	hand_r.draw();
-	hand_l.draw();
+//	hand_r.update();
+//	hand_l.update();
+//	hand_r.draw();
+//	hand_l.draw();
 	
-	//lat_obj.Draw();
-	
-	/* PSYSICS TEST */
-	manager_psx.Draw();
-	
-	glDisable(GL_CULL_FACE);
+	my_level.Draw();
 
 	SceneEnd();
-	
-	pkt_hand.update(hand_r, hand_l);
-	pkt_to_send.index = 1;
 
-	
-	if (pkt_hand.Hand_r.is_active == 1 || pkt_hand.Hand_l.is_active == 1)
-		p_adversary.send(pkt_to_send);
 }
 
 
@@ -153,7 +125,7 @@ function DownloadReady(RequestID)
 
 function OnTimer()
 {
-	RunPhysicsEngine(delta_t);
+	RunPhysicsEngine(DELTA_T);
 }
 
 
@@ -172,6 +144,43 @@ function CameraMoveMouse()
 
 	CameraMoveMouse_MBL_LC();
 
+}
+
+/* Camera Manager (Using Keyboard) */
+function CameraMoveKeyboard() {
+	var cam;
+	var x_trasl, y_trasl, z_trasl;
+	
+	/* Get the actual camera. */
+	cam = CameraGetCurrent();
+	
+	/* Get the actual camera axes. */
+	x_trasl = cam.GetXAxis()*CAM_STEP;
+	y_trasl = cam.GetYAxis()*CAM_STEP;
+	z_trasl = cam.GetZAxis()*CAM_STEP;
+	
+	/* W,A,S,D keys control the camera movements as in FPS games.
+	 * Keys Q and Z are used to adjust the camera height (w.r.t.
+	 * the camera Y axis).
+	 */
+	if (keypressed("W")) {
+		cam.SetPosition(cam.GetPosition() - z_trasl);
+	}
+	if (keypressed("S")) {
+		cam.SetPosition(cam.GetPosition() + z_trasl);
+	}
+	if (keypressed("A")) {
+		cam.SetPosition(cam.GetPosition() - x_trasl);
+	}
+	if (keypressed("D")) {
+		cam.SetPosition(cam.GetPosition() + x_trasl);
+	}
+	if (keypressed("Q")) {
+		cam.SetPosition(cam.GetPosition() + y_trasl);
+	}
+	if (keypressed("Z")) {
+		cam.SetPosition(cam.GetPosition() - y_trasl);
+	}
 }
 
 

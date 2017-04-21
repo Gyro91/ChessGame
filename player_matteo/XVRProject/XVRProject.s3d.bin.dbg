@@ -162,6 +162,16 @@
 				"DEBUGMODE",
 				"DEBUGRENDER"
 			]
+		},
+		
+		{
+			"name" : "LEVEL",
+			"variables" : [ "MY_PIECES", "OPP_PIECES", "CHESSBOARD" ]
+		},
+		
+		{
+			"name" : "PIECE",
+			"variables" : [ "PIECE_ID", "PIECE_MESH", "PIECE_PSX", "POS", "ROT" ]
 		}
 	],
 	"filenames" : 
@@ -173,43 +183,45 @@
 		"C:/Program Files (x86)/VRMedia/XVRStudio2.0/Editor/plugins/org.xvr.xvrengine_1.0.0/VRMedia/Include/Camera.s3d.h",
 		"../../libXVRshared/Networking.s3d",
 		"../../libXVRshared/HandClass.s3d",
-		"../../physics/physics.s3d",
-		"../../physics/.\\s3d\\PhManager.s3d",
-		"../../physics/.\\s3d\\geometry.s3d",
-		"../../physics/.\\s3d\\util.s3d",
-		"../../physics/.\\s3d\\PhObj.s3d",
-		"../../physics/.\\s3d\\util.s3d",
-		"../../physics/.\\s3d\\PhMaterial.s3d",
-		"../../physics/.\\s3d\\PhJoint.s3d"
+		"../../libXVRshared/LevelClass.s3d",
+		"../../libXVRshared/../physics/physics.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\PhManager.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\geometry.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\util.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\PhObj.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\util.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\PhMaterial.s3d",
+		"../../libXVRshared/../physics/.\\s3d\\PhJoint.s3d",
+		"../../physics/physics.s3d"
 	],
 	"filescopes" : 
 	[
 		
 		{
-			"endLine" : 216,
+			"endLine" : 231,
 			"scopes" : 
 			[
 				
 				{
-					"endLine" : 57,
+					"endLine" : 46,
 					"functionname" : "ONDOWNLOAD",
 					"params" : 0,
-					"startLine" : 53,
+					"startLine" : 42,
 					"type" : "function"
 				},
 				
 				{
-					"endLine" : 111,
+					"endLine" : 93,
 					"functionname" : "ONINIT",
 					"params" : 1,
-					"startLine" : 61,
+					"startLine" : 50,
 					"type" : "function",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 61,
+							"line" : 50,
 							"name" : "PARAMS",
 							"offset" : -1,
 							"opt" : true,
@@ -218,7 +230,7 @@
 						
 						{
 							"global" : false,
-							"line" : 108,
+							"line" : 88,
 							"name" : "MY_CHANNEL",
 							"offset" : 1,
 							"opt" : false,
@@ -228,37 +240,46 @@
 				},
 				
 				{
-					"endLine" : 143,
+					"endLine" : 121,
 					"functionname" : "ONFRAME",
 					"params" : 0,
-					"startLine" : 113,
+					"startLine" : 95,
 					"type" : "function",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 115,
+							"line" : 97,
 							"name" : "I",
-							"offset" : 214,
+							"offset" : 210,
 							"opt" : true,
 							"static" : true
+						},
+						
+						{
+							"global" : false,
+							"line" : 119,
+							"name" : "CAM",
+							"offset" : 1,
+							"opt" : false,
+							"static" : false
 						}
 					]
 				},
 				
 				{
-					"endLine" : 149,
+					"endLine" : 127,
 					"functionname" : "DOWNLOADREADY",
 					"params" : 1,
-					"startLine" : 146,
+					"startLine" : 124,
 					"type" : "function",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 146,
+							"line" : 124,
 							"name" : "REQUESTID",
 							"offset" : -1,
 							"opt" : true,
@@ -268,55 +289,141 @@
 				},
 				
 				{
-					"endLine" : 156,
+					"endLine" : 134,
 					"functionname" : "ONTIMER",
 					"params" : 0,
-					"startLine" : 153,
+					"startLine" : 131,
 					"type" : "function"
 				},
 				
 				{
-					"endLine" : 164,
+					"endLine" : 142,
 					"functionname" : "ONEXIT",
 					"params" : 0,
-					"startLine" : 160,
+					"startLine" : 138,
 					"type" : "function"
 				},
 				
 				{
-					"endLine" : 174,
+					"endLine" : 152,
 					"functionname" : "CAMERAMOVEMOUSE",
 					"params" : 0,
-					"startLine" : 169,
+					"startLine" : 147,
 					"type" : "function"
 				},
 				
 				{
-					"endLine" : 203,
+					"endLine" : 189,
+					"functionname" : "CAMERAMOVEKEYBOARD",
+					"params" : 0,
+					"scopes" : 
+					[
+						
+						{
+							"endLine" : 173,
+							"startLine" : 171,
+							"type" : "block"
+						},
+						
+						{
+							"endLine" : 176,
+							"startLine" : 174,
+							"type" : "block"
+						},
+						
+						{
+							"endLine" : 179,
+							"startLine" : 177,
+							"type" : "block"
+						},
+						
+						{
+							"endLine" : 182,
+							"startLine" : 180,
+							"type" : "block"
+						},
+						
+						{
+							"endLine" : 185,
+							"startLine" : 183,
+							"type" : "block"
+						},
+						
+						{
+							"endLine" : 188,
+							"startLine" : 186,
+							"type" : "block"
+						}
+					],
+					"startLine" : 155,
+					"type" : "function",
+					"variables" : 
+					[
+						
+						{
+							"global" : false,
+							"line" : 156,
+							"name" : "CAM",
+							"offset" : 1,
+							"opt" : false,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 157,
+							"name" : "X_TRASL",
+							"offset" : 2,
+							"opt" : false,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 157,
+							"name" : "Y_TRASL",
+							"offset" : 3,
+							"opt" : false,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 157,
+							"name" : "Z_TRASL",
+							"offset" : 4,
+							"opt" : false,
+							"static" : false
+						}
+					]
+				},
+				
+				{
+					"endLine" : 218,
 					"functionname" : "DRAWGRID",
 					"params" : 2,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 198,
+							"endLine" : 213,
 							"scopes" : 
 							[
 								
 								{
-									"endLine" : 198,
-									"startLine" : 192,
+									"endLine" : 213,
+									"startLine" : 207,
 									"type" : "block"
 								}
 							],
-							"startLine" : 191,
+							"startLine" : 206,
 							"type" : "block",
 							"variables" : 
 							[
 								
 								{
 									"global" : false,
-									"line" : 191,
+									"line" : 206,
 									"name" : "I",
 									"offset" : 4,
 									"opt" : false,
@@ -325,14 +432,14 @@
 							]
 						}
 					],
-					"startLine" : 178,
+					"startLine" : 193,
 					"type" : "function",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 178,
+							"line" : 193,
 							"name" : "COL",
 							"offset" : -1,
 							"opt" : true,
@@ -341,7 +448,7 @@
 						
 						{
 							"global" : false,
-							"line" : 178,
+							"line" : 193,
 							"name" : "SIZE",
 							"offset" : -2,
 							"opt" : true,
@@ -350,7 +457,7 @@
 						
 						{
 							"global" : false,
-							"line" : 186,
+							"line" : 201,
 							"name" : "MAX",
 							"offset" : 1,
 							"opt" : false,
@@ -359,7 +466,7 @@
 						
 						{
 							"global" : false,
-							"line" : 187,
+							"line" : 202,
 							"name" : "MIN",
 							"offset" : 2,
 							"opt" : false,
@@ -368,7 +475,7 @@
 						
 						{
 							"global" : false,
-							"line" : 188,
+							"line" : 203,
 							"name" : "STEP",
 							"offset" : 3,
 							"opt" : false,
@@ -378,18 +485,18 @@
 				},
 				
 				{
-					"endLine" : 211,
+					"endLine" : 226,
 					"functionname" : "ONEVENT",
 					"params" : 0,
-					"startLine" : 208,
+					"startLine" : 223,
 					"type" : "function"
 				},
 				
 				{
-					"endLine" : 216,
+					"endLine" : 231,
 					"functionname" : "ONERROR",
 					"params" : 0,
-					"startLine" : 213,
+					"startLine" : 228,
 					"type" : "function"
 				}
 			],
@@ -400,26 +507,8 @@
 				
 				{
 					"global" : true,
-					"line" : 20,
+					"line" : 18,
 					"name" : "SEQ_NUMBER",
-					"offset" : 199,
-					"opt" : true,
-					"static" : false
-				},
-				
-				{
-					"global" : true,
-					"line" : 23,
-					"name" : "HAND_R",
-					"offset" : 200,
-					"opt" : true,
-					"static" : false
-				},
-				
-				{
-					"global" : true,
-					"line" : 24,
-					"name" : "HAND_L",
 					"offset" : 201,
 					"opt" : true,
 					"static" : false
@@ -427,8 +516,8 @@
 				
 				{
 					"global" : true,
-					"line" : 26,
-					"name" : "PKT_HAND",
+					"line" : 20,
+					"name" : "HAND_R",
 					"offset" : 202,
 					"opt" : true,
 					"static" : false
@@ -436,8 +525,8 @@
 				
 				{
 					"global" : true,
-					"line" : 27,
-					"name" : "P_ADVERSARY",
+					"line" : 21,
+					"name" : "HAND_L",
 					"offset" : 203,
 					"opt" : true,
 					"static" : false
@@ -445,8 +534,8 @@
 				
 				{
 					"global" : true,
-					"line" : 29,
-					"name" : "PKT_TO_SEND",
+					"line" : 23,
+					"name" : "PKT_HAND",
 					"offset" : 204,
 					"opt" : true,
 					"static" : false
@@ -454,8 +543,8 @@
 				
 				{
 					"global" : true,
-					"line" : 32,
-					"name" : "PSX_CUBE",
+					"line" : 24,
+					"name" : "P_ADVERSARY",
 					"offset" : 205,
 					"opt" : true,
 					"static" : false
@@ -463,8 +552,8 @@
 				
 				{
 					"global" : true,
-					"line" : 33,
-					"name" : "RIGIDMATERIAL",
+					"line" : 26,
+					"name" : "PKT_TO_SEND",
 					"offset" : 206,
 					"opt" : true,
 					"static" : false
@@ -472,8 +561,8 @@
 				
 				{
 					"global" : true,
-					"line" : 34,
-					"name" : "DELTA_T",
+					"line" : 29,
+					"name" : "CAMPOS",
 					"offset" : 207,
 					"opt" : true,
 					"static" : false
@@ -481,8 +570,8 @@
 				
 				{
 					"global" : true,
-					"line" : 36,
-					"name" : "LAT_OBJ",
+					"line" : 32,
+					"name" : "LIGHT0",
 					"offset" : 208,
 					"opt" : true,
 					"static" : false
@@ -490,45 +579,9 @@
 				
 				{
 					"global" : true,
-					"line" : 37,
-					"name" : "LAT_MESH",
+					"line" : 33,
+					"name" : "POSL",
 					"offset" : 209,
-					"opt" : true,
-					"static" : false
-				},
-				
-				{
-					"global" : true,
-					"line" : 38,
-					"name" : "LAT_PSX",
-					"offset" : 210,
-					"opt" : true,
-					"static" : false
-				},
-				
-				{
-					"global" : true,
-					"line" : 40,
-					"name" : "SPHERE_OBJ",
-					"offset" : 211,
-					"opt" : true,
-					"static" : false
-				},
-				
-				{
-					"global" : true,
-					"line" : 41,
-					"name" : "SPHERE_MESH",
-					"offset" : 212,
-					"opt" : true,
-					"static" : false
-				},
-				
-				{
-					"global" : true,
-					"line" : 45,
-					"name" : "CAMPOS",
-					"offset" : 213,
 					"opt" : true,
 					"static" : false
 				}
@@ -3017,30 +3070,272 @@
 		},
 		
 		{
-			"endLine" : 21,
+			"endLine" : 183,
 			"scopes" : 
 			[
 				
 				{
-					"endLine" : 13,
-					"functionname" : "INITPHYSICSENGINE",
+					"endLine" : 92,
+					"functionname" : "LEVEL_INIT",
 					"params" : 0,
-					"startLine" : 8,
+					"startLine" : 90,
 					"type" : "function"
 				},
 				
 				{
-					"endLine" : 18,
+					"classname" : "PIECE",
+					"endLine" : 148,
+					"methodname" : "PIECE",
+					"params" : 5,
+					"startLine" : 94,
+					"type" : "method",
+					"variables" : 
+					[
+						
+						{
+							"global" : false,
+							"line" : 94,
+							"name" : "THIS",
+							"offset" : -1,
+							"opt" : true,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 94,
+							"name" : "ID",
+							"offset" : -2,
+							"opt" : true,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 94,
+							"name" : "MESH",
+							"offset" : -3,
+							"opt" : true,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 94,
+							"name" : "INIT_POS",
+							"offset" : -4,
+							"opt" : true,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 94,
+							"name" : "INIT_ROT",
+							"offset" : -5,
+							"opt" : true,
+							"static" : false
+						}
+					]
+				},
+				
+				{
+					"classname" : "PIECE",
+					"endLine" : 152,
+					"methodname" : "GETPSX",
+					"params" : 1,
+					"startLine" : 150,
+					"type" : "method",
+					"variables" : 
+					[
+						
+						{
+							"global" : false,
+							"line" : 150,
+							"name" : "THIS",
+							"offset" : -1,
+							"opt" : true,
+							"static" : false
+						}
+					]
+				},
+				
+				{
+					"classname" : "PIECE",
+					"endLine" : 156,
+					"methodname" : "DRAW",
+					"params" : 1,
+					"startLine" : 154,
+					"type" : "method",
+					"variables" : 
+					[
+						
+						{
+							"global" : false,
+							"line" : 154,
+							"name" : "THIS",
+							"offset" : -1,
+							"opt" : true,
+							"static" : false
+						}
+					]
+				},
+				
+				{
+					"classname" : "LEVEL",
+					"endLine" : 178,
+					"methodname" : "LEVEL",
+					"params" : 1,
+					"scopes" : 
+					[
+						
+						{
+							"endLine" : 177,
+							"scopes" : 
+							[
+								
+								{
+									"endLine" : 177,
+									"scopes" : 
+									[
+										
+										{
+											"endLine" : 173,
+											"startLine" : 169,
+											"type" : "block"
+										},
+										
+										{
+											"endLine" : 176,
+											"startLine" : 173,
+											"type" : "block"
+										}
+									],
+									"startLine" : 168,
+									"type" : "block"
+								}
+							],
+							"startLine" : 168,
+							"type" : "block",
+							"variables" : 
+							[
+								
+								{
+									"global" : false,
+									"line" : 168,
+									"name" : "I",
+									"offset" : 4,
+									"opt" : false,
+									"static" : false
+								}
+							]
+						}
+					],
+					"startLine" : 158,
+					"type" : "method",
+					"variables" : 
+					[
+						
+						{
+							"global" : false,
+							"line" : 158,
+							"name" : "THIS",
+							"offset" : -1,
+							"opt" : true,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 161,
+							"name" : "ROT",
+							"offset" : 1,
+							"opt" : false,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 162,
+							"name" : "POS_OTHER",
+							"offset" : 2,
+							"opt" : false,
+							"static" : false
+						},
+						
+						{
+							"global" : false,
+							"line" : 164,
+							"name" : "MESH_PIECES",
+							"offset" : 3,
+							"opt" : false,
+							"static" : false
+						}
+					]
+				},
+				
+				{
+					"classname" : "LEVEL",
+					"endLine" : 182,
+					"methodname" : "DRAW",
+					"params" : 1,
+					"startLine" : 180,
+					"type" : "method",
+					"variables" : 
+					[
+						
+						{
+							"global" : false,
+							"line" : 180,
+							"name" : "THIS",
+							"offset" : -1,
+							"opt" : true,
+							"static" : false
+						}
+					]
+				}
+			],
+			"startLine" : 0,
+			"type" : "global",
+			"variables" : 
+			[
+				
+				{
+					"global" : true,
+					"line" : 3,
+					"name" : "MY_LEVEL",
+					"offset" : 200,
+					"opt" : true,
+					"static" : false
+				}
+			]
+		},
+		
+		{
+			"endLine" : 25,
+			"scopes" : 
+			[
+				
+				{
+					"endLine" : 17,
+					"functionname" : "INITPHYSICSENGINE",
+					"params" : 0,
+					"startLine" : 11,
+					"type" : "function"
+				},
+				
+				{
+					"endLine" : 22,
 					"functionname" : "RUNPHYSICSENGINE",
 					"params" : 1,
-					"startLine" : 15,
+					"startLine" : 19,
 					"type" : "function",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 15,
+							"line" : 19,
 							"name" : "DELTA",
 							"offset" : -1,
 							"opt" : true,
@@ -3056,9 +3351,18 @@
 				
 				{
 					"global" : true,
-					"line" : 6,
+					"line" : 8,
 					"name" : "MANAGER_PSX",
 					"offset" : 198,
+					"opt" : true,
+					"static" : false
+				},
+				
+				{
+					"global" : true,
+					"line" : 9,
+					"name" : "RIGIDMATERIAL",
+					"offset" : 199,
 					"opt" : true,
 					"static" : false
 				}
@@ -3066,7 +3370,7 @@
 		},
 		
 		{
-			"endLine" : 918,
+			"endLine" : 889,
 			"scopes" : 
 			[
 				
@@ -3123,17 +3427,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 143,
+					"endLine" : 140,
 					"methodname" : "CVMPHMANAGER",
 					"params" : 2,
-					"startLine" : 122,
+					"startLine" : 119,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 122,
+							"line" : 119,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3142,7 +3446,7 @@
 						
 						{
 							"global" : false,
-							"line" : 122,
+							"line" : 119,
 							"name" : "DEBUG",
 							"offset" : -2,
 							"opt" : true,
@@ -3153,26 +3457,26 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 160,
+					"endLine" : 157,
 					"methodname" : "DRAW",
 					"params" : 4,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 156,
-							"startLine" : 153,
+							"endLine" : 153,
+							"startLine" : 150,
 							"type" : "block"
 						}
 					],
-					"startLine" : 152,
+					"startLine" : 149,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 152,
+							"line" : 149,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3181,7 +3485,7 @@
 						
 						{
 							"global" : false,
-							"line" : 152,
+							"line" : 149,
 							"name" : "FLAGS",
 							"offset" : -2,
 							"opt" : true,
@@ -3190,7 +3494,7 @@
 						
 						{
 							"global" : false,
-							"line" : 152,
+							"line" : 149,
 							"name" : "X",
 							"offset" : -3,
 							"opt" : true,
@@ -3199,7 +3503,7 @@
 						
 						{
 							"global" : false,
-							"line" : 152,
+							"line" : 149,
 							"name" : "Y",
 							"offset" : -4,
 							"opt" : true,
@@ -3208,7 +3512,7 @@
 						
 						{
 							"global" : false,
-							"line" : 153,
+							"line" : 150,
 							"name" : "PHOBJ",
 							"offset" : 3,
 							"opt" : false,
@@ -3219,17 +3523,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 169,
+					"endLine" : 166,
 					"methodname" : "GETDELTA",
 					"params" : 1,
-					"startLine" : 167,
+					"startLine" : 164,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 167,
+							"line" : 164,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3240,17 +3544,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 176,
+					"endLine" : 173,
 					"methodname" : "INITPHYSICS",
 					"params" : 1,
-					"startLine" : 174,
+					"startLine" : 171,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 174,
+							"line" : 171,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3261,17 +3565,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 187,
+					"endLine" : 184,
 					"methodname" : "NEWMATERIAL",
 					"params" : 4,
-					"startLine" : 185,
+					"startLine" : 182,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 185,
+							"line" : 182,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3280,7 +3584,7 @@
 						
 						{
 							"global" : false,
-							"line" : 185,
+							"line" : 182,
 							"name" : "RESTITUTION",
 							"offset" : -2,
 							"opt" : true,
@@ -3289,7 +3593,7 @@
 						
 						{
 							"global" : false,
-							"line" : 185,
+							"line" : 182,
 							"name" : "STATICFRICTION",
 							"offset" : -3,
 							"opt" : true,
@@ -3298,7 +3602,7 @@
 						
 						{
 							"global" : false,
-							"line" : 185,
+							"line" : 182,
 							"name" : "DYNAMICFRICTION",
 							"offset" : -4,
 							"opt" : true,
@@ -3309,17 +3613,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 209,
+					"endLine" : 206,
 					"methodname" : "ADDPHOBJECT",
 					"params" : 4,
-					"startLine" : 201,
+					"startLine" : 198,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 201,
+							"line" : 198,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3328,7 +3632,7 @@
 						
 						{
 							"global" : false,
-							"line" : 201,
+							"line" : 198,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -3337,7 +3641,7 @@
 						
 						{
 							"global" : false,
-							"line" : 201,
+							"line" : 198,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -3346,7 +3650,7 @@
 						
 						{
 							"global" : false,
-							"line" : 201,
+							"line" : 198,
 							"name" : "ISSTATIC",
 							"offset" : -4,
 							"opt" : true,
@@ -3355,7 +3659,7 @@
 						
 						{
 							"global" : false,
-							"line" : 202,
+							"line" : 199,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3364,7 +3668,7 @@
 						
 						{
 							"global" : false,
-							"line" : 204,
+							"line" : 201,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -3375,17 +3679,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 233,
+					"endLine" : 230,
 					"methodname" : "ADDPHCUBE",
 					"params" : 8,
-					"startLine" : 225,
+					"startLine" : 222,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3394,7 +3698,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -3403,7 +3707,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -3412,7 +3716,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "DIM",
 							"offset" : -4,
 							"opt" : true,
@@ -3421,7 +3725,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "ISSTATIC",
 							"offset" : -5,
 							"opt" : true,
@@ -3430,7 +3734,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "DENSITY",
 							"offset" : -6,
 							"opt" : true,
@@ -3439,7 +3743,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "SEGS",
 							"offset" : -7,
 							"opt" : true,
@@ -3448,7 +3752,7 @@
 						
 						{
 							"global" : false,
-							"line" : 225,
+							"line" : 222,
 							"name" : "MAT",
 							"offset" : -8,
 							"opt" : true,
@@ -3457,7 +3761,7 @@
 						
 						{
 							"global" : false,
-							"line" : 226,
+							"line" : 223,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3466,7 +3770,7 @@
 						
 						{
 							"global" : false,
-							"line" : 228,
+							"line" : 225,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -3477,17 +3781,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 257,
+					"endLine" : 254,
 					"methodname" : "ADDPHSPHERE",
 					"params" : 8,
-					"startLine" : 249,
+					"startLine" : 246,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3496,7 +3800,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -3505,7 +3809,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -3514,7 +3818,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "RADIUS",
 							"offset" : -4,
 							"opt" : true,
@@ -3523,7 +3827,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "ISSTATIC",
 							"offset" : -5,
 							"opt" : true,
@@ -3532,7 +3836,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "DENSITY",
 							"offset" : -6,
 							"opt" : true,
@@ -3541,7 +3845,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "SEGS",
 							"offset" : -7,
 							"opt" : true,
@@ -3550,7 +3854,7 @@
 						
 						{
 							"global" : false,
-							"line" : 249,
+							"line" : 246,
 							"name" : "MAT",
 							"offset" : -8,
 							"opt" : true,
@@ -3559,7 +3863,7 @@
 						
 						{
 							"global" : false,
-							"line" : 250,
+							"line" : 247,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3568,7 +3872,7 @@
 						
 						{
 							"global" : false,
-							"line" : 252,
+							"line" : 249,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -3579,17 +3883,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 275,
+					"endLine" : 272,
 					"methodname" : "ADDPHPLANE",
 					"params" : 4,
-					"startLine" : 267,
+					"startLine" : 264,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 267,
+							"line" : 264,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3598,7 +3902,7 @@
 						
 						{
 							"global" : false,
-							"line" : 267,
+							"line" : 264,
 							"name" : "NOR",
 							"offset" : -2,
 							"opt" : true,
@@ -3607,7 +3911,7 @@
 						
 						{
 							"global" : false,
-							"line" : 267,
+							"line" : 264,
 							"name" : "DIST",
 							"offset" : -3,
 							"opt" : true,
@@ -3616,7 +3920,7 @@
 						
 						{
 							"global" : false,
-							"line" : 267,
+							"line" : 264,
 							"name" : "MAT",
 							"offset" : -4,
 							"opt" : true,
@@ -3625,7 +3929,7 @@
 						
 						{
 							"global" : false,
-							"line" : 268,
+							"line" : 265,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3634,7 +3938,7 @@
 						
 						{
 							"global" : false,
-							"line" : 270,
+							"line" : 267,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -3645,17 +3949,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 300,
+					"endLine" : 297,
 					"methodname" : "ADDPHTERRAIN",
 					"params" : 11,
-					"startLine" : 292,
+					"startLine" : 289,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3664,7 +3968,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -3673,7 +3977,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "ROWS",
 							"offset" : -3,
 							"opt" : true,
@@ -3682,7 +3986,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "COLS",
 							"offset" : -4,
 							"opt" : true,
@@ -3691,7 +3995,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "SAMPLE",
 							"offset" : -5,
 							"opt" : true,
@@ -3700,7 +4004,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "THICKNESS",
 							"offset" : -6,
 							"opt" : true,
@@ -3709,7 +4013,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "DIMX",
 							"offset" : -7,
 							"opt" : true,
@@ -3718,7 +4022,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "DIMZ",
 							"offset" : -8,
 							"opt" : true,
@@ -3727,7 +4031,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "MINY",
 							"offset" : -9,
 							"opt" : true,
@@ -3736,7 +4040,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "MAXY",
 							"offset" : -10,
 							"opt" : true,
@@ -3745,7 +4049,7 @@
 						
 						{
 							"global" : false,
-							"line" : 292,
+							"line" : 289,
 							"name" : "MAT",
 							"offset" : -11,
 							"opt" : true,
@@ -3754,7 +4058,7 @@
 						
 						{
 							"global" : false,
-							"line" : 293,
+							"line" : 290,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3763,7 +4067,7 @@
 						
 						{
 							"global" : false,
-							"line" : 295,
+							"line" : 292,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -3774,17 +4078,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 326,
+					"endLine" : 323,
 					"methodname" : "ADDPHCONE",
 					"params" : 9,
-					"startLine" : 317,
+					"startLine" : 314,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3793,7 +4097,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -3802,7 +4106,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -3811,7 +4115,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "RADIUS",
 							"offset" : -4,
 							"opt" : true,
@@ -3820,7 +4124,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "HEIGHT",
 							"offset" : -5,
 							"opt" : true,
@@ -3829,7 +4133,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "ISSTATIC",
 							"offset" : -6,
 							"opt" : true,
@@ -3838,7 +4142,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "DENSITY",
 							"offset" : -7,
 							"opt" : true,
@@ -3847,7 +4151,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "SEGS",
 							"offset" : -8,
 							"opt" : true,
@@ -3856,7 +4160,7 @@
 						
 						{
 							"global" : false,
-							"line" : 317,
+							"line" : 314,
 							"name" : "MAT",
 							"offset" : -9,
 							"opt" : true,
@@ -3865,7 +4169,7 @@
 						
 						{
 							"global" : false,
-							"line" : 318,
+							"line" : 315,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3874,7 +4178,7 @@
 						
 						{
 							"global" : false,
-							"line" : 320,
+							"line" : 317,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -3885,17 +4189,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 352,
+					"endLine" : 349,
 					"methodname" : "ADDPHCONEFRUSTUM",
 					"params" : 10,
-					"startLine" : 344,
+					"startLine" : 341,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -3904,7 +4208,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -3913,7 +4217,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -3922,7 +4226,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "MINRADIUS",
 							"offset" : -4,
 							"opt" : true,
@@ -3931,7 +4235,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "MAXRADIUS",
 							"offset" : -5,
 							"opt" : true,
@@ -3940,7 +4244,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "HEIGHT",
 							"offset" : -6,
 							"opt" : true,
@@ -3949,7 +4253,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "ISSTATIC",
 							"offset" : -7,
 							"opt" : true,
@@ -3958,7 +4262,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "DENSITY",
 							"offset" : -8,
 							"opt" : true,
@@ -3967,7 +4271,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "SEGS",
 							"offset" : -9,
 							"opt" : true,
@@ -3976,7 +4280,7 @@
 						
 						{
 							"global" : false,
-							"line" : 344,
+							"line" : 341,
 							"name" : "MAT",
 							"offset" : -10,
 							"opt" : true,
@@ -3985,7 +4289,7 @@
 						
 						{
 							"global" : false,
-							"line" : 345,
+							"line" : 342,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -3994,7 +4298,7 @@
 						
 						{
 							"global" : false,
-							"line" : 347,
+							"line" : 344,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4005,17 +4309,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 378,
+					"endLine" : 375,
 					"methodname" : "ADDPHPYRAMID",
 					"params" : 9,
-					"startLine" : 370,
+					"startLine" : 367,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4024,7 +4328,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -4033,7 +4337,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -4042,7 +4346,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "SIDE",
 							"offset" : -4,
 							"opt" : true,
@@ -4051,7 +4355,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "HEIGHT",
 							"offset" : -5,
 							"opt" : true,
@@ -4060,7 +4364,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "ISSTATIC",
 							"offset" : -6,
 							"opt" : true,
@@ -4069,7 +4373,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "DENSITY",
 							"offset" : -7,
 							"opt" : true,
@@ -4078,7 +4382,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "SEGS",
 							"offset" : -8,
 							"opt" : true,
@@ -4087,7 +4391,7 @@
 						
 						{
 							"global" : false,
-							"line" : 370,
+							"line" : 367,
 							"name" : "MAT",
 							"offset" : -9,
 							"opt" : true,
@@ -4096,7 +4400,7 @@
 						
 						{
 							"global" : false,
-							"line" : 371,
+							"line" : 368,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -4105,7 +4409,7 @@
 						
 						{
 							"global" : false,
-							"line" : 373,
+							"line" : 370,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4116,17 +4420,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 403,
+					"endLine" : 400,
 					"methodname" : "ADDPHCYLINDER",
 					"params" : 9,
-					"startLine" : 395,
+					"startLine" : 392,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4135,7 +4439,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -4144,7 +4448,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -4153,7 +4457,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "RADIUS",
 							"offset" : -4,
 							"opt" : true,
@@ -4162,7 +4466,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "HEIGHT",
 							"offset" : -5,
 							"opt" : true,
@@ -4171,7 +4475,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "ISSTATIC",
 							"offset" : -6,
 							"opt" : true,
@@ -4180,7 +4484,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "DENSITY",
 							"offset" : -7,
 							"opt" : true,
@@ -4189,7 +4493,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "SEGS",
 							"offset" : -8,
 							"opt" : true,
@@ -4198,7 +4502,7 @@
 						
 						{
 							"global" : false,
-							"line" : 395,
+							"line" : 392,
 							"name" : "MAT",
 							"offset" : -9,
 							"opt" : true,
@@ -4207,7 +4511,7 @@
 						
 						{
 							"global" : false,
-							"line" : 396,
+							"line" : 393,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -4216,7 +4520,7 @@
 						
 						{
 							"global" : false,
-							"line" : 398,
+							"line" : 395,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4227,17 +4531,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 428,
+					"endLine" : 425,
 					"methodname" : "ADDPHCONVEXSHAPE",
 					"params" : 8,
-					"startLine" : 420,
+					"startLine" : 417,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4246,7 +4550,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -4255,7 +4559,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -4264,7 +4568,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "MESH",
 							"offset" : -4,
 							"opt" : true,
@@ -4273,7 +4577,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "ISSTATIC",
 							"offset" : -5,
 							"opt" : true,
@@ -4282,7 +4586,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "DENSITY",
 							"offset" : -6,
 							"opt" : true,
@@ -4291,7 +4595,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "SEGS",
 							"offset" : -7,
 							"opt" : true,
@@ -4300,7 +4604,7 @@
 						
 						{
 							"global" : false,
-							"line" : 420,
+							"line" : 417,
 							"name" : "MAT",
 							"offset" : -8,
 							"opt" : true,
@@ -4309,7 +4613,7 @@
 						
 						{
 							"global" : false,
-							"line" : 421,
+							"line" : 418,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -4318,7 +4622,7 @@
 						
 						{
 							"global" : false,
-							"line" : 423,
+							"line" : 420,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4329,17 +4633,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 453,
+					"endLine" : 450,
 					"methodname" : "ADDPHTRIANGLESHAPE",
 					"params" : 8,
-					"startLine" : 445,
+					"startLine" : 442,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4348,7 +4652,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "POS",
 							"offset" : -2,
 							"opt" : true,
@@ -4357,7 +4661,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "ROT",
 							"offset" : -3,
 							"opt" : true,
@@ -4366,7 +4670,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "MESH",
 							"offset" : -4,
 							"opt" : true,
@@ -4375,7 +4679,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "ISSTATIC",
 							"offset" : -5,
 							"opt" : true,
@@ -4384,7 +4688,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "DENSITY",
 							"offset" : -6,
 							"opt" : true,
@@ -4393,7 +4697,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "SEGS",
 							"offset" : -7,
 							"opt" : true,
@@ -4402,7 +4706,7 @@
 						
 						{
 							"global" : false,
-							"line" : 445,
+							"line" : 442,
 							"name" : "MAT",
 							"offset" : -8,
 							"opt" : true,
@@ -4411,7 +4715,7 @@
 						
 						{
 							"global" : false,
-							"line" : 446,
+							"line" : 443,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -4420,7 +4724,7 @@
 						
 						{
 							"global" : false,
-							"line" : 448,
+							"line" : 445,
 							"name" : "ACTOR_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4431,32 +4735,32 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 474,
+					"endLine" : 471,
 					"methodname" : "DELETEPHOBJ",
 					"params" : 2,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 473,
+							"endLine" : 470,
 							"scopes" : 
 							[
 								
 								{
-									"endLine" : 473,
+									"endLine" : 470,
 									"scopes" : 
 									[
 										
 										{
-											"endLine" : 472,
-											"startLine" : 462,
+											"endLine" : 469,
+											"startLine" : 459,
 											"type" : "block",
 											"variables" : 
 											[
 												
 												{
 													"global" : false,
-													"line" : 464,
+													"line" : 461,
 													"name" : "NACTOR_P",
 													"offset" : 3,
 													"opt" : false,
@@ -4465,7 +4769,7 @@
 												
 												{
 													"global" : false,
-													"line" : 465,
+													"line" : 462,
 													"name" : "NACTOR_N",
 													"offset" : 2,
 													"opt" : false,
@@ -4474,18 +4778,18 @@
 											]
 										}
 									],
-									"startLine" : 461,
+									"startLine" : 458,
 									"type" : "block"
 								}
 							],
-							"startLine" : 461,
+							"startLine" : 458,
 							"type" : "block",
 							"variables" : 
 							[
 								
 								{
 									"global" : false,
-									"line" : 461,
+									"line" : 458,
 									"name" : "I",
 									"offset" : 1,
 									"opt" : false,
@@ -4494,14 +4798,14 @@
 							]
 						}
 					],
-					"startLine" : 460,
+					"startLine" : 457,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 460,
+							"line" : 457,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4510,7 +4814,7 @@
 						
 						{
 							"global" : false,
-							"line" : 460,
+							"line" : 457,
 							"name" : "OBJ",
 							"offset" : -2,
 							"opt" : true,
@@ -4521,22 +4825,22 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 512,
+					"endLine" : 509,
 					"methodname" : "SIMULATE",
 					"params" : 2,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 501,
-							"startLine" : 485,
+							"endLine" : 498,
+							"startLine" : 482,
 							"type" : "block",
 							"variables" : 
 							[
 								
 								{
 									"global" : false,
-									"line" : 487,
+									"line" : 484,
 									"name" : "K",
 									"offset" : 1,
 									"opt" : false,
@@ -4545,7 +4849,7 @@
 								
 								{
 									"global" : false,
-									"line" : 488,
+									"line" : 485,
 									"name" : "T",
 									"offset" : 2,
 									"opt" : false,
@@ -4555,25 +4859,25 @@
 						},
 						
 						{
-							"endLine" : 503,
-							"startLine" : 501,
+							"endLine" : 500,
+							"startLine" : 498,
 							"type" : "block"
 						},
 						
 						{
-							"endLine" : 509,
-							"startLine" : 505,
+							"endLine" : 506,
+							"startLine" : 502,
 							"type" : "block"
 						}
 					],
-					"startLine" : 483,
+					"startLine" : 480,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 483,
+							"line" : 480,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4582,7 +4886,7 @@
 						
 						{
 							"global" : false,
-							"line" : 483,
+							"line" : 480,
 							"name" : "DELTA",
 							"offset" : -2,
 							"opt" : true,
@@ -4593,32 +4897,32 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 548,
+					"endLine" : 545,
 					"methodname" : "UPDATEGRAPHICS",
 					"params" : 1,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 547,
+							"endLine" : 544,
 							"scopes" : 
 							[
 								
 								{
-									"endLine" : 547,
+									"endLine" : 544,
 									"scopes" : 
 									[
 										
 										{
-											"endLine" : 544,
-											"startLine" : 521,
+											"endLine" : 541,
+											"startLine" : 518,
 											"type" : "block",
 											"variables" : 
 											[
 												
 												{
 													"global" : false,
-													"line" : 522,
+													"line" : 519,
 													"name" : "POS",
 													"offset" : 2,
 													"opt" : false,
@@ -4627,7 +4931,7 @@
 												
 												{
 													"global" : false,
-													"line" : 540,
+													"line" : 537,
 													"name" : "ANGLE",
 													"offset" : 4,
 													"opt" : false,
@@ -4636,7 +4940,7 @@
 												
 												{
 													"global" : false,
-													"line" : 541,
+													"line" : 538,
 													"name" : "AXIS",
 													"offset" : 3,
 													"opt" : false,
@@ -4646,23 +4950,23 @@
 										},
 										
 										{
-											"endLine" : 546,
-											"startLine" : 544,
+											"endLine" : 543,
+											"startLine" : 541,
 											"type" : "block"
 										}
 									],
-									"startLine" : 520,
+									"startLine" : 517,
 									"type" : "block"
 								}
 							],
-							"startLine" : 520,
+							"startLine" : 517,
 							"type" : "block",
 							"variables" : 
 							[
 								
 								{
 									"global" : false,
-									"line" : 520,
+									"line" : 517,
 									"name" : "I",
 									"offset" : 1,
 									"opt" : false,
@@ -4671,14 +4975,14 @@
 							]
 						}
 					],
-					"startLine" : 518,
+					"startLine" : 515,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 518,
+							"line" : 515,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4689,17 +4993,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 556,
+					"endLine" : 553,
 					"methodname" : "SETSCENEGRAVITY",
 					"params" : 2,
-					"startLine" : 554,
+					"startLine" : 551,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 554,
+							"line" : 551,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4708,7 +5012,7 @@
 						
 						{
 							"global" : false,
-							"line" : 554,
+							"line" : 551,
 							"name" : "GRAVITY",
 							"offset" : -2,
 							"opt" : true,
@@ -4719,17 +5023,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 564,
+					"endLine" : 561,
 					"methodname" : "FREEMEM",
 					"params" : 1,
-					"startLine" : 562,
+					"startLine" : 559,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 562,
+							"line" : 559,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4740,17 +5044,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 584,
+					"endLine" : 581,
 					"methodname" : "NEWCYLINDRICALJOINT",
 					"params" : 7,
-					"startLine" : 577,
+					"startLine" : 574,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4759,7 +5063,7 @@
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -4768,7 +5072,7 @@
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -4777,7 +5081,7 @@
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -4786,7 +5090,7 @@
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -4795,7 +5099,7 @@
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -4804,7 +5108,7 @@
 						
 						{
 							"global" : false,
-							"line" : 577,
+							"line" : 574,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -4813,7 +5117,7 @@
 						
 						{
 							"global" : false,
-							"line" : 578,
+							"line" : 575,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -4822,7 +5126,7 @@
 						
 						{
 							"global" : false,
-							"line" : 579,
+							"line" : 576,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4833,17 +5137,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 604,
+					"endLine" : 601,
 					"methodname" : "NEWFIXEDJOINT",
 					"params" : 7,
-					"startLine" : 597,
+					"startLine" : 594,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4852,7 +5156,7 @@
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -4861,7 +5165,7 @@
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -4870,7 +5174,7 @@
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -4879,7 +5183,7 @@
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -4888,7 +5192,7 @@
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -4897,7 +5201,7 @@
 						
 						{
 							"global" : false,
-							"line" : 597,
+							"line" : 594,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -4906,7 +5210,7 @@
 						
 						{
 							"global" : false,
-							"line" : 598,
+							"line" : 595,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -4915,7 +5219,7 @@
 						
 						{
 							"global" : false,
-							"line" : 599,
+							"line" : 596,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -4926,17 +5230,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 624,
+					"endLine" : 621,
 					"methodname" : "NEWPRISMATICJOINT",
 					"params" : 7,
-					"startLine" : 617,
+					"startLine" : 614,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -4945,7 +5249,7 @@
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -4954,7 +5258,7 @@
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -4963,7 +5267,7 @@
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -4972,7 +5276,7 @@
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -4981,7 +5285,7 @@
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -4990,7 +5294,7 @@
 						
 						{
 							"global" : false,
-							"line" : 617,
+							"line" : 614,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -4999,7 +5303,7 @@
 						
 						{
 							"global" : false,
-							"line" : 618,
+							"line" : 615,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -5008,7 +5312,7 @@
 						
 						{
 							"global" : false,
-							"line" : 619,
+							"line" : 616,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -5019,17 +5323,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 644,
+					"endLine" : 641,
 					"methodname" : "NEWREVOLUTEJOINT",
 					"params" : 7,
-					"startLine" : 637,
+					"startLine" : 634,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5038,7 +5342,7 @@
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -5047,7 +5351,7 @@
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -5056,7 +5360,7 @@
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -5065,7 +5369,7 @@
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -5074,7 +5378,7 @@
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -5083,7 +5387,7 @@
 						
 						{
 							"global" : false,
-							"line" : 637,
+							"line" : 634,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -5092,7 +5396,7 @@
 						
 						{
 							"global" : false,
-							"line" : 638,
+							"line" : 635,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -5101,7 +5405,7 @@
 						
 						{
 							"global" : false,
-							"line" : 639,
+							"line" : 636,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -5112,17 +5416,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 664,
+					"endLine" : 661,
 					"methodname" : "NEWDISTANCEJOINT",
 					"params" : 7,
-					"startLine" : 657,
+					"startLine" : 654,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5131,7 +5435,7 @@
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -5140,7 +5444,7 @@
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -5149,7 +5453,7 @@
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -5158,7 +5462,7 @@
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -5167,7 +5471,7 @@
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -5176,7 +5480,7 @@
 						
 						{
 							"global" : false,
-							"line" : 657,
+							"line" : 654,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -5185,7 +5489,7 @@
 						
 						{
 							"global" : false,
-							"line" : 658,
+							"line" : 655,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -5194,7 +5498,7 @@
 						
 						{
 							"global" : false,
-							"line" : 659,
+							"line" : 656,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -5205,17 +5509,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 684,
+					"endLine" : 681,
 					"methodname" : "NEWSPHERICALJOINT",
 					"params" : 7,
-					"startLine" : 677,
+					"startLine" : 674,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5224,7 +5528,7 @@
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -5233,7 +5537,7 @@
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -5242,7 +5546,7 @@
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -5251,7 +5555,7 @@
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -5260,7 +5564,7 @@
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -5269,7 +5573,7 @@
 						
 						{
 							"global" : false,
-							"line" : 677,
+							"line" : 674,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -5278,7 +5582,7 @@
 						
 						{
 							"global" : false,
-							"line" : 678,
+							"line" : 675,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -5287,7 +5591,7 @@
 						
 						{
 							"global" : false,
-							"line" : 679,
+							"line" : 676,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -5298,17 +5602,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 704,
+					"endLine" : 701,
 					"methodname" : "NEWD6JOINT",
 					"params" : 7,
-					"startLine" : 697,
+					"startLine" : 694,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5317,7 +5621,7 @@
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -5326,7 +5630,7 @@
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -5335,7 +5639,7 @@
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "POSA1",
 							"offset" : -4,
 							"opt" : true,
@@ -5344,7 +5648,7 @@
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "POSA2",
 							"offset" : -5,
 							"opt" : true,
@@ -5353,7 +5657,7 @@
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "ORA1",
 							"offset" : -6,
 							"opt" : true,
@@ -5362,7 +5666,7 @@
 						
 						{
 							"global" : false,
-							"line" : 697,
+							"line" : 694,
 							"name" : "ORA2",
 							"offset" : -7,
 							"opt" : true,
@@ -5371,7 +5675,7 @@
 						
 						{
 							"global" : false,
-							"line" : 698,
+							"line" : 695,
 							"name" : "ELEM",
 							"offset" : 1,
 							"opt" : false,
@@ -5380,7 +5684,7 @@
 						
 						{
 							"global" : false,
-							"line" : 699,
+							"line" : 696,
 							"name" : "JOINT_HANDLER",
 							"offset" : 2,
 							"opt" : false,
@@ -5391,32 +5695,32 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 724,
+					"endLine" : 721,
 					"methodname" : "DELETEPHJOINT",
 					"params" : 2,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 723,
+							"endLine" : 720,
 							"scopes" : 
 							[
 								
 								{
-									"endLine" : 723,
+									"endLine" : 720,
 									"scopes" : 
 									[
 										
 										{
-											"endLine" : 722,
-											"startLine" : 712,
+											"endLine" : 719,
+											"startLine" : 709,
 											"type" : "block",
 											"variables" : 
 											[
 												
 												{
 													"global" : false,
-													"line" : 714,
+													"line" : 711,
 													"name" : "NJOINT_P",
 													"offset" : 3,
 													"opt" : false,
@@ -5425,7 +5729,7 @@
 												
 												{
 													"global" : false,
-													"line" : 715,
+													"line" : 712,
 													"name" : "NJOINT_N",
 													"offset" : 2,
 													"opt" : false,
@@ -5434,18 +5738,18 @@
 											]
 										}
 									],
-									"startLine" : 711,
+									"startLine" : 708,
 									"type" : "block"
 								}
 							],
-							"startLine" : 711,
+							"startLine" : 708,
 							"type" : "block",
 							"variables" : 
 							[
 								
 								{
 									"global" : false,
-									"line" : 711,
+									"line" : 708,
 									"name" : "I",
 									"offset" : 1,
 									"opt" : false,
@@ -5454,14 +5758,14 @@
 							]
 						}
 					],
-					"startLine" : 710,
+					"startLine" : 707,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 710,
+							"line" : 707,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5470,7 +5774,7 @@
 						
 						{
 							"global" : false,
-							"line" : 710,
+							"line" : 707,
 							"name" : "JOINT",
 							"offset" : -2,
 							"opt" : true,
@@ -5481,17 +5785,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 744,
+					"endLine" : 741,
 					"methodname" : "SETUPCOLLISIONREPORT",
 					"params" : 5,
-					"startLine" : 737,
+					"startLine" : 734,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 737,
+							"line" : 734,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5500,7 +5804,7 @@
 						
 						{
 							"global" : false,
-							"line" : 737,
+							"line" : 734,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -5509,7 +5813,7 @@
 						
 						{
 							"global" : false,
-							"line" : 737,
+							"line" : 734,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -5518,7 +5822,7 @@
 						
 						{
 							"global" : false,
-							"line" : 737,
+							"line" : 734,
 							"name" : "FLAG",
 							"offset" : -4,
 							"opt" : true,
@@ -5527,7 +5831,7 @@
 						
 						{
 							"global" : false,
-							"line" : 737,
+							"line" : 734,
 							"name" : "VALUE",
 							"offset" : -5,
 							"opt" : true,
@@ -5536,7 +5840,7 @@
 						
 						{
 							"global" : false,
-							"line" : 740,
+							"line" : 737,
 							"name" : "IVALUE",
 							"offset" : 1,
 							"opt" : false,
@@ -5547,32 +5851,32 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 762,
+					"endLine" : 759,
 					"methodname" : "INTOUCH",
 					"params" : 3,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 757,
-							"startLine" : 755,
+							"endLine" : 754,
+							"startLine" : 752,
 							"type" : "block"
 						},
 						
 						{
-							"endLine" : 760,
-							"startLine" : 758,
+							"endLine" : 757,
+							"startLine" : 755,
 							"type" : "block"
 						}
 					],
-					"startLine" : 752,
+					"startLine" : 749,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 752,
+							"line" : 749,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5581,7 +5885,7 @@
 						
 						{
 							"global" : false,
-							"line" : 752,
+							"line" : 749,
 							"name" : "A1",
 							"offset" : -2,
 							"opt" : true,
@@ -5590,7 +5894,7 @@
 						
 						{
 							"global" : false,
-							"line" : 752,
+							"line" : 749,
 							"name" : "A2",
 							"offset" : -3,
 							"opt" : true,
@@ -5599,7 +5903,7 @@
 						
 						{
 							"global" : false,
-							"line" : 753,
+							"line" : 750,
 							"name" : "RESULTBOOL",
 							"offset" : 1,
 							"opt" : true,
@@ -5608,7 +5912,7 @@
 						
 						{
 							"global" : false,
-							"line" : 754,
+							"line" : 751,
 							"name" : "RESULT",
 							"offset" : 1,
 							"opt" : false,
@@ -5619,41 +5923,41 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 820,
+					"endLine" : 817,
 					"methodname" : "GETGLOBALCOLLISION",
 					"params" : 2,
 					"scopes" : 
 					[
 						
 						{
-							"endLine" : 818,
+							"endLine" : 815,
 							"scopes" : 
 							[
 								
 								{
-									"endLine" : 818,
+									"endLine" : 815,
 									"scopes" : 
 									[
 										
 										{
-											"endLine" : 817,
+											"endLine" : 814,
 											"scopes" : 
 											[
 												
 												{
-													"endLine" : 817,
-													"startLine" : 800,
+													"endLine" : 814,
+													"startLine" : 797,
 													"type" : "block"
 												}
 											],
-											"startLine" : 800,
+											"startLine" : 797,
 											"type" : "block",
 											"variables" : 
 											[
 												
 												{
 													"global" : false,
-													"line" : 800,
+													"line" : 797,
 													"name" : "P",
 													"offset" : 5,
 													"opt" : false,
@@ -5662,18 +5966,18 @@
 											]
 										}
 									],
-									"startLine" : 776,
+									"startLine" : 773,
 									"type" : "block"
 								}
 							],
-							"startLine" : 776,
+							"startLine" : 773,
 							"type" : "block",
 							"variables" : 
 							[
 								
 								{
 									"global" : false,
-									"line" : 776,
+									"line" : 773,
 									"name" : "I",
 									"offset" : 1,
 									"opt" : false,
@@ -5682,14 +5986,14 @@
 							]
 						}
 					],
-					"startLine" : 769,
+					"startLine" : 766,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 769,
+							"line" : 766,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5698,7 +6002,7 @@
 						
 						{
 							"global" : false,
-							"line" : 769,
+							"line" : 766,
 							"name" : "COLLSTRUCT",
 							"offset" : -2,
 							"opt" : true,
@@ -5707,7 +6011,7 @@
 						
 						{
 							"global" : false,
-							"line" : 771,
+							"line" : 768,
 							"name" : "A",
 							"offset" : 195,
 							"opt" : true,
@@ -5716,7 +6020,7 @@
 						
 						{
 							"global" : false,
-							"line" : 772,
+							"line" : 769,
 							"name" : "J",
 							"offset" : 3,
 							"opt" : false,
@@ -5725,7 +6029,7 @@
 						
 						{
 							"global" : false,
-							"line" : 774,
+							"line" : 771,
 							"name" : "N",
 							"offset" : 2,
 							"opt" : false,
@@ -5736,17 +6040,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 829,
+					"endLine" : 826,
 					"methodname" : "ENABLECOLLISION",
 					"params" : 3,
-					"startLine" : 827,
+					"startLine" : 824,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 827,
+							"line" : 824,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5755,7 +6059,7 @@
 						
 						{
 							"global" : false,
-							"line" : 827,
+							"line" : 824,
 							"name" : "G1",
 							"offset" : -2,
 							"opt" : true,
@@ -5764,7 +6068,7 @@
 						
 						{
 							"global" : false,
-							"line" : 827,
+							"line" : 824,
 							"name" : "G2",
 							"offset" : -3,
 							"opt" : true,
@@ -5775,17 +6079,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 838,
+					"endLine" : 835,
 					"methodname" : "DISABLECOLLISION",
 					"params" : 3,
-					"startLine" : 836,
+					"startLine" : 833,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 836,
+							"line" : 833,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5794,7 +6098,7 @@
 						
 						{
 							"global" : false,
-							"line" : 836,
+							"line" : 833,
 							"name" : "G1",
 							"offset" : -2,
 							"opt" : true,
@@ -5803,7 +6107,7 @@
 						
 						{
 							"global" : false,
-							"line" : 836,
+							"line" : 833,
 							"name" : "G2",
 							"offset" : -3,
 							"opt" : true,
@@ -5814,17 +6118,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 863,
+					"endLine" : 860,
 					"methodname" : "COOKCONVEXMESH",
 					"params" : 2,
-					"startLine" : 850,
+					"startLine" : 847,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 850,
+							"line" : 847,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5833,7 +6137,7 @@
 						
 						{
 							"global" : false,
-							"line" : 850,
+							"line" : 847,
 							"name" : "M",
 							"offset" : -2,
 							"opt" : true,
@@ -5842,7 +6146,7 @@
 						
 						{
 							"global" : false,
-							"line" : 851,
+							"line" : 848,
 							"name" : "SUBSETNUMBER",
 							"offset" : 1,
 							"opt" : true,
@@ -5851,7 +6155,7 @@
 						
 						{
 							"global" : false,
-							"line" : 852,
+							"line" : 849,
 							"name" : "VERTEXCOUNT",
 							"offset" : 1,
 							"opt" : false,
@@ -5860,7 +6164,7 @@
 						
 						{
 							"global" : false,
-							"line" : 853,
+							"line" : 850,
 							"name" : "TRIANGLECOUNT",
 							"offset" : 3,
 							"opt" : true,
@@ -5869,7 +6173,7 @@
 						
 						{
 							"global" : false,
-							"line" : 855,
+							"line" : 852,
 							"name" : "VERTEX",
 							"offset" : 2,
 							"opt" : false,
@@ -5878,7 +6182,7 @@
 						
 						{
 							"global" : false,
-							"line" : 856,
+							"line" : 853,
 							"name" : "INDEX",
 							"offset" : 3,
 							"opt" : false,
@@ -5887,7 +6191,7 @@
 						
 						{
 							"global" : false,
-							"line" : 859,
+							"line" : 856,
 							"name" : "MESHINDEX",
 							"offset" : 4,
 							"opt" : false,
@@ -5898,17 +6202,17 @@
 				
 				{
 					"classname" : "CVMPHMANAGER",
-					"endLine" : 889,
+					"endLine" : 886,
 					"methodname" : "COOKMESH",
 					"params" : 2,
-					"startLine" : 874,
+					"startLine" : 871,
 					"type" : "method",
 					"variables" : 
 					[
 						
 						{
 							"global" : false,
-							"line" : 874,
+							"line" : 871,
 							"name" : "THIS",
 							"offset" : -1,
 							"opt" : true,
@@ -5917,7 +6221,7 @@
 						
 						{
 							"global" : false,
-							"line" : 874,
+							"line" : 871,
 							"name" : "M",
 							"offset" : -2,
 							"opt" : true,
@@ -5926,7 +6230,7 @@
 						
 						{
 							"global" : false,
-							"line" : 875,
+							"line" : 872,
 							"name" : "SUBSETNUMBER",
 							"offset" : 1,
 							"opt" : true,
@@ -5935,7 +6239,7 @@
 						
 						{
 							"global" : false,
-							"line" : 876,
+							"line" : 873,
 							"name" : "VERTEXCOUNT",
 							"offset" : 1,
 							"opt" : false,
@@ -5944,7 +6248,7 @@
 						
 						{
 							"global" : false,
-							"line" : 877,
+							"line" : 874,
 							"name" : "TRIANGLECOUNT",
 							"offset" : 2,
 							"opt" : false,
@@ -5953,7 +6257,7 @@
 						
 						{
 							"global" : false,
-							"line" : 879,
+							"line" : 876,
 							"name" : "VERTEX",
 							"offset" : 3,
 							"opt" : false,
@@ -5962,7 +6266,7 @@
 						
 						{
 							"global" : false,
-							"line" : 880,
+							"line" : 877,
 							"name" : "INDEX",
 							"offset" : 4,
 							"opt" : false,
@@ -5971,7 +6275,7 @@
 						
 						{
 							"global" : false,
-							"line" : 882,
+							"line" : 879,
 							"name" : "PPIP",
 							"offset" : 5,
 							"opt" : false,
@@ -5980,102 +6284,9 @@
 						
 						{
 							"global" : false,
-							"line" : 885,
+							"line" : 882,
 							"name" : "MESHINDEX",
 							"offset" : 6,
-							"opt" : false,
-							"static" : false
-						}
-					]
-				},
-				
-				{
-					"classname" : "CVMPHMANAGER",
-					"endLine" : 915,
-					"methodname" : "ADDPHFROMGIVENMESH",
-					"params" : 7,
-					"startLine" : 906,
-					"type" : "method",
-					"variables" : 
-					[
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "THIS",
-							"offset" : -1,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "MESH",
-							"offset" : -2,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "POS",
-							"offset" : -3,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "ROT",
-							"offset" : -4,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "ISSTATIC",
-							"offset" : -5,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "DENSITY",
-							"offset" : -6,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 906,
-							"name" : "MAT",
-							"offset" : -7,
-							"opt" : true,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 908,
-							"name" : "ELEM",
-							"offset" : 1,
-							"opt" : false,
-							"static" : false
-						},
-						
-						{
-							"global" : false,
-							"line" : 910,
-							"name" : "ACTOR_HANDLER",
-							"offset" : 2,
 							"opt" : false,
 							"static" : false
 						}
@@ -17143,6 +17354,12 @@
 			],
 			"startLine" : 0,
 			"type" : "global"
+		},
+		
+		{
+			"endLine" : 25,
+			"startLine" : 0,
+			"type" : "global"
 		}
 	],
 	"filetables" : 
@@ -17158,470 +17375,530 @@
 				},
 				
 				{
-					"line" : 20,
+					"line" : 18,
 					"offset" : 11
 				},
 				
 				{
-					"line" : 34,
+					"line" : 29,
 					"offset" : 12
 				},
 				
 				{
-					"line" : 45,
+					"line" : 33,
 					"offset" : 13
 				},
 				
 				{
-					"line" : 216,
+					"line" : 231,
 					"offset" : 14
 				},
 				
 				{
-					"line" : 53,
-					"offset" : 9359
+					"line" : 42,
+					"offset" : 9587
 				},
 				
 				{
-					"line" : 57,
-					"offset" : 9360
-				},
-				
-				{
-					"line" : 61,
-					"offset" : 9361
-				},
-				
-				{
-					"line" : 64,
-					"offset" : 9362
-				},
-				
-				{
-					"line" : 66,
-					"offset" : 9367
-				},
-				
-				{
-					"line" : 68,
-					"offset" : 9370
-				},
-				
-				{
-					"line" : 70,
-					"offset" : 9374
-				},
-				
-				{
-					"line" : 71,
-					"offset" : 9379
-				},
-				
-				{
-					"line" : 72,
-					"offset" : 9384
-				},
-				
-				{
-					"line" : 75,
-					"offset" : 9389
-				},
-				
-				{
-					"line" : 76,
-					"offset" : 9391
-				},
-				
-				{
-					"line" : 77,
-					"offset" : 9394
-				},
-				
-				{
-					"line" : 78,
-					"offset" : 9398
-				},
-				
-				{
-					"line" : 79,
-					"offset" : 9403
-				},
-				
-				{
-					"line" : 80,
-					"offset" : 9408
-				},
-				
-				{
-					"line" : 81,
-					"offset" : 9411
-				},
-				
-				{
-					"line" : 82,
-					"offset" : 9415
-				},
-				
-				{
-					"line" : 84,
-					"offset" : 9418
-				},
-				
-				{
-					"line" : 86,
-					"offset" : 9422
-				},
-				
-				{
-					"line" : 93,
-					"offset" : 9428
-				},
-				
-				{
-					"line" : 94,
-					"offset" : 9439
-				},
-				
-				{
-					"line" : 95,
-					"offset" : 9450
-				},
-				
-				{
-					"line" : 96,
-					"offset" : 9453
-				},
-				
-				{
-					"line" : 97,
-					"offset" : 9456
-				},
-				
-				{
-					"line" : 98,
-					"offset" : 9458
-				},
-				
-				{
-					"line" : 100,
-					"offset" : 9460
-				},
-				
-				{
-					"line" : 101,
-					"offset" : 9463
-				},
-				
-				{
-					"line" : 103,
-					"offset" : 9466
-				},
-				
-				{
-					"line" : 104,
-					"offset" : 9468
-				},
-				
-				{
-					"line" : 105,
-					"offset" : 9470
-				},
-				
-				{
-					"line" : 106,
-					"offset" : 9472
-				},
-				
-				{
-					"line" : 108,
-					"offset" : 9474
-				},
-				
-				{
-					"line" : 109,
-					"offset" : 9480
-				},
-				
-				{
-					"line" : 111,
-					"offset" : 9486
-				},
-				
-				{
-					"line" : 113,
-					"offset" : 9487
-				},
-				
-				{
-					"line" : 115,
-					"offset" : 9488
-				},
-				
-				{
-					"line" : 116,
-					"offset" : 9492
-				},
-				
-				{
-					"line" : 117,
-					"offset" : 9494
-				},
-				
-				{
-					"line" : 118,
-					"offset" : 9496
-				},
-				
-				{
-					"line" : 119,
-					"offset" : 9500
-				},
-				
-				{
-					"line" : 120,
-					"offset" : 9503
-				},
-				
-				{
-					"line" : 121,
-					"offset" : 9508
-				},
-				
-				{
-					"line" : 123,
-					"offset" : 9511
-				},
-				
-				{
-					"line" : 124,
-					"offset" : 9513
-				},
-				
-				{
-					"line" : 125,
-					"offset" : 9515
-				},
-				
-				{
-					"line" : 126,
-					"offset" : 9517
-				},
-				
-				{
-					"line" : 131,
-					"offset" : 9519
-				},
-				
-				{
-					"line" : 133,
-					"offset" : 9521
-				},
-				
-				{
-					"line" : 135,
-					"offset" : 9524
-				},
-				
-				{
-					"line" : 137,
-					"offset" : 9526
-				},
-				
-				{
-					"line" : 138,
-					"offset" : 9530
-				},
-				
-				{
-					"line" : 141,
-					"offset" : 9531
-				},
-				
-				{
-					"line" : 142,
-					"offset" : 9538
-				},
-				
-				{
-					"line" : 143,
-					"offset" : 9541
-				},
-				
-				{
-					"line" : 146,
-					"offset" : 9542
-				},
-				
-				{
-					"line" : 149,
-					"offset" : 9543
-				},
-				
-				{
-					"line" : 153,
-					"offset" : 9544
-				},
-				
-				{
-					"line" : 155,
-					"offset" : 9545
-				},
-				
-				{
-					"line" : 156,
-					"offset" : 9548
-				},
-				
-				{
-					"line" : 160,
-					"offset" : 9549
-				},
-				
-				{
-					"line" : 163,
-					"offset" : 9550
-				},
-				
-				{
-					"line" : 164,
-					"offset" : 9552
-				},
-				
-				{
-					"line" : 169,
-					"offset" : 9553
-				},
-				
-				{
-					"line" : 172,
-					"offset" : 9554
-				},
-				
-				{
-					"line" : 174,
-					"offset" : 9556
-				},
-				
-				{
-					"line" : 178,
-					"offset" : 9557
-				},
-				
-				{
-					"line" : 181,
-					"offset" : 9558
-				},
-				
-				{
-					"line" : 183,
-					"offset" : 9561
-				},
-				
-				{
-					"line" : 184,
-					"offset" : 9564
-				},
-				
-				{
-					"line" : 185,
-					"offset" : 9567
-				},
-				
-				{
-					"line" : 186,
-					"offset" : 9570
-				},
-				
-				{
-					"line" : 187,
-					"offset" : 9571
-				},
-				
-				{
-					"line" : 188,
-					"offset" : 9572
-				},
-				
-				{
-					"line" : 190,
-					"offset" : 9573
-				},
-				
-				{
-					"line" : 191,
-					"offset" : 9576
-				},
-				
-				{
-					"line" : 193,
-					"offset" : 9578
-				},
-				
-				{
-					"line" : 194,
-					"offset" : 9583
-				},
-				
-				{
-					"line" : 196,
+					"line" : 46,
 					"offset" : 9588
 				},
 				
 				{
-					"line" : 197,
-					"offset" : 9593
+					"line" : 50,
+					"offset" : 9589
 				},
 				
 				{
-					"line" : 191,
-					"offset" : 9598
+					"line" : 53,
+					"offset" : 9590
 				},
 				
 				{
-					"line" : 198,
-					"offset" : 9599
+					"line" : 56,
+					"offset" : 9595
 				},
 				
 				{
-					"line" : 199,
+					"line" : 57,
+					"offset" : 9597
+				},
+				
+				{
+					"line" : 58,
 					"offset" : 9600
 				},
 				
 				{
-					"line" : 202,
-					"offset" : 9602
-				},
-				
-				{
-					"line" : 203,
-					"offset" : 9604
-				},
-				
-				{
-					"line" : 208,
+					"line" : 59,
 					"offset" : 9605
 				},
 				
 				{
-					"line" : 211,
-					"offset" : 9606
-				},
-				
-				{
-					"line" : 213,
+					"line" : 62,
 					"offset" : 9607
 				},
 				
 				{
-					"line" : 216,
-					"offset" : 9608
+					"line" : 64,
+					"offset" : 9610
+				},
+				
+				{
+					"line" : 66,
+					"offset" : 9614
+				},
+				
+				{
+					"line" : 67,
+					"offset" : 9619
+				},
+				
+				{
+					"line" : 68,
+					"offset" : 9624
+				},
+				
+				{
+					"line" : 71,
+					"offset" : 9629
+				},
+				
+				{
+					"line" : 73,
+					"offset" : 9631
+				},
+				
+				{
+					"line" : 75,
+					"offset" : 9634
+				},
+				
+				{
+					"line" : 77,
+					"offset" : 9636
+				},
+				
+				{
+					"line" : 78,
+					"offset" : 9638
+				},
+				
+				{
+					"line" : 80,
+					"offset" : 9640
+				},
+				
+				{
+					"line" : 81,
+					"offset" : 9643
+				},
+				
+				{
+					"line" : 83,
+					"offset" : 9646
+				},
+				
+				{
+					"line" : 84,
+					"offset" : 9648
+				},
+				
+				{
+					"line" : 85,
+					"offset" : 9650
+				},
+				
+				{
+					"line" : 86,
+					"offset" : 9652
+				},
+				
+				{
+					"line" : 88,
+					"offset" : 9654
+				},
+				
+				{
+					"line" : 89,
+					"offset" : 9660
+				},
+				
+				{
+					"line" : 91,
+					"offset" : 9666
+				},
+				
+				{
+					"line" : 92,
+					"offset" : 9669
+				},
+				
+				{
+					"line" : 93,
+					"offset" : 9672
+				},
+				
+				{
+					"line" : 95,
+					"offset" : 9673
+				},
+				
+				{
+					"line" : 97,
+					"offset" : 9674
+				},
+				
+				{
+					"line" : 98,
+					"offset" : 9678
+				},
+				
+				{
+					"line" : 99,
+					"offset" : 9680
+				},
+				
+				{
+					"line" : 100,
+					"offset" : 9682
+				},
+				
+				{
+					"line" : 101,
+					"offset" : 9684
+				},
+				
+				{
+					"line" : 103,
+					"offset" : 9688
+				},
+				
+				{
+					"line" : 104,
+					"offset" : 9690
+				},
+				
+				{
+					"line" : 105,
+					"offset" : 9692
+				},
+				
+				{
+					"line" : 106,
+					"offset" : 9694
+				},
+				
+				{
+					"line" : 108,
+					"offset" : 9696
+				},
+				
+				{
+					"line" : 110,
+					"offset" : 9698
+				},
+				
+				{
+					"line" : 112,
+					"offset" : 9700
+				},
+				
+				{
+					"line" : 113,
+					"offset" : 9704
+				},
+				
+				{
+					"line" : 116,
+					"offset" : 9705
+				},
+				
+				{
+					"line" : 117,
+					"offset" : 9711
+				},
+				
+				{
+					"line" : 119,
+					"offset" : 9714
+				},
+				
+				{
+					"line" : 120,
+					"offset" : 9716
+				},
+				
+				{
+					"line" : 121,
+					"offset" : 9719
+				},
+				
+				{
+					"line" : 124,
+					"offset" : 9720
+				},
+				
+				{
+					"line" : 127,
+					"offset" : 9721
+				},
+				
+				{
+					"line" : 131,
+					"offset" : 9722
+				},
+				
+				{
+					"line" : 133,
+					"offset" : 9723
+				},
+				
+				{
+					"line" : 134,
+					"offset" : 9726
+				},
+				
+				{
+					"line" : 138,
+					"offset" : 9727
+				},
+				
+				{
+					"line" : 141,
+					"offset" : 9728
+				},
+				
+				{
+					"line" : 142,
+					"offset" : 9730
+				},
+				
+				{
+					"line" : 147,
+					"offset" : 9731
+				},
+				
+				{
+					"line" : 150,
+					"offset" : 9732
+				},
+				
+				{
+					"line" : 152,
+					"offset" : 9734
+				},
+				
+				{
+					"line" : 155,
+					"offset" : 9735
+				},
+				
+				{
+					"line" : 160,
+					"offset" : 9736
+				},
+				
+				{
+					"line" : 163,
+					"offset" : 9738
+				},
+				
+				{
+					"line" : 164,
+					"offset" : 9741
+				},
+				
+				{
+					"line" : 165,
+					"offset" : 9744
+				},
+				
+				{
+					"line" : 171,
+					"offset" : 9747
+				},
+				
+				{
+					"line" : 172,
+					"offset" : 9752
+				},
+				
+				{
+					"line" : 174,
+					"offset" : 9758
+				},
+				
+				{
+					"line" : 175,
+					"offset" : 9763
+				},
+				
+				{
+					"line" : 177,
+					"offset" : 9769
+				},
+				
+				{
+					"line" : 178,
+					"offset" : 9774
+				},
+				
+				{
+					"line" : 180,
+					"offset" : 9780
+				},
+				
+				{
+					"line" : 181,
+					"offset" : 9785
+				},
+				
+				{
+					"line" : 183,
+					"offset" : 9791
+				},
+				
+				{
+					"line" : 184,
+					"offset" : 9796
+				},
+				
+				{
+					"line" : 186,
+					"offset" : 9802
+				},
+				
+				{
+					"line" : 187,
+					"offset" : 9807
+				},
+				
+				{
+					"line" : 189,
+					"offset" : 9813
+				},
+				
+				{
+					"line" : 193,
+					"offset" : 9814
+				},
+				
+				{
+					"line" : 196,
+					"offset" : 9815
+				},
+				
+				{
+					"line" : 198,
+					"offset" : 9818
+				},
+				
+				{
+					"line" : 199,
+					"offset" : 9821
+				},
+				
+				{
+					"line" : 200,
+					"offset" : 9824
+				},
+				
+				{
+					"line" : 201,
+					"offset" : 9827
+				},
+				
+				{
+					"line" : 202,
+					"offset" : 9828
+				},
+				
+				{
+					"line" : 203,
+					"offset" : 9829
+				},
+				
+				{
+					"line" : 205,
+					"offset" : 9830
+				},
+				
+				{
+					"line" : 206,
+					"offset" : 9833
+				},
+				
+				{
+					"line" : 208,
+					"offset" : 9835
+				},
+				
+				{
+					"line" : 209,
+					"offset" : 9840
+				},
+				
+				{
+					"line" : 211,
+					"offset" : 9845
+				},
+				
+				{
+					"line" : 212,
+					"offset" : 9850
+				},
+				
+				{
+					"line" : 206,
+					"offset" : 9855
+				},
+				
+				{
+					"line" : 213,
+					"offset" : 9856
+				},
+				
+				{
+					"line" : 214,
+					"offset" : 9857
+				},
+				
+				{
+					"line" : 217,
+					"offset" : 9859
+				},
+				
+				{
+					"line" : 218,
+					"offset" : 9861
+				},
+				
+				{
+					"line" : 223,
+					"offset" : 9862
+				},
+				
+				{
+					"line" : 226,
+					"offset" : 9863
+				},
+				
+				{
+					"line" : 228,
+					"offset" : 9864
+				},
+				
+				{
+					"line" : 231,
+					"offset" : 9865
 				}
 			],
 			"offsets" : 
 			[
 				
 				{
-					"endoffset" : 9608,
+					"endoffset" : 9865,
 					"startoffset" : 0
 				}
 			]
@@ -20370,61 +20647,470 @@
 			[
 				
 				{
-					"line" : 8,
-					"offset" : 9341
+					"line" : 90,
+					"offset" : 9343
 				},
 				
 				{
-					"line" : 9,
-					"offset" : 9342
+					"line" : 91,
+					"offset" : 9344
 				},
 				
 				{
-					"line" : 10,
-					"offset" : 9345
+					"line" : 92,
+					"offset" : 9346
 				},
 				
 				{
-					"line" : 11,
+					"line" : 94,
 					"offset" : 9347
 				},
 				
 				{
-					"line" : 12,
+					"line" : 95,
+					"offset" : 9348
+				},
+				
+				{
+					"line" : 96,
 					"offset" : 9349
 				},
 				
 				{
-					"line" : 13,
+					"line" : 97,
+					"offset" : 9350
+				},
+				
+				{
+					"line" : 105,
 					"offset" : 9351
 				},
 				
 				{
-					"line" : 15,
+					"line" : 109,
 					"offset" : 9352
 				},
 				
 				{
-					"line" : 16,
+					"line" : 113,
 					"offset" : 9353
 				},
 				
 				{
-					"line" : 17,
+					"line" : 114,
+					"offset" : 9354
+				},
+				
+				{
+					"line" : 118,
+					"offset" : 9355
+				},
+				
+				{
+					"line" : 119,
 					"offset" : 9356
 				},
 				
 				{
-					"line" : 18,
+					"line" : 123,
+					"offset" : 9357
+				},
+				
+				{
+					"line" : 124,
 					"offset" : 9358
+				},
+				
+				{
+					"line" : 128,
+					"offset" : 9359
+				},
+				
+				{
+					"line" : 129,
+					"offset" : 9360
+				},
+				
+				{
+					"line" : 130,
+					"offset" : 9361
+				},
+				
+				{
+					"line" : 131,
+					"offset" : 9362
+				},
+				
+				{
+					"line" : 132,
+					"offset" : 9363
+				},
+				
+				{
+					"line" : 133,
+					"offset" : 9364
+				},
+				
+				{
+					"line" : 134,
+					"offset" : 9365
+				},
+				
+				{
+					"line" : 135,
+					"offset" : 9366
+				},
+				
+				{
+					"line" : 139,
+					"offset" : 9367
+				},
+				
+				{
+					"line" : 142,
+					"offset" : 9368
+				},
+				
+				{
+					"line" : 101,
+					"offset" : 9369
+				},
+				
+				{
+					"line" : 103,
+					"offset" : 9374
+				},
+				
+				{
+					"line" : 104,
+					"offset" : 9379
+				},
+				
+				{
+					"line" : 106,
+					"offset" : 9380
+				},
+				
+				{
+					"line" : 107,
+					"offset" : 9385
+				},
+				
+				{
+					"line" : 108,
+					"offset" : 9390
+				},
+				
+				{
+					"line" : 110,
+					"offset" : 9391
+				},
+				
+				{
+					"line" : 111,
+					"offset" : 9396
+				},
+				
+				{
+					"line" : 112,
+					"offset" : 9401
+				},
+				
+				{
+					"line" : 115,
+					"offset" : 9402
+				},
+				
+				{
+					"line" : 116,
+					"offset" : 9407
+				},
+				
+				{
+					"line" : 117,
+					"offset" : 9412
+				},
+				
+				{
+					"line" : 120,
+					"offset" : 9413
+				},
+				
+				{
+					"line" : 121,
+					"offset" : 9418
+				},
+				
+				{
+					"line" : 122,
+					"offset" : 9423
+				},
+				
+				{
+					"line" : 125,
+					"offset" : 9424
+				},
+				
+				{
+					"line" : 126,
+					"offset" : 9429
+				},
+				
+				{
+					"line" : 127,
+					"offset" : 9434
+				},
+				
+				{
+					"line" : 136,
+					"offset" : 9435
+				},
+				
+				{
+					"line" : 137,
+					"offset" : 9440
+				},
+				
+				{
+					"line" : 138,
+					"offset" : 9445
+				},
+				
+				{
+					"line" : 140,
+					"offset" : 9446
+				},
+				
+				{
+					"line" : 144,
+					"offset" : 9449
+				},
+				
+				{
+					"line" : 145,
+					"offset" : 9450
+				},
+				
+				{
+					"line" : 147,
+					"offset" : 9464
+				},
+				
+				{
+					"line" : 148,
+					"offset" : 9479
+				},
+				
+				{
+					"line" : 150,
+					"offset" : 9480
+				},
+				
+				{
+					"line" : 151,
+					"offset" : 9481
+				},
+				
+				{
+					"line" : 154,
+					"offset" : 9483
+				},
+				
+				{
+					"line" : 155,
+					"offset" : 9484
+				},
+				
+				{
+					"line" : 156,
+					"offset" : 9487
+				},
+				
+				{
+					"line" : 158,
+					"offset" : 9488
+				},
+				
+				{
+					"line" : 159,
+					"offset" : 9489
+				},
+				
+				{
+					"line" : 160,
+					"offset" : 9491
+				},
+				
+				{
+					"line" : 161,
+					"offset" : 9493
+				},
+				
+				{
+					"line" : 163,
+					"offset" : 9494
+				},
+				
+				{
+					"line" : 162,
+					"offset" : 9495
+				},
+				
+				{
+					"line" : 163,
+					"offset" : 9501
+				},
+				
+				{
+					"line" : 164,
+					"offset" : 9503
+				},
+				
+				{
+					"line" : 166,
+					"offset" : 9512
+				},
+				
+				{
+					"line" : 168,
+					"offset" : 9520
+				},
+				
+				{
+					"line" : 169,
+					"offset" : 9522
+				},
+				
+				{
+					"line" : 171,
+					"offset" : 9523
+				},
+				
+				{
+					"line" : 172,
+					"offset" : 9536
+				},
+				
+				{
+					"line" : 176,
+					"offset" : 9550
+				},
+				
+				{
+					"line" : 174,
+					"offset" : 9551
+				},
+				
+				{
+					"line" : 175,
+					"offset" : 9565
+				},
+				
+				{
+					"line" : 168,
+					"offset" : 9580
+				},
+				
+				{
+					"line" : 177,
+					"offset" : 9581
+				},
+				
+				{
+					"line" : 178,
+					"offset" : 9582
+				},
+				
+				{
+					"line" : 180,
+					"offset" : 9583
+				},
+				
+				{
+					"line" : 181,
+					"offset" : 9584
+				},
+				
+				{
+					"line" : 182,
+					"offset" : 9586
 				}
 			],
 			"offsets" : 
 			[
 				
 				{
-					"endoffset" : 9358,
-					"startoffset" : 9341
+					"endoffset" : 9586,
+					"startoffset" : 9343
+				}
+			]
+		},
+		
+		{
+			"code" : 
+			[
+				
+				{
+					"line" : 11,
+					"offset" : 9317
+				},
+				
+				{
+					"line" : 12,
+					"offset" : 9318
+				},
+				
+				{
+					"line" : 13,
+					"offset" : 9321
+				},
+				
+				{
+					"line" : 14,
+					"offset" : 9325
+				},
+				
+				{
+					"line" : 15,
+					"offset" : 9327
+				},
+				
+				{
+					"line" : 16,
+					"offset" : 9333
+				},
+				
+				{
+					"line" : 17,
+					"offset" : 9335
+				},
+				
+				{
+					"line" : 19,
+					"offset" : 9336
+				},
+				
+				{
+					"line" : 20,
+					"offset" : 9337
+				},
+				
+				{
+					"line" : 21,
+					"offset" : 9340
+				},
+				
+				{
+					"line" : 22,
+					"offset" : 9342
+				}
+			],
+			"offsets" : 
+			[
+				
+				{
+					"endoffset" : 9342,
+					"startoffset" : 9317
 				}
 			]
 		},
@@ -20519,1560 +21205,1520 @@
 				},
 				
 				{
-					"line" : 122,
+					"line" : 119,
 					"offset" : 8345
 				},
 				
 				{
-					"line" : 124,
+					"line" : 121,
 					"offset" : 8346
 				},
 				
 				{
-					"line" : 125,
+					"line" : 122,
 					"offset" : 8347
 				},
 				
 				{
-					"line" : 126,
+					"line" : 123,
 					"offset" : 8348
 				},
 				
 				{
-					"line" : 127,
+					"line" : 124,
 					"offset" : 8349
 				},
 				
 				{
-					"line" : 130,
+					"line" : 127,
 					"offset" : 8352
 				},
 				
 				{
-					"line" : 131,
+					"line" : 128,
 					"offset" : 8354
 				},
 				
 				{
-					"line" : 134,
+					"line" : 131,
 					"offset" : 8356
 				},
 				
 				{
-					"line" : 135,
+					"line" : 132,
 					"offset" : 8358
 				},
 				
 				{
-					"line" : 136,
+					"line" : 133,
 					"offset" : 8363
 				},
 				
 				{
-					"line" : 137,
+					"line" : 134,
 					"offset" : 8364
 				},
 				
 				{
-					"line" : 138,
+					"line" : 135,
 					"offset" : 8365
 				},
 				
 				{
-					"line" : 141,
+					"line" : 138,
 					"offset" : 8366
 				},
 				
 				{
-					"line" : 142,
+					"line" : 139,
 					"offset" : 8368
 				},
 				
 				{
-					"line" : 143,
+					"line" : 140,
 					"offset" : 8370
 				},
 				
 				{
-					"line" : 152,
+					"line" : 149,
 					"offset" : 8371
 				},
 				
 				{
-					"line" : 156,
+					"line" : 153,
 					"offset" : 8372
 				},
 				
 				{
-					"line" : 153,
+					"line" : 150,
 					"offset" : 8373
 				},
 				
 				{
-					"line" : 156,
+					"line" : 153,
 					"offset" : 8374
 				},
 				
 				{
-					"line" : 155,
+					"line" : 152,
 					"offset" : 8377
 				},
 				
 				{
-					"line" : 156,
+					"line" : 153,
 					"offset" : 8382
 				},
 				
 				{
-					"line" : 160,
+					"line" : 157,
 					"offset" : 8384
 				},
 				
 				{
-					"line" : 167,
+					"line" : 164,
 					"offset" : 8385
 				},
 				
 				{
-					"line" : 168,
+					"line" : 165,
 					"offset" : 8386
 				},
 				
 				{
-					"line" : 174,
+					"line" : 171,
 					"offset" : 8388
 				},
 				
 				{
-					"line" : 175,
+					"line" : 172,
 					"offset" : 8389
 				},
 				
 				{
-					"line" : 176,
+					"line" : 173,
 					"offset" : 8395
 				},
 				
 				{
-					"line" : 185,
+					"line" : 182,
 					"offset" : 8396
 				},
 				
 				{
-					"line" : 186,
+					"line" : 183,
 					"offset" : 8397
 				},
 				
 				{
-					"line" : 201,
+					"line" : 198,
 					"offset" : 8404
 				},
 				
 				{
-					"line" : 202,
+					"line" : 199,
 					"offset" : 8405
 				},
 				
 				{
-					"line" : 203,
+					"line" : 200,
 					"offset" : 8407
 				},
 				
 				{
-					"line" : 204,
+					"line" : 201,
 					"offset" : 8412
 				},
 				
 				{
-					"line" : 205,
+					"line" : 202,
 					"offset" : 8414
 				},
 				
 				{
-					"line" : 206,
+					"line" : 203,
 					"offset" : 8417
 				},
 				
 				{
-					"line" : 207,
+					"line" : 204,
 					"offset" : 8420
 				},
 				
 				{
-					"line" : 208,
+					"line" : 205,
 					"offset" : 8423
 				},
 				
 				{
-					"line" : 225,
+					"line" : 222,
 					"offset" : 8424
 				},
 				
 				{
-					"line" : 226,
+					"line" : 223,
 					"offset" : 8425
 				},
 				
 				{
-					"line" : 227,
+					"line" : 224,
 					"offset" : 8427
 				},
 				
 				{
-					"line" : 228,
+					"line" : 225,
 					"offset" : 8436
 				},
 				
 				{
-					"line" : 229,
+					"line" : 226,
 					"offset" : 8438
 				},
 				
 				{
-					"line" : 230,
+					"line" : 227,
 					"offset" : 8441
 				},
 				
 				{
-					"line" : 231,
+					"line" : 228,
 					"offset" : 8444
 				},
 				
 				{
-					"line" : 232,
+					"line" : 229,
 					"offset" : 8447
 				},
 				
 				{
-					"line" : 249,
+					"line" : 246,
 					"offset" : 8448
 				},
 				
 				{
-					"line" : 250,
+					"line" : 247,
 					"offset" : 8449
 				},
 				
 				{
-					"line" : 251,
+					"line" : 248,
 					"offset" : 8451
 				},
 				
 				{
-					"line" : 252,
+					"line" : 249,
 					"offset" : 8460
 				},
 				
 				{
-					"line" : 253,
+					"line" : 250,
 					"offset" : 8462
 				},
 				
 				{
-					"line" : 254,
+					"line" : 251,
 					"offset" : 8465
 				},
 				
 				{
-					"line" : 255,
+					"line" : 252,
 					"offset" : 8468
 				},
 				
 				{
-					"line" : 256,
+					"line" : 253,
 					"offset" : 8471
 				},
 				
 				{
-					"line" : 267,
+					"line" : 264,
 					"offset" : 8472
 				},
 				
 				{
-					"line" : 268,
+					"line" : 265,
 					"offset" : 8473
 				},
 				
 				{
-					"line" : 269,
+					"line" : 266,
 					"offset" : 8475
 				},
 				
 				{
-					"line" : 270,
+					"line" : 267,
 					"offset" : 8480
 				},
 				
 				{
-					"line" : 271,
+					"line" : 268,
 					"offset" : 8482
 				},
 				
 				{
-					"line" : 272,
+					"line" : 269,
 					"offset" : 8485
 				},
 				
 				{
-					"line" : 273,
+					"line" : 270,
 					"offset" : 8488
 				},
 				
 				{
-					"line" : 274,
+					"line" : 271,
 					"offset" : 8491
 				},
 				
 				{
-					"line" : 292,
+					"line" : 289,
 					"offset" : 8492
 				},
 				
 				{
-					"line" : 293,
+					"line" : 290,
 					"offset" : 8493
 				},
 				
 				{
-					"line" : 294,
+					"line" : 291,
 					"offset" : 8495
 				},
 				
 				{
-					"line" : 295,
+					"line" : 292,
 					"offset" : 8507
 				},
 				
 				{
-					"line" : 296,
+					"line" : 293,
 					"offset" : 8509
 				},
 				
 				{
-					"line" : 297,
+					"line" : 294,
 					"offset" : 8512
 				},
 				
 				{
-					"line" : 298,
+					"line" : 295,
 					"offset" : 8515
 				},
 				
 				{
-					"line" : 299,
+					"line" : 296,
 					"offset" : 8518
 				},
 				
 				{
-					"line" : 317,
+					"line" : 314,
 					"offset" : 8519
 				},
 				
 				{
-					"line" : 318,
+					"line" : 315,
 					"offset" : 8520
 				},
 				
 				{
-					"line" : 319,
+					"line" : 316,
 					"offset" : 8522
 				},
 				
 				{
-					"line" : 320,
+					"line" : 317,
 					"offset" : 8533
 				},
 				
 				{
-					"line" : 321,
+					"line" : 318,
 					"offset" : 8535
 				},
 				
 				{
-					"line" : 322,
+					"line" : 319,
 					"offset" : 8538
 				},
 				
 				{
-					"line" : 323,
+					"line" : 320,
 					"offset" : 8541
 				},
 				
 				{
-					"line" : 324,
+					"line" : 321,
 					"offset" : 8544
 				},
 				
 				{
-					"line" : 325,
+					"line" : 322,
 					"offset" : 8547
 				},
 				
 				{
-					"line" : 344,
+					"line" : 341,
 					"offset" : 8548
 				},
 				
 				{
-					"line" : 345,
+					"line" : 342,
 					"offset" : 8549
 				},
 				
 				{
-					"line" : 346,
+					"line" : 343,
 					"offset" : 8551
 				},
 				
 				{
-					"line" : 347,
+					"line" : 344,
 					"offset" : 8563
 				},
 				
 				{
-					"line" : 348,
+					"line" : 345,
 					"offset" : 8565
 				},
 				
 				{
-					"line" : 349,
+					"line" : 346,
 					"offset" : 8568
 				},
 				
 				{
-					"line" : 350,
+					"line" : 347,
 					"offset" : 8571
 				},
 				
 				{
-					"line" : 351,
+					"line" : 348,
 					"offset" : 8574
 				},
 				
 				{
-					"line" : 370,
+					"line" : 367,
 					"offset" : 8575
 				},
 				
 				{
-					"line" : 371,
+					"line" : 368,
 					"offset" : 8576
 				},
 				
 				{
-					"line" : 372,
+					"line" : 369,
 					"offset" : 8578
 				},
 				
 				{
-					"line" : 373,
+					"line" : 370,
 					"offset" : 8589
 				},
 				
 				{
-					"line" : 374,
+					"line" : 371,
 					"offset" : 8591
 				},
 				
 				{
-					"line" : 375,
+					"line" : 372,
 					"offset" : 8594
 				},
 				
 				{
-					"line" : 376,
+					"line" : 373,
 					"offset" : 8597
 				},
 				
 				{
-					"line" : 377,
+					"line" : 374,
 					"offset" : 8600
 				},
 				
 				{
-					"line" : 395,
+					"line" : 392,
 					"offset" : 8601
 				},
 				
 				{
-					"line" : 396,
+					"line" : 393,
 					"offset" : 8602
 				},
 				
 				{
-					"line" : 397,
+					"line" : 394,
 					"offset" : 8604
 				},
 				
 				{
-					"line" : 398,
+					"line" : 395,
 					"offset" : 8615
 				},
 				
 				{
-					"line" : 399,
+					"line" : 396,
 					"offset" : 8617
 				},
 				
 				{
-					"line" : 400,
+					"line" : 397,
 					"offset" : 8620
 				},
 				
 				{
-					"line" : 401,
+					"line" : 398,
 					"offset" : 8623
 				},
 				
 				{
-					"line" : 402,
+					"line" : 399,
 					"offset" : 8626
 				},
 				
 				{
-					"line" : 420,
+					"line" : 417,
 					"offset" : 8627
 				},
 				
 				{
-					"line" : 421,
+					"line" : 418,
 					"offset" : 8628
 				},
 				
 				{
-					"line" : 422,
+					"line" : 419,
 					"offset" : 8630
 				},
 				
 				{
-					"line" : 423,
+					"line" : 420,
 					"offset" : 8640
 				},
 				
 				{
-					"line" : 424,
+					"line" : 421,
 					"offset" : 8642
 				},
 				
 				{
-					"line" : 425,
+					"line" : 422,
 					"offset" : 8645
 				},
 				
 				{
-					"line" : 426,
+					"line" : 423,
 					"offset" : 8648
 				},
 				
 				{
-					"line" : 427,
+					"line" : 424,
 					"offset" : 8651
 				},
 				
 				{
-					"line" : 445,
+					"line" : 442,
 					"offset" : 8652
 				},
 				
 				{
-					"line" : 446,
+					"line" : 443,
 					"offset" : 8653
 				},
 				
 				{
-					"line" : 447,
+					"line" : 444,
 					"offset" : 8655
 				},
 				
 				{
-					"line" : 448,
+					"line" : 445,
 					"offset" : 8665
 				},
 				
 				{
-					"line" : 449,
+					"line" : 446,
 					"offset" : 8667
 				},
 				
 				{
-					"line" : 450,
+					"line" : 447,
 					"offset" : 8670
 				},
 				
 				{
-					"line" : 451,
+					"line" : 448,
 					"offset" : 8673
 				},
 				
 				{
-					"line" : 452,
+					"line" : 449,
 					"offset" : 8676
 				},
 				
 				{
-					"line" : 460,
+					"line" : 457,
 					"offset" : 8677
 				},
 				
 				{
-					"line" : 461,
+					"line" : 458,
 					"offset" : 8678
 				},
 				
 				{
-					"line" : 462,
+					"line" : 459,
 					"offset" : 8682
 				},
 				
 				{
-					"line" : 464,
+					"line" : 461,
 					"offset" : 8689
 				},
 				
 				{
-					"line" : 465,
+					"line" : 462,
 					"offset" : 8691
 				},
 				
 				{
-					"line" : 467,
+					"line" : 464,
 					"offset" : 8695
 				},
 				
 				{
-					"line" : 468,
+					"line" : 465,
 					"offset" : 8697
 				},
 				
 				{
-					"line" : 470,
+					"line" : 467,
 					"offset" : 8701
 				},
 				
 				{
-					"line" : 471,
+					"line" : 468,
 					"offset" : 8703
 				},
 				
 				{
-					"line" : 461,
+					"line" : 458,
 					"offset" : 8704
 				},
 				
 				{
-					"line" : 473,
+					"line" : 470,
 					"offset" : 8705
 				},
 				
 				{
-					"line" : 474,
+					"line" : 471,
 					"offset" : 8706
 				},
 				
 				{
-					"line" : 483,
+					"line" : 480,
 					"offset" : 8707
 				},
 				
 				{
-					"line" : 485,
+					"line" : 482,
 					"offset" : 8708
 				},
 				
 				{
-					"line" : 487,
+					"line" : 484,
 					"offset" : 8710
 				},
 				
 				{
-					"line" : 488,
+					"line" : 485,
 					"offset" : 8711
 				},
 				
 				{
-					"line" : 489,
+					"line" : 486,
 					"offset" : 8714
 				},
 				
 				{
-					"line" : 490,
+					"line" : 487,
 					"offset" : 8717
 				},
 				
 				{
-					"line" : 492,
+					"line" : 489,
 					"offset" : 8718
 				},
 				
 				{
-					"line" : 493,
+					"line" : 490,
 					"offset" : 8723
 				},
 				
 				{
-					"line" : 495,
+					"line" : 492,
 					"offset" : 8725
 				},
 				
 				{
-					"line" : 499,
+					"line" : 496,
 					"offset" : 8727
 				},
 				
 				{
-					"line" : 503,
+					"line" : 500,
 					"offset" : 8731
 				},
 				
 				{
-					"line" : 502,
+					"line" : 499,
 					"offset" : 8732
 				},
 				
 				{
-					"line" : 505,
+					"line" : 502,
 					"offset" : 8733
 				},
 				
 				{
-					"line" : 508,
+					"line" : 505,
 					"offset" : 8735
 				},
 				
 				{
-					"line" : 511,
+					"line" : 508,
 					"offset" : 8739
 				},
 				
 				{
-					"line" : 518,
+					"line" : 515,
 					"offset" : 8741
 				},
 				
 				{
-					"line" : 519,
+					"line" : 516,
 					"offset" : 8742
 				},
 				
 				{
-					"line" : 520,
+					"line" : 517,
 					"offset" : 8744
 				},
 				
 				{
-					"line" : 521,
+					"line" : 518,
 					"offset" : 8748
 				},
 				
 				{
-					"line" : 523,
+					"line" : 520,
 					"offset" : 8752
 				},
 				
 				{
-					"line" : 524,
+					"line" : 521,
 					"offset" : 8756
 				},
 				
 				{
-					"line" : 541,
+					"line" : 538,
 					"offset" : 8763
 				},
 				
 				{
-					"line" : 542,
+					"line" : 539,
 					"offset" : 8764
 				},
 				
 				{
-					"line" : 543,
+					"line" : 540,
 					"offset" : 8772
 				},
 				
 				{
-					"line" : 520,
+					"line" : 517,
 					"offset" : 8780
 				},
 				
 				{
-					"line" : 547,
+					"line" : 544,
 					"offset" : 8781
 				},
 				
 				{
-					"line" : 548,
+					"line" : 545,
 					"offset" : 8782
 				},
 				
 				{
-					"line" : 554,
+					"line" : 551,
 					"offset" : 8783
 				},
 				
 				{
-					"line" : 555,
+					"line" : 552,
 					"offset" : 8784
 				},
 				
 				{
-					"line" : 556,
+					"line" : 553,
 					"offset" : 8787
 				},
 				
 				{
-					"line" : 562,
+					"line" : 559,
 					"offset" : 8788
 				},
 				
 				{
-					"line" : 563,
+					"line" : 560,
 					"offset" : 8789
 				},
 				
 				{
-					"line" : 564,
+					"line" : 561,
 					"offset" : 8791
 				},
 				
 				{
-					"line" : 577,
+					"line" : 574,
 					"offset" : 8792
 				},
 				
 				{
-					"line" : 578,
+					"line" : 575,
 					"offset" : 8793
 				},
 				
 				{
-					"line" : 579,
+					"line" : 576,
 					"offset" : 8802
 				},
 				
 				{
-					"line" : 580,
+					"line" : 577,
 					"offset" : 8804
 				},
 				
 				{
-					"line" : 581,
+					"line" : 578,
 					"offset" : 8807
 				},
 				
 				{
-					"line" : 582,
+					"line" : 579,
 					"offset" : 8810
 				},
 				
 				{
-					"line" : 583,
+					"line" : 580,
 					"offset" : 8813
 				},
 				
 				{
-					"line" : 597,
+					"line" : 594,
 					"offset" : 8814
 				},
 				
 				{
-					"line" : 598,
+					"line" : 595,
 					"offset" : 8815
 				},
 				
 				{
-					"line" : 599,
+					"line" : 596,
 					"offset" : 8824
 				},
 				
 				{
-					"line" : 600,
+					"line" : 597,
 					"offset" : 8826
 				},
 				
 				{
-					"line" : 601,
+					"line" : 598,
 					"offset" : 8829
 				},
 				
 				{
-					"line" : 602,
+					"line" : 599,
 					"offset" : 8832
 				},
 				
 				{
-					"line" : 603,
+					"line" : 600,
 					"offset" : 8835
 				},
 				
 				{
-					"line" : 617,
+					"line" : 614,
 					"offset" : 8836
 				},
 				
 				{
-					"line" : 618,
+					"line" : 615,
 					"offset" : 8837
 				},
 				
 				{
-					"line" : 619,
+					"line" : 616,
 					"offset" : 8846
 				},
 				
 				{
-					"line" : 620,
+					"line" : 617,
 					"offset" : 8848
 				},
 				
 				{
-					"line" : 621,
+					"line" : 618,
 					"offset" : 8851
 				},
 				
 				{
-					"line" : 622,
+					"line" : 619,
 					"offset" : 8854
 				},
 				
 				{
-					"line" : 623,
+					"line" : 620,
 					"offset" : 8857
 				},
 				
 				{
-					"line" : 637,
+					"line" : 634,
 					"offset" : 8858
 				},
 				
 				{
-					"line" : 638,
+					"line" : 635,
 					"offset" : 8859
 				},
 				
 				{
-					"line" : 639,
+					"line" : 636,
 					"offset" : 8868
 				},
 				
 				{
-					"line" : 640,
+					"line" : 637,
 					"offset" : 8870
 				},
 				
 				{
-					"line" : 641,
+					"line" : 638,
 					"offset" : 8873
 				},
 				
 				{
-					"line" : 642,
+					"line" : 639,
 					"offset" : 8876
 				},
 				
 				{
-					"line" : 643,
+					"line" : 640,
 					"offset" : 8879
 				},
 				
 				{
-					"line" : 657,
+					"line" : 654,
 					"offset" : 8880
 				},
 				
 				{
-					"line" : 658,
+					"line" : 655,
 					"offset" : 8881
 				},
 				
 				{
-					"line" : 659,
+					"line" : 656,
 					"offset" : 8890
 				},
 				
 				{
-					"line" : 660,
+					"line" : 657,
 					"offset" : 8892
 				},
 				
 				{
-					"line" : 661,
+					"line" : 658,
 					"offset" : 8895
 				},
 				
 				{
-					"line" : 662,
+					"line" : 659,
 					"offset" : 8898
 				},
 				
 				{
-					"line" : 663,
+					"line" : 660,
 					"offset" : 8901
 				},
 				
 				{
-					"line" : 677,
+					"line" : 674,
 					"offset" : 8902
 				},
 				
 				{
-					"line" : 678,
+					"line" : 675,
 					"offset" : 8903
 				},
 				
 				{
-					"line" : 679,
+					"line" : 676,
 					"offset" : 8912
 				},
 				
 				{
-					"line" : 680,
+					"line" : 677,
 					"offset" : 8914
 				},
 				
 				{
-					"line" : 681,
+					"line" : 678,
 					"offset" : 8917
 				},
 				
 				{
-					"line" : 682,
+					"line" : 679,
 					"offset" : 8920
 				},
 				
 				{
-					"line" : 683,
+					"line" : 680,
 					"offset" : 8923
 				},
 				
 				{
-					"line" : 697,
+					"line" : 694,
 					"offset" : 8924
 				},
 				
 				{
-					"line" : 698,
+					"line" : 695,
 					"offset" : 8925
 				},
 				
 				{
-					"line" : 699,
+					"line" : 696,
 					"offset" : 8934
 				},
 				
 				{
-					"line" : 700,
+					"line" : 697,
 					"offset" : 8936
 				},
 				
 				{
-					"line" : 701,
+					"line" : 698,
 					"offset" : 8939
 				},
 				
 				{
-					"line" : 702,
+					"line" : 699,
 					"offset" : 8942
 				},
 				
 				{
-					"line" : 703,
+					"line" : 700,
 					"offset" : 8945
 				},
 				
 				{
-					"line" : 710,
+					"line" : 707,
 					"offset" : 8946
 				},
 				
 				{
-					"line" : 711,
+					"line" : 708,
 					"offset" : 8947
 				},
 				
 				{
-					"line" : 712,
+					"line" : 709,
 					"offset" : 8951
 				},
 				
 				{
-					"line" : 714,
+					"line" : 711,
 					"offset" : 8958
 				},
 				
 				{
-					"line" : 715,
+					"line" : 712,
 					"offset" : 8960
 				},
 				
 				{
-					"line" : 717,
+					"line" : 714,
 					"offset" : 8964
 				},
 				
 				{
-					"line" : 718,
+					"line" : 715,
 					"offset" : 8966
 				},
 				
 				{
-					"line" : 720,
+					"line" : 717,
 					"offset" : 8970
 				},
 				
 				{
-					"line" : 721,
+					"line" : 718,
 					"offset" : 8972
 				},
 				
 				{
-					"line" : 711,
+					"line" : 708,
 					"offset" : 8973
 				},
 				
 				{
-					"line" : 723,
+					"line" : 720,
 					"offset" : 8974
 				},
 				
 				{
-					"line" : 724,
+					"line" : 721,
 					"offset" : 8975
 				},
 				
 				{
-					"line" : 737,
+					"line" : 734,
 					"offset" : 8976
 				},
 				
 				{
-					"line" : 738,
+					"line" : 735,
 					"offset" : 8977
 				},
 				
 				{
-					"line" : 739,
+					"line" : 736,
 					"offset" : 8979
 				},
 				
 				{
-					"line" : 740,
+					"line" : 737,
 					"offset" : 8980
 				},
 				
 				{
-					"line" : 741,
+					"line" : 738,
 					"offset" : 8981
 				},
 				
 				{
-					"line" : 742,
+					"line" : 739,
 					"offset" : 8982
 				},
 				
 				{
-					"line" : 743,
+					"line" : 740,
 					"offset" : 8983
 				},
 				
 				{
-					"line" : 744,
+					"line" : 741,
 					"offset" : 8998
 				},
 				
 				{
-					"line" : 752,
+					"line" : 749,
 					"offset" : 8999
 				},
 				
 				{
-					"line" : 754,
+					"line" : 751,
 					"offset" : 9000
 				},
 				
 				{
-					"line" : 755,
+					"line" : 752,
 					"offset" : 9007
 				},
 				
 				{
-					"line" : 760,
+					"line" : 757,
 					"offset" : 9008
 				},
 				
 				{
-					"line" : 761,
+					"line" : 758,
 					"offset" : 9009
 				},
 				
 				{
-					"line" : 769,
+					"line" : 766,
 					"offset" : 9010
 				},
 				
 				{
-					"line" : 771,
+					"line" : 768,
 					"offset" : 9011
 				},
 				
 				{
-					"line" : 772,
+					"line" : 769,
 					"offset" : 9016
 				},
 				
 				{
-					"line" : 774,
+					"line" : 771,
 					"offset" : 9017
 				},
 				
 				{
-					"line" : 776,
+					"line" : 773,
 					"offset" : 9021
 				},
 				
 				{
-					"line" : 777,
+					"line" : 774,
 					"offset" : 9025
 				},
 				
 				{
-					"line" : 778,
+					"line" : 775,
 					"offset" : 9033
 				},
 				
 				{
-					"line" : 779,
+					"line" : 776,
 					"offset" : 9041
 				},
 				
 				{
-					"line" : 783,
+					"line" : 780,
 					"offset" : 9044
 				},
 				
 				{
-					"line" : 786,
+					"line" : 783,
 					"offset" : 9045
 				},
 				
 				{
-					"line" : 789,
+					"line" : 786,
 					"offset" : 9046
 				},
 				
 				{
-					"line" : 781,
+					"line" : 778,
 					"offset" : 9048
 				},
 				
 				{
-					"line" : 782,
+					"line" : 779,
 					"offset" : 9051
 				},
 				
 				{
-					"line" : 784,
+					"line" : 781,
 					"offset" : 9052
 				},
 				
 				{
-					"line" : 785,
+					"line" : 782,
 					"offset" : 9055
 				},
 				
 				{
-					"line" : 787,
+					"line" : 784,
 					"offset" : 9056
 				},
 				
 				{
-					"line" : 791,
+					"line" : 788,
 					"offset" : 9059
 				},
 				
 				{
-					"line" : 792,
+					"line" : 789,
 					"offset" : 9067
 				},
 				
 				{
-					"line" : 793,
+					"line" : 790,
 					"offset" : 9075
 				},
 				
 				{
-					"line" : 795,
+					"line" : 792,
 					"offset" : 9083
 				},
 				
 				{
-					"line" : 796,
+					"line" : 793,
 					"offset" : 9091
 				},
 				
 				{
-					"line" : 797,
+					"line" : 794,
 					"offset" : 9099
 				},
 				
 				{
-					"line" : 799,
+					"line" : 796,
 					"offset" : 9107
 				},
 				
 				{
-					"line" : 800,
+					"line" : 797,
 					"offset" : 9113
 				},
 				
 				{
-					"line" : 802,
+					"line" : 799,
 					"offset" : 9117
 				},
 				
 				{
-					"line" : 803,
+					"line" : 800,
 					"offset" : 9127
 				},
 				
 				{
-					"line" : 804,
+					"line" : 801,
 					"offset" : 9137
 				},
 				
 				{
-					"line" : 806,
+					"line" : 803,
 					"offset" : 9147
 				},
 				
 				{
-					"line" : 807,
+					"line" : 804,
 					"offset" : 9157
 				},
 				
 				{
-					"line" : 808,
+					"line" : 805,
 					"offset" : 9167
 				},
 				
 				{
-					"line" : 810,
+					"line" : 807,
 					"offset" : 9177
 				},
 				
 				{
-					"line" : 811,
+					"line" : 808,
 					"offset" : 9187
 				},
 				
 				{
-					"line" : 812,
+					"line" : 809,
 					"offset" : 9197
 				},
 				
 				{
-					"line" : 814,
+					"line" : 811,
 					"offset" : 9207
 				},
 				
 				{
-					"line" : 815,
+					"line" : 812,
 					"offset" : 9217
 				},
 				
 				{
-					"line" : 816,
+					"line" : 813,
 					"offset" : 9227
 				},
 				
 				{
-					"line" : 800,
+					"line" : 797,
 					"offset" : 9237
 				},
 				
 				{
-					"line" : 817,
+					"line" : 814,
 					"offset" : 9238
 				},
 				
 				{
-					"line" : 776,
+					"line" : 773,
 					"offset" : 9239
 				},
 				
 				{
-					"line" : 818,
+					"line" : 815,
 					"offset" : 9240
 				},
 				
 				{
-					"line" : 819,
+					"line" : 816,
 					"offset" : 9241
 				},
 				
 				{
-					"line" : 827,
+					"line" : 824,
 					"offset" : 9242
 				},
 				
 				{
-					"line" : 828,
+					"line" : 825,
 					"offset" : 9243
 				},
 				
 				{
-					"line" : 829,
+					"line" : 826,
 					"offset" : 9247
 				},
 				
 				{
-					"line" : 836,
+					"line" : 833,
 					"offset" : 9248
 				},
 				
 				{
-					"line" : 837,
+					"line" : 834,
 					"offset" : 9249
 				},
 				
 				{
-					"line" : 838,
+					"line" : 835,
 					"offset" : 9253
 				},
 				
 				{
-					"line" : 850,
+					"line" : 847,
 					"offset" : 9254
 				},
 				
 				{
-					"line" : 854,
+					"line" : 851,
 					"offset" : 9255
 				},
 				
 				{
-					"line" : 855,
+					"line" : 852,
 					"offset" : 9262
 				},
 				
 				{
-					"line" : 856,
+					"line" : 853,
 					"offset" : 9264
 				},
 				
 				{
-					"line" : 857,
+					"line" : 854,
 					"offset" : 9265
 				},
 				
 				{
-					"line" : 859,
+					"line" : 856,
 					"offset" : 9271
 				},
 				
 				{
-					"line" : 860,
+					"line" : 857,
 					"offset" : 9276
 				},
 				
 				{
-					"line" : 862,
+					"line" : 859,
 					"offset" : 9280
 				},
 				
 				{
-					"line" : 874,
+					"line" : 871,
 					"offset" : 9281
 				},
 				
 				{
-					"line" : 878,
+					"line" : 875,
 					"offset" : 9282
 				},
 				
 				{
-					"line" : 879,
+					"line" : 876,
 					"offset" : 9289
 				},
 				
 				{
-					"line" : 880,
+					"line" : 877,
 					"offset" : 9291
 				},
 				
 				{
-					"line" : 881,
+					"line" : 878,
 					"offset" : 9292
 				},
 				
 				{
-					"line" : 882,
+					"line" : 879,
 					"offset" : 9297
 				},
 				
 				{
-					"line" : 883,
+					"line" : 880,
 					"offset" : 9301
 				},
 				
 				{
-					"line" : 885,
+					"line" : 882,
 					"offset" : 9305
 				},
 				
 				{
-					"line" : 886,
+					"line" : 883,
 					"offset" : 9312
 				},
 				
 				{
-					"line" : 888,
+					"line" : 885,
 					"offset" : 9316
-				},
-				
-				{
-					"line" : 906,
-					"offset" : 9317
-				},
-				
-				{
-					"line" : 908,
-					"offset" : 9318
-				},
-				
-				{
-					"line" : 909,
-					"offset" : 9320
-				},
-				
-				{
-					"line" : 910,
-					"offset" : 9329
-				},
-				
-				{
-					"line" : 911,
-					"offset" : 9331
-				},
-				
-				{
-					"line" : 912,
-					"offset" : 9334
-				},
-				
-				{
-					"line" : 913,
-					"offset" : 9337
-				},
-				
-				{
-					"line" : 914,
-					"offset" : 9340
 				}
 			],
 			"offsets" : 
 			[
 				
 				{
-					"endoffset" : 9340,
+					"endoffset" : 9316,
 					"startoffset" : 8309
 				}
 			]
@@ -32222,6 +32868,7 @@
 					"startoffset" : 7466
 				}
 			]
-		}
+		},
+		null
 	]
 }
