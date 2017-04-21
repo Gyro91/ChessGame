@@ -2,7 +2,6 @@
  *  This library implements all the classes and functions for the Server side
  * 
  */
-#include "Networking.s3d"
  
  var status_new = 0;
 
