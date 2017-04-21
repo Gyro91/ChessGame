@@ -1,2 +1,3 @@
 *.s3d.bin
 *.s3d.bin.dbg
+*.s3d.asm
