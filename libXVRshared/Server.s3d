@@ -1,6 +1,6 @@
 /*
  *  This library implements all the classes and functions for the Server side
- * 
+ *  
  */
  
  var status_new = 0;
