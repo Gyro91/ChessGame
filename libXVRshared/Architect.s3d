@@ -6,8 +6,17 @@
  */
 
 class Architect {
+	/* Map for the grab state of the pieces. 
+	 * 0 if a piece is free,
+	 * 1 if a piece is already grabbed.
+	 */
+	var grab_map;
 	
 	grab_request(cc, id_player); // This function has to return the id piece
 	grab_release(id_piece, id_player); 
 	
 };
+
+function Architect::Architect() {
+	grab_map = Array()
+}

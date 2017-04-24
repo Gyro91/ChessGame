@@ -1,23 +1,29 @@
 #include "../physics/physics.s3d"
 
+#define NUM_PIECES		32
+
+/* Players IDs */
+#define PLAYER_1		0
+#define PLAYER_2		16
+
 /* Pieces IDs */
-#define CHESSBOARD_ID	0
-#define KING_ID			1
-#define QUEEN_ID		2
-#define ROOK0_ID		3
-#define ROOK1_ID		4
-#define KNIGHT0_ID		5
-#define KNIGHT1_ID		6
-#define BISHOP0_ID		7
-#define BISHOP1_ID		8
-#define PAWN0_ID		9
-#define PAWN1_ID		10
-#define PAWN2_ID		11
-#define PAWN3_ID		12
-#define PAWN4_ID		13
-#define PAWN5_ID		14
-#define PAWN6_ID		15
-#define PAWN7_ID		16
+#define CHESSBOARD_ID	-1
+#define KING_ID			0
+#define QUEEN_ID		1
+#define ROOK0_ID		2
+#define ROOK1_ID		3
+#define KNIGHT0_ID		4
+#define KNIGHT1_ID		5
+#define BISHOP0_ID		6
+#define BISHOP1_ID		7
+#define PAWN0_ID		8
+#define PAWN1_ID		9
+#define PAWN2_ID		10
+#define PAWN3_ID		11
+#define PAWN4_ID		12
+#define PAWN5_ID		13
+#define PAWN6_ID		14
+#define PAWN7_ID		15
 
 #define PIECE_DENSITY	1
 
@@ -96,8 +102,7 @@ var my_level;
 /* Level class declaration. */
 class Level {
 	var type;
-	var p1_pieces;
-	var p2_pieces;
+	var pieces;
 	var chessboard;
 	
 	UpdatePosition(id_player, id_piece, DoF);
@@ -143,8 +148,7 @@ function level_init(type) {
  
 function Level::Level(level_t) {
 	type = level_t;
-	p1_pieces = Array(16);
-	p2_pieces = Array(16);
+	pieces = Array(NUM_PIECES);
 	/* Initial piece positions */
 	var rot = [0.0, 0.0, 0.0];
 	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
@@ -152,24 +156,23 @@ function Level::Level(level_t) {
 	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH,
 		BISHOP_MESH, BISHOP_MESH};
 	/* Instantiate the chessboard */
-	chessboard = Piece(CHESSBOARD_ID, 0, CHESSBOARD_MESH, CHESSBOARD_POS, rot, type);
+	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, rot, type);
 	/* Instantiate all the other pieces */
-	for (var i=0; i<=15; i++) {
-		if (i <= 7) {
+	for (var i=0; i<NUM_PIECES/2; i++) {
+		if (i < 8) {
 			/* It's not a pawn. */
-			p1_pieces[i] = Piece(i+1, 0, mesh_pieces[i], pos_other[i], rot, type);
-			p2_pieces[i] = Piece(i+1, 1, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT, type);
+			pieces[PLAYER_1 + i] = Piece(i, mesh_pieces[i], pos_other[i], rot, type);
+			pieces[PLAYER_2 + i] = Piece(i, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT, type);
 		} else {
-			p1_pieces[i] = Piece(i+1, 0, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot, type);
-			p2_pieces[i] = Piece(i+1, 1, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT, type);
+			pieces[PLAYER_1 + i] = Piece(i, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot, type);
+			pieces[PLAYER_2 + i] = Piece(i, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT, type);
 		}
 	}
 }
 
 function Level::Draw() {
-	for (var i=0; i<=15; i++) {
-		p1_pieces[i].GetObj().Draw();
-		p2_pieces[i].GetObj().Draw();
+	for (var i=0; i<NUM_PIECES; i++) {
+		pieces[i].GetObj().Draw();
 	}
 	chessboard.GetObj().Draw();
 }
@@ -178,7 +181,10 @@ function Level::Draw() {
  * Piece Class Member Functions
  */
 
-function Piece::Piece(p_id, opp, p_mesh, init_pos, init_rot, type) {
+function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
+	/* Check if the piece belongs to player 2 */
+	var p2 = (p_id >= PLAYER_2)? 1 : 0;
+	
 	id = p_id;
 	pos = init_pos;
 	rot = init_rot;
@@ -227,7 +233,7 @@ function Piece::Piece(p_id, opp, p_mesh, init_pos, init_rot, type) {
 			break;
 	}
 	
-	if (opp == 1)
+	if (p2 == 1)
 		mesh.ModulateMaterials([1,0.0,0.0]);
 	if (type == PHYSICAL_LVL) {
 		/* Instanciate the physical object */
