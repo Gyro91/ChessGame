@@ -1,11 +1,114 @@
+//#include "Packet.s3d"
+
+#define SM_STATE_WAIT 0
+#define SM_STATE_OPEN 1
+#define SM_STATE_CLOSED 2
+#define SM_STATE_GRABBED 3
+
+#define GRAB_THRESH 4
+
 /* 
- * 
- * 
+ * The class manage the status of an hand and it allows object grabbing. 
+ * It receives packet from the Server and according with the Architect it
+ * modify pieces position. 
  * 
  */
  
  class Hand_SM {
  	
- 	// UpdatePosition(id_player, id_piece, DoF);
+ 	var current_state;
+ 	var next_state;
+ 	var id_piece;
+ 	var my_name;
+ 	
  	step(pkt);
+ 	init(nm);
+ 	
  };
+ 
+ function Hand_SM::init(nm) 
+ {
+ 	current_state = SM_STATE_WAIT;
+ 	my_name = nm;
+ 	id_piece = -1;
+ }
+ 
+ function Hand_SM::step(pkt)
+ {
+ 	/*
+ 	 * decode the packet
+ 	 */
+ 	 var lenght = 0; // poi verrà messa con il valore letto dal pacchetto
+ 	 var position = 0;
+ 	 var is_hand = true;
+ 	 
+ 	 /*
+ 	  * transitions
+ 	  */
+ 	if (is_hand == false) {
+ 		next_state = SM_STATE_WAIT;
+ 		
+ 		/*
+ 		 * Unlock the object if grabbed
+ 		 */
+ 		/* 
+ 		if (id_piece >= 0)
+ 			ARCHITETTO.grab_release(id_piece, my_name);
+		*/
+	} else {
+		switch (current_state) {
+		case SM_STATE_WAIT:
+	      	if (lenght >= GRAB_THRESH)
+	      		next_state = SM_STATE_OPEN;
+	    	break;
+		case SM_STATE_OPEN:
+			if (lenght < GRAB_THRESH) {
+				next_state = SM_STATE_CLOSED;
+				
+				/*
+				 * Request to the Architect
+				 */
+				 
+				//id_piece = ARCHITETTO.grab_request(position, my_name)
+
+				if (id_piece >= 0)
+					next_state = SM_STATE_GRABBED;
+			}				
+	    	break;
+		case SM_STATE_CLOSED:
+	      	if (lenght >= GRAB_THRESH)
+	      		next_state = SM_STATE_CLOSED;
+	    	break;
+		case SM_STATE_GRABBED:
+	      	if (lenght >= GRAB_THRESH) {
+	      		next_state = SM_STATE_OPEN;
+	      		
+	      		/*
+	      		 * unlock the object
+	      		 */
+	      		 
+	      		//ARCHITETTO.grab_release(id_piece, my_name);	
+	      		
+      		} else {
+      			
+      			/*
+      			 * Update piece position
+      			 */
+      			 
+      			//LIVELLO.UpdatePosition(my_name, id_piece, position);
+      		}
+	    	break;
+	    default :
+	      next_state = SM_STATE_WAIT;
+		}
+	} 
+	
+	/*
+	 * do something
+	 */
+	current_state = next_state;
+	
+	
+ }
+ 
+ 
