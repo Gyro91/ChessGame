@@ -1,0 +1,11 @@
+/* 
+ * 
+ * 
+ * 
+ */
+ 
+ class Hand_SM {
+ 	
+ 	// UpdatePosition(id_player, id_piece, DoF);
+ 	step(pkt);
+ };

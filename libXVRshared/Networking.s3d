@@ -21,6 +21,7 @@ var last_rx_seq_number = 0; /* This is the id sequence number for the last packe
  */
  
 class Packet {	
+	
 	var hand_l_status;
  	var hand_r_status;
 	var sequence_remote_id;
