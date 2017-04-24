@@ -1,0 +1,13 @@
+
+/* This class implements the entity that has to decide result
+ * of grabbing. The Architect is the only entity that could 
+ * change the physic type.
+ * 
+ */
+
+class Architect {
+	
+	grab_request(cc, id_player); // This function has to return the id piece
+	grab_release(id_piece, id_player); 
+	
+};

@@ -100,6 +100,8 @@ class Level {
 	var p2_pieces;
 	var chessboard;
 	
+	UpdatePosition(id_player, id_piece, DoF);
+	GetTable();
 	GetMyPiece(id);
 	GetOppPiece(id);
 	Draw();

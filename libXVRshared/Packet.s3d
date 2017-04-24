@@ -1,0 +1,63 @@
+#define TYPE_PIECE_PAYLOAD 0
+#define TYPE_HAND_PAYLOAD 1
+#define TYPE_EVENT_REQ_PAYLOAD 2
+
+/* 
+ * Type 0 Packet: 6DoF and piece id;
+ * Type 1 Packet: Data Hand;
+ * Type 2 Packet: Elaborated data from client (centro congiungente).
+ * 
+ * 
+ */
+
+class Packet {
+
+	var type;
+	var seq_remote_id;
+	var payload;
+};
+
+
+class PiecePayload {
+	
+	var id;
+	var pos;
+	var rot;
+};
+
+class HandPayload {
+	
+	var is_right;
+	var status_hand;
+	var raw_data;
+	
+};
+
+class EventReqPayload {
+	
+	var is_right;
+	var length;
+	var cc;
+}; 
+
+function init_PiecePayload()
+{
+	type = TYPE_PIECE_PAYLOAD;
+	seq_remote_id = 0;
+	payload = PiecePayload();
+}
+
+function init_HandPayload()
+{
+	type = TYPE_HAND_PAYLOAD;
+	seq_remote_id = 0;
+	payload = HandPayload();
+}
+
+function init_EventReqPayload()
+{
+	type = TYPE_EVENT_REQ_PAYLOAD;
+	seq_remote_id = 0;
+	payload = EventReqPayload();
+}
+
