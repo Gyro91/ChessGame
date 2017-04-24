@@ -96,6 +96,8 @@ class Level {
 	var opp_pieces;
 	var chessboard;
 	
+	UpdatePosition(id_player, id_piece, DoF);
+	GetTable();
 	GetMyPiece(id);
 	GetOppPiece(id);
 	Draw();
