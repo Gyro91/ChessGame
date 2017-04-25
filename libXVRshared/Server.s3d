@@ -3,45 +3,43 @@
  *  
  */
  
- var status_new = 0;
-
- 
- /* This class has 4 ports for the communication:
-  * - A TCP port for the status of the communication and data;
-  * - 3 UDP ports, two for the hand (left and right) and one for the chess pieces;
-  * 
-  * It is provided:
-  * - an conf function to set the ports;
-  * - an init function for the initilization operations (accept, ...)
-  * - a function to send the status;
-  * - a function to receive the status from the other client;
-  * - a function to receive the objects from the client;
-  * - a function to send the updated objects;
-  * 
-  */
+ #define CLIENT_1 0
+ #define CLIENT_2 1
  
  class Server {
  	
- 	var addr_client;	
- 	var UDP_client_port;
+ 	var server_address;
+ 	var udp_server_port1, udp_server_port2;
+ 	var addr_client1, addr_client2;	
+ 	var udp_client1_port, udp_client2_port;
+ 	var id_channel_client1, id_channel_client2;
  	var pkt_hand;
  	
  	
- 	conf(address, port1);
+ 	conf(s_address, s_port1, s_port2, c_address1, 
+ 		c_port1, c_address2, c_port2
+ 	);
  	init();
- 	send_status(status_server);
- 	send_pkt(pkt, port);
- 	recv_objects();
- 	step(hand_l, hand_r, pieces, status_server);
+ 	recv(client);
+ 	send(data, client);
+ 	step();
  	
  };
  
  /* This function is used to configure the Server. */
  
- function Server::conf(address, port1)
+ function Server::conf(s_address, s_port1, s_port2, c_address1, 
+ 		c_port1, c_address2, c_port2)
  {	
- 	addr_client = address;
- 	UDP_client_port = port1;
+	server_address = s_address;
+	udp_server_port1 = s_port1;
+	udp_server_port2 = s_port2;
+	
+	addr_client1 = c_address1;
+	addr_client2 = c_address2;
+	
+	udp_client1_port = c_port1;
+	udp_client2_port = c_port2;
  }
  
  /* All the operations for the Server initialization 
@@ -50,24 +48,56 @@
   
  function Server::init()
  {
+ 	id_channel_client1 = NetCreateChannel(udp_server_port1, 
+ 										addr_client1, VR_NO_BLOCKING);
+ 	if (id_channel_client1 == -1)
+ 		outputln("Error creating channel client1");	
  		
- 	pkt_hand = Packet();
- 	pkt_hand.sequence_remote_id = 0;
- 
+	 id_channel_client2 = NetCreateChannel(udp_server_port2, 
+ 											addr_client2, VR_NO_BLOCKING);
+ 	if (id_channel_client2 == -1)
+ 		outputln("Error creating channel client2");	 
  }
  
+ /* This function is used by the Server to receive a packet from a specified
+  * client.
+  */
   
- function Server::send_pkt(pkt, port)
- {
- 	NetVarSendTo(addr_client, port, pkt);
+ function Server::recv(client)
+ {	
+ 	if (client == CLIENT_1) {
+ 		var pkt = NetVarReceiveFrom(id_channel_client1, addr_client1);
+ 		if (pkt != NULL)
+ 			outputln(pkt);
+ 	}
+ 	else if (client == CLIENT_2) {
+ 		var pkt = NetVarReceiveFrom(id_channel_client2, addr_client2);
+ 		if (pkt != NULL)
+ 			outputln(pkt);
+ 	}
  }
  
- function Server::step(hand_l, hand_r, status_server, pieces)
+ /* This function is used by the Server to send a packet to the specified
+  * client.
+  */
+  
+ function Server::send(data, client)
+ {	
+ 	if (client == CLIENT_1)
+ 		NetVarSendTo(addr_client1, udp_client1_port, data);
+ 	else if (client == CLIENT_2)
+ 		NetVarSendTo(addr_client2, udp_client2_port, data);
+ }
+ 
+ function Server::step()
  {
- 	
- 	if (hand_l.is_active == 1 || hand_r.is_active == 1) {
- 		update_pkt(hand_l, hand_r, pkt_hand);
- 		send_pkt(pkt_hand, UDP_client_port);
- 	}	
- 		
+	// Receive from Client1
+	recv(CLIENT_2);
+	recv(CLIENT_1);
+	send(4, CLIENT_2);
+	send(5, CLIENT_1);
+	
+	// Receive from Client2
+	
+	// Mirroring Data
  }	

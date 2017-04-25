@@ -11,7 +11,7 @@
  */
 
 class Packet {
-
+	
 	var type;
 	var seq_remote_id;
 	var payload;

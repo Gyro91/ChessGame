@@ -1,0 +1,200 @@
+/* Include s3d symbols */
+#include <Script3d.h>
+#include <Camera.s3d.h>
+
+#define CAM_STEP	0.05
+// #define HI_RES
+
+/* Include shared libraries */
+#include "../../libXVRshared/LevelClass.s3d"
+#include "../../libXVRshared/Server.s3d"
+#include "../../physics/physics.s3d"
+
+
+
+/* Set global scene parameters */
+SET SCENE_FOV  = 60;
+SET SCENE_NEAR = 0.005;
+SET SCENE_FAR  = 1000;
+
+
+
+/* COMMUNICATION VARIABLES */
+var server_t;
+
+
+
+/* Camera globals */
+var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
+
+/* Light globals */
+var Light0;
+var PosL = [15, 10, 15];	// default light position
+
+
+/* Function declarations */
+function CameraMoveMouse();
+function CameraMoveKeyboard();
+function DrawGrid(col, size);
+
+
+function OnDownload()
+{
+	// TODO: download your resources here
+	// E.g.: FileDownload("resource.ext");
+}
+
+
+
+function OnInit(params)
+{
+	/* initialize camera */
+	CameraGetCurrent().SetPosition(CamPos);
+	
+	/* initialize light */
+	Light0 = CVmLight();
+	Light0.SetPosition(PosL);
+	Light0.SetDiffuse(1, 1, 1);
+	Light0.Enable();
+	
+	SetLocalDir("");
+	
+	/* Initlialize Physx engine */
+	InitPhysicsEngine();
+
+	/* Set the scene gravity */
+	manager_psx.SetSceneGravity([0.0, -9.8, 0.0]);
+	/* Initialize the level */
+	level_init();	
+
+	server_t = Server();
+	server_t.conf("127.0.0.1", 5000, 5001, "127.0.0.1",
+		8000, "127.0.0.1", 8001
+	);
+	server_t.init();
+	
+}
+
+function OnFrame()
+{	
+	CameraMoveMouse();
+	CameraMoveKeyboard();
+	SceneBegin(VR_SHOW_STATS);	
+	
+	DrawGrid([0.5, 0.5, 0.5], 100);	
+
+	SceneEnd();
+	
+	server_t.step();
+
+}
+
+
+function DownloadReady(RequestID)
+{
+	// TODO
+}
+
+
+
+function OnTimer()
+{
+	RunPhysicsEngine(DELTA_T);
+}
+
+
+
+function OnExit()
+{
+	/* PHYSICS TEST */
+	manager_psx.FreeMem();
+}
+
+
+
+// Camera manager (using mouse)
+function CameraMoveMouse()
+{	
+
+	CameraMoveMouse_MBL_LC();
+
+}
+
+/* Camera Manager (Using Keyboard) */
+function CameraMoveKeyboard() {
+	var cam;
+	var x_trasl, y_trasl, z_trasl;
+	
+	/* Get the actual camera. */
+	cam = CameraGetCurrent();
+	
+	/* Get the actual camera axes. */
+	x_trasl = cam.GetXAxis()*CAM_STEP;
+	y_trasl = cam.GetYAxis()*CAM_STEP;
+	z_trasl = cam.GetZAxis()*CAM_STEP;
+	
+	/* W,A,S,D keys control the camera movements as in FPS games.
+	 * Keys Q and Z are used to adjust the camera height (w.r.t.
+	 * the camera Y axis).
+	 */
+	if (keypressed("W")) {
+		cam.SetPosition(cam.GetPosition() - z_trasl);
+	}
+	if (keypressed("S")) {
+		cam.SetPosition(cam.GetPosition() + z_trasl);
+	}
+	if (keypressed("A")) {
+		cam.SetPosition(cam.GetPosition() - x_trasl);
+	}
+	if (keypressed("D")) {
+		cam.SetPosition(cam.GetPosition() + x_trasl);
+	}
+	if (keypressed("Q")) {
+		cam.SetPosition(cam.GetPosition() + y_trasl);
+	}
+	if (keypressed("Z")) {
+		cam.SetPosition(cam.GetPosition() - y_trasl);
+	}
+}
+
+
+
+function DrawGrid(col, size)
+{
+	/* let's not mess up current OpenGL status */
+	glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT | GL_CURRENT_BIT);
+	
+	glLineWidth(1);
+	glDisable(GL_LIGHTING);
+	glColor(col);
+	var max = size / 2.0;
+	var min = -max;	
+	var step = size / 10.0;
+	
+	glBegin(GL_LINES);
+		for (var i = min; i <= max; i += step)
+		{
+			glVertex(i, 0, max);
+			glVertex(i, 0, min);
+			
+			glVertex(max, 0, i);
+			glVertex(min, 0, i);
+		}
+	glEnd();
+	
+	/* polite restoration of previous OpenGL status */
+	glPopAttrib();
+}
+
+//////// Utility fnctions
+
+
+function OnEvent()
+{
+	
+}
+
+function OnError()
+{
+	
+}

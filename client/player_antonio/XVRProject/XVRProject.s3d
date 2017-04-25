@@ -1,0 +1,172 @@
+
+/* Include s3d symbols */
+#include <Script3d.h>
+#include <Camera.s3d.h>
+#include "../../../libXVRshared/Client.s3d"
+#include "../../../libXVRshared/HandClass.s3d"
+
+/* Set global scene parameters */
+SET SCENE_FOV  = 60;
+SET SCENE_NEAR = 0.5;
+SET SCENE_FAR  = 1000;
+
+
+// TODO: put your global variables here
+/* Hand Variables */
+var seq_number = 0;
+
+
+var hand_r;
+var hand_l;
+
+var pkt_hand;
+var p_adversary;
+
+/* Communication variables */
+
+var client_t;
+
+/* Camera globals */
+var CamPos = [0.0, 1.0, 5.0]; 	// camera position
+
+
+/* Function declarations */
+function CameraMoveMouse();
+function DrawGrid(col, size);
+
+
+
+
+function OnDownload()
+{
+	// TODO: download your resources here
+	// E.g.: FileDownload("resource.ext");
+}
+
+
+
+function OnInit(params)
+{
+	/* initialize camera */
+	CameraGetCurrent().SetPosition(CamPos);
+
+	// TODO: put your initialization code here
+	SetLocalDir("");
+	
+ 	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
+
+	leapDll.__AddFunction(C_VOID, "get_seq_number", C_PFLOAT);
+	leapDll.__AddFunction(C_INT, "get_right_hand", C_PFLOAT);
+	leapDll.__AddFunction(C_INT, "get_left_hand", C_PFLOAT);
+
+	hand_r = Hand();
+	hand_l = Hand();
+	
+	hand_r.init(1);
+	hand_l.init(0);
+	
+	
+	client_t = Client();
+	client_t.conf("127.0.0.1", 5000, 8000);
+	client_t.init();
+
+}
+
+
+
+
+
+function OnFrame()
+{	
+	CameraMoveMouse();
+	SceneBegin();	
+	DrawGrid([0.5, 0.5, 0.5], 100);	
+	glDisable(GL_LIGHTING);
+	glColor(1,1,1);
+	glEnable(GL_TEXTURE_2D);
+	
+	
+	glDisable(GL_CULL_FACE);
+
+	SceneEnd();
+	
+	client_t.step();
+}
+
+
+
+
+
+function DownloadReady(RequestID)
+{
+	// TODO
+}
+
+
+
+function OnTimer()
+{
+	// TODO:
+	
+	
+  
+	//outputln(pkt_hand.sequence_remote_id);
+}
+
+
+
+function OnExit()
+{
+	// TODO: put your cleanup code here
+}
+
+
+
+// Camera manager (using mouse)
+function CameraMoveMouse()
+{	
+
+	CameraMoveMouse_MBL_LC();
+
+}
+
+
+
+function DrawGrid(col, size)
+{
+	/* let's not mess up current OpenGL status */
+	glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT | GL_CURRENT_BIT);
+	
+	glLineWidth(1);
+	glDisable(GL_LIGHTING);
+	glColor(col);
+	var max = size / 2.0;
+	var min = -max;	
+	var step = size / 10.0;
+	
+	glBegin(GL_LINES);
+		for (var i = min; i <= max; i += step)
+		{
+			glVertex(i, 0, max);
+			glVertex(i, 0, min);
+			
+			glVertex(max, 0, i);
+			glVertex(min, 0, i);
+		}
+	glEnd();
+	
+	/* polite restoration of previous OpenGL status */
+	glPopAttrib();
+}
+
+
+
+function OnEvent()
+{
+	
+}
+
+function OnError()
+{
+	
+}
