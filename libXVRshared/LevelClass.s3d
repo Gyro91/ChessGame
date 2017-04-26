@@ -68,16 +68,17 @@
 #define BISHOP_SCALE	PIECE_SCALE * 2.4089
 	
 #define X_OFFSET		SQUARE_SIZE*0.5
-#define Y_OFFSET		SQUARE_SIZE
+#define Y_OFFSET		SQUARE_SIZE*1.1
 #define Z_OFFSET		SQUARE_SIZE*0.5
 #define PAWN_Z			SQUARE_SIZE*2.5		
 
 /* Macros for pieces positions. */
-#define CHESSBOARD_POS	[CHESSBOARD_SIZE/2, SQUARE_SIZE/2, CHESSBOARD_SIZE/2]
+#define CHESSBOARD_POS	[CHESSBOARD_SIZE/2, 0.0, CHESSBOARD_SIZE/2]
 #define OPP_PAWN_Z		SQUARE_SIZE*5
 #define OPP_OTHER_Z		SQUARE_SIZE*7
 #define OPP_PAWN_VECT	[0.0, 0.0, OPP_PAWN_Z]
 #define OPP_OTHER_VECT	[0.0, 0.0, OPP_OTHER_Z]
+#define NO_ROT			[0.0, 0.0, 0.0]
 #define OPP_ROT			[0.0, 180, 0.0]
 #define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
 #define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*0.5]
@@ -86,8 +87,8 @@
 #define KNIGHT1_POS		[SQUARE_SIZE*6.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define BISHOP0_POS		[SQUARE_SIZE*2.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define BISHOP1_POS		[SQUARE_SIZE*5.5, Y_OFFSET, SQUARE_SIZE*0.5]
-#define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET*2, SQUARE_SIZE*0.5]
-#define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET*1.6, SQUARE_SIZE*0.5]
+#define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET, SQUARE_SIZE*0.5]
+#define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET, SQUARE_SIZE*0.5]
 
 #define PHYSICAL_LVL	0
 #define GRAPHICAL_LVL	1
@@ -104,17 +105,21 @@ class Level {
 	var type;
 	var pieces;
 	var chessboard;
+	var table;
 	
-	UpdatePosition(id_player, id_piece, DoF);
 	GetTable();
-	GetMyPiece(id);
-	GetOppPiece(id);
+	GetPiece(piece_id);
+	
+	PieceUpdate(player_id, piece_id, pos, rot);
+	TableUpdate();
+	
 	Draw();
 };
 
 /* Piece class declaration. */
 class Piece {
 	var id;
+	var player_id;
 	var obj;
 	var mesh;
 	var psx;
@@ -122,8 +127,9 @@ class Piece {
 	var rot;
 	
 	GetObj();
-	Update(pos, rot);
-
+	GetPosition();
+	GetRotation();
+	Update(p_pos, p_rot);
 };
 
 /*
@@ -149,25 +155,51 @@ function level_init(type) {
 function Level::Level(level_t) {
 	type = level_t;
 	pieces = Array(NUM_PIECES);
+	
 	/* Initial piece positions */
-	var rot = [0.0, 0.0, 0.0];
 	var pos_other = {KING_POS, QUEEN_POS, ROOK0_POS, ROOK1_POS, KNIGHT0_POS, KNIGHT1_POS, 
 		BISHOP0_POS, BISHOP1_POS};
+	/* Pieces meshes */
 	var mesh_pieces = {KING_MESH, QUEEN_MESH, ROOK_MESH, ROOK_MESH, KNIGHT_MESH, KNIGHT_MESH,
 		BISHOP_MESH, BISHOP_MESH};
 	/* Instantiate the chessboard */
-	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, rot, type);
+	chessboard = Piece(CHESSBOARD_ID, CHESSBOARD_MESH, CHESSBOARD_POS, NO_ROT, type);
 	/* Instantiate all the other pieces */
 	for (var i=0; i<NUM_PIECES/2; i++) {
 		if (i < 8) {
 			/* It's not a pawn. */
-			pieces[PLAYER_1 + i] = Piece(i, mesh_pieces[i], pos_other[i], rot, type);
-			pieces[PLAYER_2 + i] = Piece(i, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT, type);
+			pieces[PLAYER_1 + i] = Piece(PLAYER_1 + i, mesh_pieces[i], pos_other[i], NO_ROT, type);
+			pieces[PLAYER_2 + i] = Piece(PLAYER_2 + i, mesh_pieces[i], pos_other[i] + OPP_OTHER_VECT, OPP_ROT, type);
 		} else {
-			pieces[PLAYER_1 + i] = Piece(i, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), rot, type);
-			pieces[PLAYER_2 + i] = Piece(i, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT, type);
+			/* It's a pawn. */
+			pieces[PLAYER_1 + i] = Piece(PLAYER_1 + i, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8), NO_ROT, type);
+			pieces[PLAYER_2 + i] = Piece(PLAYER_2 + i, PAWN_MESH, PAWN0_POS + SQUARE_VECT*(i-8) + OPP_PAWN_VECT, OPP_ROT, type);
 		}
 	}
+	
+	if (type == PHYSICAL_LVL) {
+		table = Array(NUM_PIECES);
+		for (var i=0; i<NUM_PIECES; i++) {
+			table[i] = Array(6);
+			table[i] = [pieces[i].GetPosition(), pieces[i].GetRotation()];
+		}
+	} else {
+		table = NULL;
+	}
+}
+
+function Level::PieceUpdate(player_id, piece_id, pos, rot) {
+	pieces[player_id + piece_id].Update(pos, rot);
+}
+
+function Level::TableUpdate() {
+	for (var i=0; i<NUM_PIECES; i++) {
+		table[i] = [pieces[i].GetPosition(), pieces[i].GetRotation()];
+	}
+}
+
+function Level::GetTable() {
+	return table;
 }
 
 function Level::Draw() {
@@ -182,10 +214,18 @@ function Level::Draw() {
  */
 
 function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
-	/* Check if the piece belongs to player 2 */
-	var p2 = (p_id >= PLAYER_2)? 1 : 0;
+	var p2, bb;
 	
-	id = p_id;
+	/* Check if the piece belongs to player 2 */
+	if (p_id >= PLAYER_2) {
+		p2 = 1;
+		id = p_id - PLAYER_2;
+		player_id = PLAYER_2;
+	} else {
+		p2 = 0;
+		id = p_id;
+		player_id = PLAYER_1;
+	}
 	pos = init_pos;
 	rot = init_rot;
 	
@@ -233,8 +273,15 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
 			break;
 	}
 	
-	if (p2 == 1)
+	/* Move the mesh reference frame to the base of the mesh  */
+	mesh.CenterBoundingBox();
+	bb = mesh.GetBoundingBox();
+	/* bb[4] contains the y_max coordinate of the BB */
+	mesh.Translate([0.0, bb[4], 0.0]);
+	
+	if (p2 == 1) {
 		mesh.ModulateMaterials([1,0.0,0.0]);
+	}
 	if (type == PHYSICAL_LVL) {
 		/* Instanciate the physical object */
 		obj = NULL;
@@ -250,20 +297,29 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
 	}
 }
 
+function Piece::GetPosition() {
+	return pos;
+}
+
+function Piece::GetRotation() {
+	return rot;
+}
+
 function Piece::GetObj() {
 	return obj;
 }
 
 function Piece::Update(p_pos, p_rot) {
-	var quat = EulerToQuaternion(rot);
+	var quat;
 	var matrix3 = vector(9);
 	var matrix4 = vector(16);
 		
-	p_pos = pos;
-	p_rot = rot;
+	pos = p_pos;
+	rot = p_rot;
 	
 	obj.SetPosition(pos);
 	
+	quat = EulerToQuaternion(rot);
 	matrix3 = QuaternionToMatrix3(quat); 
 	matrix4[0] = matrix3[0];	matrix4[1] = matrix3[1];	matrix4[2] = matrix3[2];	matrix4[3] = 0.0;
 	matrix4[4] = matrix3[3];	matrix4[5] = matrix3[4];	matrix4[6] = matrix3[5];	matrix4[7] = 0.0;

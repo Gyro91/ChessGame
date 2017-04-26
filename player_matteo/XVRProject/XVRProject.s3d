@@ -94,6 +94,8 @@ function OnInit(params)
 	
 	setTimeStep(TIMESTEP_ON_TIMER);
 	
+	glEnable(GL_NORMALIZE);
+	
 }
 
 function OnFrame()

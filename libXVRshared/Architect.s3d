@@ -1,22 +1,35 @@
-
 /* This class implements the entity that has to decide result
  * of grabbing. The Architect is the only entity that could 
  * change the physic type.
  * 
  */
+ 
+ #include "LevelClass.s3d"
 
 class Architect {
 	/* Map for the grab state of the pieces. 
-	 * 0 if a piece is free,
-	 * 1 if a piece is already grabbed.
+	 * FALSE if a piece is free,
+	 * TRUE if a piece is already grabbed.
 	 */
-	var grab_map;
+	var is_grabbed;
 	
-	grab_request(cc, id_player); // This function has to return the id piece
-	grab_release(id_piece, id_player); 
+	grab_request(cc, player_id); // This function has to return the id piece
+	grab_release(piece_id, player_id); 
 	
 };
 
 function Architect::Architect() {
-	grab_map = Array()
+	is_grabbed = Array(NUM_PIECES);
+	
+	for (var i=0; i<NUM_PIECES; i++) {
+		is_grabbed[i] = false;
+	}
+}
+
+function Architect::grab_request(cc, player_id) {
+	
+}
+
+function Architect::grab_release(player_id, piece_id) {
+	grab_map[player_id + piece_id] = false;
 }
