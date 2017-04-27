@@ -1,4 +1,8 @@
+#ifdef PHYSX
+
 #include "../physics/physics.s3d"
+
+#endif
 
 #define NUM_PIECES		32
 
@@ -28,25 +32,25 @@
 #define PIECE_DENSITY	1
 
 /* Pieces meshes */
-#define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
+#define CHESSBOARD_MESH	"../../../meshes/chessboard.aam"
 
 #ifdef	HI_RES
 
-#define KING_MESH		"../../meshes/king.aam"
-#define QUEEN_MESH		"../../meshes/queen.aam"
-#define ROOK_MESH		"../../meshes/rook.aam"
-#define KNIGHT_MESH		"../../meshes/knight.aam"
-#define BISHOP_MESH		"../../meshes/bishop.aam"
-#define PAWN_MESH		"../../meshes/pawn.aam"
+#define KING_MESH		"../../../meshes/king.aam"
+#define QUEEN_MESH		"../../../meshes/queen.aam"
+#define ROOK_MESH		"../../../meshes/rook.aam"
+#define KNIGHT_MESH		"../../../meshes/knight.aam"
+#define BISHOP_MESH		"../../../meshes/bishop.aam"
+#define PAWN_MESH		"../../../meshes/pawn.aam"
 
 #else 
 /* LOW_RES */
-#define KING_MESH		"../../meshes/king_low.aam"
-#define QUEEN_MESH		"../../meshes/queen_low.aam"
-#define ROOK_MESH		"../../meshes/rook_low.aam"
-#define KNIGHT_MESH		"../../meshes/knight_low.aam"
-#define BISHOP_MESH		"../../meshes/bishop_low.aam"
-#define PAWN_MESH		"../../meshes/pawn_low.aam"
+#define KING_MESH		"../../../meshes/king_low.aam"
+#define QUEEN_MESH		"../../../meshes/queen_low.aam"
+#define ROOK_MESH		"../../../meshes/rook_low.aam"
+#define KNIGHT_MESH		"../../../meshes/knight_low.aam"
+#define BISHOP_MESH		"../../../meshes/bishop_low.aam"
+#define PAWN_MESH		"../../../meshes/pawn_low.aam"
 
 #endif
 
@@ -110,7 +114,7 @@ class Level {
 	GetTable();
 	GetPiece(piece_id);
 	
-	PieceUpdate(player_id, piece_id, pos, rot);
+	PieceUpdate(piece_id, pos, rot);
 	TableUpdate();
 	
 	Draw();
@@ -138,10 +142,12 @@ class Piece {
 
 function level_init(type) {
 	if (type == PHYSICAL_LVL) {
-	/* Initlialize Physx engine */
-	InitPhysicsEngine();
-	/* Set the gravity */
-	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+		/* Initlialize Physx engine */
+		#ifdef PHYSX
+		InitPhysicsEngine();
+		/* Set the gravity */
+		manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+		#endif
 	}
 	
 	/* Initialize the level */
@@ -191,8 +197,8 @@ function Level::Level(level_t) {
 	}
 }
 
-function Level::PieceUpdate(player_id, piece_id, pos, rot) {
-	pieces[player_id + piece_id].Update(pos, rot);
+function Level::PieceUpdate(piece_id, pos, rot) {
+	pieces[piece_id].Update(pos, rot);
 }
 
 function Level::TableUpdate() {
@@ -291,11 +297,13 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
 	if (type == PHYSICAL_LVL) {
 		/* Instanciate the physical object */
 		obj = NULL;
+		#ifdef PHYSX
 		if (id == CHESSBOARD_ID) {
 			psx = manager_psx.AddPhConvexShape(pos, rot, mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
 		} else {
 			psx = manager_psx.AddPhConvexShape(pos, rot, mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
-		}
+		} 
+		#endif
 	} else {
 		psx = NULL;
 		obj = CVmObj(mesh);

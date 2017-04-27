@@ -4,6 +4,7 @@
 #include <Camera.s3d.h>
 #include "../../../libXVRshared/Client.s3d"
 
+
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
 SET SCENE_NEAR = 0.5;
@@ -68,7 +69,8 @@ function OnInit(params)
 	client_t = Client();
 	client_t.conf("127.0.0.1", 5001, 8001);
 	client_t.init();
-
+	
+	
 }
 
 
@@ -88,6 +90,8 @@ function OnFrame()
 	hand_l.update();
 	hand_r.draw();
 	hand_l.draw();
+	
+	client_t.Draw();
 	
 	glDisable(GL_CULL_FACE);
 

@@ -65,6 +65,56 @@
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/physics</locationURI>
 		</link>
+		<link>
+			<name>libXVRshared/Architect.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/Architect.s3d</locationURI>
+		</link>
+		<link>
+			<name>libXVRshared/Client.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/Client.s3d</locationURI>
+		</link>
+		<link>
+			<name>libXVRshared/HandClass.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/HandClass.s3d</locationURI>
+		</link>
+		<link>
+			<name>libXVRshared/Hand_SM.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/Hand_SM.s3d</locationURI>
+		</link>
+		<link>
+			<name>libXVRshared/LevelClass.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/LevelClass.s3d</locationURI>
+		</link>
+		<link>
+			<name>libXVRshared/Packet.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/Packet.s3d</locationURI>
+		</link>
+		<link>
+			<name>libXVRshared/Server.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/libXVRshared/Server.s3d</locationURI>
+		</link>
+		<link>
+			<name>physics/lib</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/physics/lib</locationURI>
+		</link>
+		<link>
+			<name>physics/physics.s3d</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/physics/physics.s3d</locationURI>
+		</link>
+		<link>
+			<name>physics/s3d</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/physics/s3d</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

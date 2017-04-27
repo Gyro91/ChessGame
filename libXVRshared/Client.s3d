@@ -4,6 +4,7 @@
   */
  #include "Packet.s3d"
  #include "HandClass.s3d"
+ #include "LevelClass.s3d"
  
  class Client {
  	
@@ -12,6 +13,7 @@
  	var udp_client_port;
  	var id_channel;
  	var pkt_hand_l, pkt_hand_r;
+ 	var pkt_piece;
  	var remote_hand_r; 
  	var remote_hand_l; 
  	
@@ -20,6 +22,7 @@
  	step(hand_r, hand_l);
  	send(data);
  	recv();
+ 	draw();
  	
  };
  
@@ -43,16 +46,19 @@
  		
  	pkt_hand_l = Packet();
  	pkt_hand_r = Packet();
+ 	pkt_piece = Packet();
  	
  	remote_hand_r = Hand();
  	remote_hand_l = Hand();
  	
  	init_HandPayload(pkt_hand_r);
 	init_HandPayload(pkt_hand_l);
+	init_PiecePayload(pkt_piece);
 	
 	remote_hand_r.init(1);
  	remote_hand_l.init(0);
-			
+	
+	level_init(GRAPHICAL_LVL);		
  }
  
 
@@ -86,18 +92,29 @@
 	while (NetDataReady(id_channel) == TRUE) {
 		var data = recv();
 		if (data != NULL) {
-			if (data.payload.is_right == 1) {
-				remote_hand_r.push_raw_data(data.payload.raw_data);
+			switch(data.type) {
+			case TYPE_HAND_PAYLOAD:
+				if (data.payload.is_right == 1) 
+					remote_hand_r.push_raw_data(data.payload.raw_data);
+				else if (data.payload.is_right == 0) 
+					remote_hand_l.push_raw_data(data.payload.raw_data);
+				break;
+			case TYPE_PIECE_PAYLOAD:
+				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.rot);
+				break;	
 			}
-			else if (data.payload.is_right == 0) {
-				remote_hand_l.push_raw_data(data.payload.raw_data);
-				
-			}
-		}	
-	}
+		}
+	}	
 	
 	// It has to be inserted a timeout due to the ghost effect
-	
-	remote_hand_l.draw();
+
+ }
+ 
+ 
+ function Client::draw()
+ {
+ 	remote_hand_l.draw();
 	remote_hand_r.draw();
+	
+	my_level.Draw();
  }

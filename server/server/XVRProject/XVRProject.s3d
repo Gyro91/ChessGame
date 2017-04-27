@@ -6,10 +6,11 @@
 // #define HI_RES
 
 /* Include shared libraries */
-#include "../../libXVRshared/LevelClass.s3d"
-#include "../../libXVRshared/Server.s3d"
+#include "../../../physics/physics.s3d"
+#include "../../../libXVRshared/LevelClass.s3d"
+#include "../../../libXVRshared/Server.s3d"
 
-#include "../../physics/physics.s3d"
+
 
 
 
@@ -83,8 +84,6 @@ function OnFrame()
 
 	SceneEnd();
 	
-	
-
 }
 
 
