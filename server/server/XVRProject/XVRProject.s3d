@@ -3,23 +3,18 @@
 #include <Camera.s3d.h>
 
 #define CAM_STEP	0.05
-// #define HI_RES
 
 /* Include shared libraries */
-#include "../../../physics/physics.s3d"
-#include "../../../libXVRshared/LevelClass.s3d"
 #include "../../../libXVRshared/Server.s3d"
 
-
-
-
+/* Initialization synchonization */
+var end_init = 0;
 
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
 SET SCENE_NEAR = 0.005;
 SET SCENE_FAR  = 1000;
-
 
 
 /* COMMUNICATION VARIABLES */
@@ -67,11 +62,11 @@ function OnInit(params)
 		8000, "127.0.0.1", 8001
 	);
 	server_t.init();
-	level_init(PHYSICAL_LVL);
+	
 	
 	glEnable(GL_NORMALIZE);
 	
-
+	end_init = 1;
 }
 
 function OnFrame()
@@ -79,7 +74,6 @@ function OnFrame()
 	CameraMoveMouse();
 	CameraMoveKeyboard();
 	SceneBegin(VR_SHOW_STATS);	
-	server_t.step();
 	DrawGrid([0.5, 0.5, 0.5], 100);	
 
 	SceneEnd();
@@ -96,7 +90,10 @@ function DownloadReady(RequestID)
 
 function OnTimer()
 {
-	RunPhysicsEngine(DELTA_T);
+	/* Wait the end of the OnInit() */
+	//while(end_init == 0);
+	
+	server_t.step();
 }
 
 

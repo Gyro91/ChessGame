@@ -2,15 +2,19 @@
  *  This library implements all the classes and functions for the Server side
  *  
  */
- #include "Packet.s3d"
- #include "HandClass.s3d"
- #define CLIENT_1 0
- #define CLIENT_2 1
- #define PHYSX
+#include "Packet.s3d"
+#include "HandClass.s3d"
  
- class Server {
- 	
- 	var server_address;
+#define PHYSX
+#include "LevelClass.s3d"
+ 
+#define CLIENT_1 0
+#define CLIENT_2 1
+
+
+
+class Server {
+	var server_address;
  	var udp_server_port1, udp_server_port2;
  	var addr_client1, addr_client2;	
  	var udp_client1_port, udp_client2_port;
@@ -26,13 +30,13 @@
  	send(data, client);
  	step();
  	
- };
+};
  
- /* This function is used to configure the Server. */
+/* This function is used to configure the Server. */
  
- function Server::conf(s_address, s_port1, s_port2, c_address1, 
+function Server::conf(s_address, s_port1, s_port2, c_address1, 
  		c_port1, c_address2, c_port2)
- {	
+{	
 	server_address = s_address;
 	udp_server_port1 = s_port1;
 	udp_server_port2 = s_port2;
@@ -42,14 +46,14 @@
 	
 	udp_client1_port = c_port1;
 	udp_client2_port = c_port2;
- }
+}
  
- /* All the operations for the Server initialization 
-  * are encapsulated in this function.
-  */
+/* All the operations for the Server initialization 
+ * are encapsulated in this function.
+ */
   
- function Server::init()
- {
+function Server::init()
+{
  	id_channel_client1 = NetCreateChannel(udp_server_port1, 
  										addr_client1, VR_NO_BLOCKING);
  	if (id_channel_client1 == -1)
@@ -63,14 +67,15 @@
  	pkt_piece = Packet();
  	init_PiecePayload(pkt_piece);
  	
- }
+ 	level_init(PHYSICAL_LVL);
+}
  
  /* This function is used by the Server to receive a packet from a specified
   * client.
   */
   
- function Server::recv(client)
- {	
+function Server::recv(client)
+{	
  	var pkt = Packet();
  	
  	if (client == CLIENT_1) {
@@ -83,22 +88,23 @@
  		if (pkt != NULL)
  			return pkt;
  	}
- }
+}
  
  /* This function is used by the Server to send a packet to the specified
   * client.
   */
   
- function Server::send(data, client)
- {	
+function Server::send(data, client)
+{	
  	if (client == CLIENT_1)
  		NetVarSendTo(addr_client1, udp_client1_port, data);
  	else if (client == CLIENT_2)
  		NetVarSendTo(addr_client2, udp_client2_port, data);
- }
+}
  
- function Server::step()
- {	
+function Server::step()
+{	
+	var sim_res;
 	static var pos = KING_POS;
 	static var rot =  [0.0, 0.0, 0.0];
 	
@@ -114,7 +120,8 @@
 			send(data, CLIENT_1);
 		}	
 	}
+	manager_psx.Simulate(DELTA_T);
+	sim_res = GetPhysicsResults();
 	
 	
-	
- }	
+}	

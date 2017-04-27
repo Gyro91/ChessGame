@@ -1,6 +1,7 @@
 #ifdef PHYSX
 
-#include "../physics/physics.s3d"
+#include "..\physics\s3d\PhManager.s3d"
+#define DELTA_T 0.02
 
 #endif
 
@@ -99,6 +100,49 @@
 
 /* Global Level object */
 var my_level;
+
+#ifdef PHYSX
+/*
+ * PHYSX CODE
+ */
+ 
+var manager_psx;
+var rigidMaterial;
+
+function InitPhysicsEngine() {
+	setLocalDir("..\\..\\..\\physics\\lib");
+	manager_psx = CVmPhManager();  
+	manager_psx.InitPhysics();	
+	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
+	setLocalDir();
+}
+
+function GetPhysicsResults() {
+	var pos, rot, angle, axis, quat;
+	var res = Array(NUM_PIECES);
+	//outputln(len(manager_psx.Array_PhObj));
+	PhysXVR.GetPhysicsResults();
+	/* The first element in the array is the chessboard */
+	for(var i = 1; i < len(manager_psx.Array_PhObj); i++){		
+		if(manager_psx.Array_PhObj[i].type != PHX_FIXED){
+			pos = manager_psx.Array_PhObj[i].GetPosition();
+			angle = 0.0;
+			axis = vector(3);
+			manager_psx.Array_PhObj[i].GetRotation(&angle, &axis);
+			quat = AxisAngleToQuaternion([axis.x, axis.y, axis.z, angle]);
+			rot = QuaternionToEuler(quat);
+			if (i % 2 != 0) {
+				/* Player 1 piece */
+				res[PLAYER_1 + (i-1)] = [pos[0], pos[1], pos[2], rot[0], rot[1], rot[2]];
+			} else {
+				/* Player 2 piece */
+				res[PLAYER_2 + (i-1)/2] = [pos[0], pos[1], pos[2], rot[0], rot[1], rot[2]];
+			}
+		}
+	}
+}
+
+#endif
 
 /*
  * CLASS DECLARATIONS
@@ -296,6 +340,7 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
 	}
 	if (type == PHYSICAL_LVL) {
 		/* Instanciate the physical object */
+		outputln(p_id);
 		obj = NULL;
 		#ifdef PHYSX
 		if (id == CHESSBOARD_ID) {
