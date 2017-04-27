@@ -2,18 +2,20 @@
   *  This library implements all the classes and functions for the Client side
   * 
   */
+ #include "Packet.s3d"
+ #include "HandClass.s3d"
  
  class Client {
  	
  	var server_address;
 	var udp_server_port;
-	
  	var udp_client_port;
  	var id_channel;
+ 	var pkt_hand_l, pkt_hand_r;
  	
  	conf(s_address, s_port, c_port);
  	init();
- 	step();
+ 	step(hand_r, hand_l);
  	send(data);
  	recv();
  	
@@ -35,7 +37,14 @@
  	id_channel = NetCreateChannel(udp_client_port, 
  									server_address, VR_NO_BLOCKING);
  	if (id_channel == -1)
- 		outputln("Error creating channel");				
+ 		outputln("Error creating channel");	
+ 		
+ 	pkt_hand_l = Packet();
+ 	pkt_hand_r = Packet();
+ 	
+ 	init_HandPayload(pkt_hand_r);
+	init_HandPayload(pkt_hand_l);
+			
  }
  
 
@@ -45,16 +54,44 @@
  }
 
  function Client::recv()
- {
- 	var pkt = NetVarReceiveFrom(id_channel, server_address);
+ {	
+ 	var pkt = Packet();
+ 	
+ 	pkt = NetVarReceiveFrom(id_channel, server_address);
  	if (pkt != NULL)
- 		outputln(pkt);
+ 		return pkt;
  }
  
- function Client::step()
- {
-	// Get data from leap motion
-	send(3);
-	recv();
-	// 
+ function Client::step(hand_r, hand_l)
+ {	
+ 	var handr = Hand();
+ 	var handl = Hand();
+ 	
+ 	handr.init(1);
+ 	handl.init(0);
+ 	
+	if (hand_r.is_active == 1) {
+		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
+		pkt_hand_r.payload.is_right = 1;
+		send(pkt_hand_r);
+	}
+	
+	if (hand_l.is_active == 1) {
+		pkt_hand_l.payload.raw_data = hand_l.get_raw_data();
+		pkt_hand_l.payload.is_right = 0;
+		send(pkt_hand_l);
+	}
+	
+	var data = recv();
+	if (data != NULL) {
+		if (data.payload.is_right == 1) {
+			handr.push_raw_data(data.payload.raw_data);
+			handr.draw();
+		}
+		else if (data.payload.is_right == 0) {
+			handl.push_raw_data(data.payload.raw_data);
+			handl.draw();
+		}
+	}	
+	
  }

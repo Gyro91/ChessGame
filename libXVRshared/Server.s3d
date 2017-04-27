@@ -2,7 +2,8 @@
  *  This library implements all the classes and functions for the Server side
  *  
  */
- 
+ #include "Packet.s3d"
+ #include "HandClass.s3d"
  #define CLIENT_1 0
  #define CLIENT_2 1
  
@@ -65,15 +66,17 @@
   
  function Server::recv(client)
  {	
+ 	var pkt = Packet();
+ 	
  	if (client == CLIENT_1) {
- 		var pkt = NetVarReceiveFrom(id_channel_client1, addr_client1);
+ 		pkt = NetVarReceiveFrom(id_channel_client1, addr_client1);
  		if (pkt != NULL)
- 			outputln(pkt);
+ 			return pkt;
  	}
  	else if (client == CLIENT_2) {
- 		var pkt = NetVarReceiveFrom(id_channel_client2, addr_client2);
+ 		pkt = NetVarReceiveFrom(id_channel_client2, addr_client2);
  		if (pkt != NULL)
- 			outputln(pkt);
+ 			return pkt;
  	}
  }
  
@@ -90,12 +93,12 @@
  }
  
  function Server::step()
- {
+ {	
 	// Receive from Client1
-	recv(CLIENT_2);
-	recv(CLIENT_1);
-	send(4, CLIENT_2);
-	send(5, CLIENT_1);
+	var data = recv(CLIENT_2);
+	if (data != NULL) {
+		send(data, CLIENT_1);
+	}	
 	
 	// Receive from Client2
 	

@@ -60,12 +60,12 @@ function OnInit(params)
 	SetLocalDir("");
 	
 	/* Initlialize Physx engine */
-	InitPhysicsEngine();
+//	InitPhysicsEngine();
 
 	/* Set the scene gravity */
-	manager_psx.SetSceneGravity([0.0, -9.8, 0.0]);
+//	manager_psx.SetSceneGravity([0.0, -9.8, 0.0]);
 	/* Initialize the level */
-	level_init();	
+//	level_init();	
 
 	server_t = Server();
 	server_t.conf("127.0.0.1", 5000, 5001, "127.0.0.1",
@@ -80,12 +80,12 @@ function OnFrame()
 	CameraMoveMouse();
 	CameraMoveKeyboard();
 	SceneBegin(VR_SHOW_STATS);	
-	
+	server_t.step();
 	DrawGrid([0.5, 0.5, 0.5], 100);	
 
 	SceneEnd();
 	
-	server_t.step();
+	
 
 }
 
@@ -99,7 +99,7 @@ function DownloadReady(RequestID)
 
 function OnTimer()
 {
-	RunPhysicsEngine(DELTA_T);
+//	RunPhysicsEngine(DELTA_T);
 }
 
 
@@ -107,7 +107,7 @@ function OnTimer()
 function OnExit()
 {
 	/* PHYSICS TEST */
-	manager_psx.FreeMem();
+//	manager_psx.FreeMem();
 }
 
 

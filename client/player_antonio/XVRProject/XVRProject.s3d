@@ -3,7 +3,6 @@
 #include <Script3d.h>
 #include <Camera.s3d.h>
 #include "../../../libXVRshared/Client.s3d"
-#include "../../../libXVRshared/HandClass.s3d"
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
@@ -84,13 +83,13 @@ function OnFrame()
 	glDisable(GL_LIGHTING);
 	glColor(1,1,1);
 	glEnable(GL_TEXTURE_2D);
-	
+	client_t.step(hand_r, hand_l);
 	
 	glDisable(GL_CULL_FACE);
 
 	SceneEnd();
 	
-	client_t.step();
+	
 }
 
 
