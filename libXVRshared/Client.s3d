@@ -1,87 +1,97 @@
-/*
- *  This library implements all the classes and functions for the Client side
- * 
- */
- #include "Networking.s3d"
+ /*
+  *  This library implements all the classes and functions for the Client side
+  * 
+  */
+ #include "Packet.s3d"
+ #include "HandClass.s3d"
  
  class Client {
  	
-
  	var server_address;
-
- 	var UDP_client_port;
+	var udp_server_port;
+ 	var udp_client_port;
  	var id_channel;
+ 	var pkt_hand_l, pkt_hand_r;
  	
- 	conf(address, port1);
- 	connect();
- 	rcv_pkt(channel, ip);
- 	step(hand_l, hand_r);
- 	recv_status();
+ 	conf(s_address, s_port, c_port);
+ 	init();
+ 	step(hand_r, hand_l);
+ 	send(data);
+ 	recv();
  	
  };
  
  /* This function is used to configure address and ports. */
  
- function Client::conf(address, port1)
+ function Client::conf(s_address, s_port, c_port)
  {	
- 	server_address = address;
- 	UDP_client_port = port1;		
+ 	server_address = s_address;
+ 	udp_server_port = s_port;
+ 	udp_client_port = c_port;		
  }
  
- /* This function is used from the Client to connect to the Server */
+ /* This function is used from the Client to do all the init operations */
  
- function Client::connect()
+ function Client::init()
  {	
- 	id_channel = NetCreateChannel(UDP_client_port, 
- 											server_address, VR_NO_BLOCKING);
+ 	id_channel = NetCreateChannel(udp_client_port, 
+ 									server_address, VR_NO_BLOCKING);
  	if (id_channel == -1)
- 		outputln("Error Creating channel");				
+ 		outputln("Error creating channel");	
+ 		
+ 	pkt_hand_l = Packet();
+ 	pkt_hand_r = Packet();
+ 	
+ 	init_HandPayload(pkt_hand_r);
+	init_HandPayload(pkt_hand_l);
+			
  }
  
 
- 
- /* This function returns the packet from the other player 
- * with an information to the caller about an eventually
- * error:
- *  (-1) if a packet is not received 
- * 	(-2) if a packet does not respect the sequence
- *  (0)  if everything went well
- */
-
- function Client::rcv_pkt(channel, ip)
+ function Client::send(data)
  {
-	var pkt_e = Packet_err();
-	var pkt = NetVarReceiveFrom(channel, ip);
-	
-	if (pkt == NULL) 
-		pkt_e.type_error = -1;		
-	else if (pkt.sequence_remote_id < last_rx_seq_number)  
-		pkt_e.type_error = -2;
-	else {
-		pkt_e.type_error = 0;
-		pkt_e.hand_l_status = pkt.hand_l_status;
-		pkt_e.hand_r_status = pkt.hand_r_status;
-		pkt_e.data_hand_l = pkt.data_hand_l;
-		pkt_e.data_hand_r = pkt.data_hand_r;
-		pkt_e.sequence_remote_id = pkt.sequence_remote_id;
-		last_rx_seq_number = pkt.sequence_remote_id;
-	}
-	
-	return pkt_e;
+	NetVarSendTo(server_address, udp_server_port, data);
  }
 
- function Client::step(hand_l, hand_r)
- {
-	var pkt_e = rcv_pkt(id_channel, server_address);
-	if (pkt_e.type_error == 0) {
-		
-		if (pkt_e.hand_l_status == 1) {
-			hand_l.push_raw_data(pkt_e.data_hand_l);
-			hand_l.draw();
-		}
-		if (pkt_e.hand_r_status == 1) {
-			hand_r.push_raw_data(pkt_e.data_hand_r);
-			hand_r.draw();
-		}
+ function Client::recv()
+ {	
+ 	var pkt = Packet();
+ 	
+ 	pkt = NetVarReceiveFrom(id_channel, server_address);
+ 	if (pkt != NULL)
+ 		return pkt;
+ }
+ 
+ function Client::step(hand_r, hand_l)
+ {	
+ 	var handr = Hand();
+ 	var handl = Hand();
+ 	
+ 	handr.init(1);
+ 	handl.init(0);
+ 	
+	if (hand_r.is_active == 1) {
+		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
+		pkt_hand_r.payload.is_right = 1;
+		send(pkt_hand_r);
 	}
+	
+	if (hand_l.is_active == 1) {
+		pkt_hand_l.payload.raw_data = hand_l.get_raw_data();
+		pkt_hand_l.payload.is_right = 0;
+		send(pkt_hand_l);
+	}
+	
+	var data = recv();
+	if (data != NULL) {
+		if (data.payload.is_right == 1) {
+			handr.push_raw_data(data.payload.raw_data);
+			handr.draw();
+		}
+		else if (data.payload.is_right == 0) {
+			handl.push_raw_data(data.payload.raw_data);
+			handl.draw();
+		}
+	}	
+	
  }
