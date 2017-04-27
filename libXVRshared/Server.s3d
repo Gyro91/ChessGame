@@ -94,13 +94,15 @@
  
  function Server::step()
  {	
-	// Receive from Client1
+	
+	
+	while (NetDataReady(id_channel_client2) == TRUE) {
 	var data = recv(CLIENT_2);
 	if (data != NULL) {
 		send(data, CLIENT_1);
 	}	
+	}
 	
-	// Receive from Client2
 	
 	// Mirroring Data
  }	

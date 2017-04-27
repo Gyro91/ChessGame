@@ -153,6 +153,7 @@ function level_init(type) {
  */
  
 function Level::Level(level_t) {
+	var rot, pos;
 	type = level_t;
 	pieces = Array(NUM_PIECES);
 	
@@ -181,7 +182,9 @@ function Level::Level(level_t) {
 		table = Array(NUM_PIECES);
 		for (var i=0; i<NUM_PIECES; i++) {
 			table[i] = Array(6);
-			table[i] = [pieces[i].GetPosition(), pieces[i].GetRotation()];
+			pos = pieces[i].GetPosition();
+			rot = pieces[i].GetRotation();
+			table[i] = [pos[0], pos[1], pos[2], rot[0], rot[1], rot[2]];
 		}
 	} else {
 		table = NULL;
@@ -193,8 +196,11 @@ function Level::PieceUpdate(player_id, piece_id, pos, rot) {
 }
 
 function Level::TableUpdate() {
+	var rot, pos;
 	for (var i=0; i<NUM_PIECES; i++) {
-		table[i] = [pieces[i].GetPosition(), pieces[i].GetRotation()];
+		pos = pieces[i].GetPosition();
+		rot = pieces[i].GetRotation();
+		table[i] = [pos[0], pos[1], pos[2], rot[0], rot[1], rot[2]];
 	}
 }
 

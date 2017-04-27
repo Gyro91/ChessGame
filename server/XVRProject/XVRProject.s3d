@@ -8,11 +8,9 @@
 /* Include shared libraries */
 #include "../../libXVRshared/LevelClass.s3d"
 #include "../../libXVRshared/Server.s3d"
-<<<<<<< HEAD:player_matteo/XVRProject/XVRProject.s3d
-#define TIMESTEP_ON_TIMER 20
-=======
+
 #include "../../physics/physics.s3d"
->>>>>>> Networking:server/XVRProject/XVRProject.s3d
+
 
 
 
@@ -68,7 +66,7 @@ function OnInit(params)
 		8000, "127.0.0.1", 8001
 	);
 	server_t.init();
-	
+	level_init(PHYSICAL_LVL);
 	
 	glEnable(GL_NORMALIZE);
 	
@@ -99,7 +97,7 @@ function DownloadReady(RequestID)
 
 function OnTimer()
 {
-
+	RunPhysicsEngine(DELTA_T);
 }
 
 

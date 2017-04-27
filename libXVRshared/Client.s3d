@@ -12,6 +12,8 @@
  	var udp_client_port;
  	var id_channel;
  	var pkt_hand_l, pkt_hand_r;
+ 	var remote_hand_r; 
+ 	var remote_hand_l; 
  	
  	conf(s_address, s_port, c_port);
  	init();
@@ -42,8 +44,14 @@
  	pkt_hand_l = Packet();
  	pkt_hand_r = Packet();
  	
+ 	remote_hand_r = Hand();
+ 	remote_hand_l = Hand();
+ 	
  	init_HandPayload(pkt_hand_r);
 	init_HandPayload(pkt_hand_l);
+	
+	remote_hand_r.init(1);
+ 	remote_hand_l.init(0);
 			
  }
  
@@ -64,12 +72,6 @@
  
  function Client::step(hand_r, hand_l)
  {	
- 	var handr = Hand();
- 	var handl = Hand();
- 	
- 	handr.init(1);
- 	handl.init(0);
- 	
 	if (hand_r.is_active == 1) {
 		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
 		pkt_hand_r.payload.is_right = 1;
@@ -81,17 +83,21 @@
 		pkt_hand_l.payload.is_right = 0;
 		send(pkt_hand_l);
 	}
+	while (NetDataReady(id_channel) == TRUE) {
+		var data = recv();
+		if (data != NULL) {
+			if (data.payload.is_right == 1) {
+				remote_hand_r.push_raw_data(data.payload.raw_data);
+			}
+			else if (data.payload.is_right == 0) {
+				remote_hand_l.push_raw_data(data.payload.raw_data);
+				
+			}
+		}	
+	}
 	
-	var data = recv();
-	if (data != NULL) {
-		if (data.payload.is_right == 1) {
-			handr.push_raw_data(data.payload.raw_data);
-			handr.draw();
-		}
-		else if (data.payload.is_right == 0) {
-			handl.push_raw_data(data.payload.raw_data);
-			handl.draw();
-		}
-	}	
+	// It has to be inserted a timeout due to the ghost effect
 	
+	remote_hand_l.draw();
+	remote_hand_r.draw();
  }
