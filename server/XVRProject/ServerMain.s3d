@@ -5,7 +5,7 @@
 #define CAM_STEP	0.05
 
 /* Include shared libraries */
-#include "../../../libXVRshared/Server.s3d"
+#include "../../libXVRshared/Server.s3d"
 
 /* Initialization synchonization */
 var end_init = 0;
@@ -55,16 +55,12 @@ function OnInit(params)
 	Light0.Enable();
 	
 	SetLocalDir("");
-	
 
 	server_t = Server();
 	server_t.conf("127.0.0.1", 5000, 5001, "127.0.0.1",
 		8000, "127.0.0.1", 8001
 	);
 	server_t.init();
-	
-	
-	glEnable(GL_NORMALIZE);
 	
 	end_init = 1;
 }
@@ -91,9 +87,9 @@ function DownloadReady(RequestID)
 function OnTimer()
 {
 	/* Wait the end of the OnInit() */
-	//while(end_init == 0);
-	
-	server_t.step();
+	if (end_init == 1) {
+		server_t.step();
+	}
 }
 
 

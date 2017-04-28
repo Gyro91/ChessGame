@@ -21,6 +21,7 @@ class Server {
  	var id_channel_client1, id_channel_client2;
  	var pkt_hand;
  	var pkt_piece;
+ 	var sim_res;
  	
  	conf(s_address, s_port1, s_port2, c_address1, 
  		c_port1, c_address2, c_port2
@@ -67,6 +68,10 @@ function Server::init()
  	pkt_piece = Packet();
  	init_PiecePayload(pkt_piece);
  	
+ 	sim_res = Array(NUM_PIECES);
+ 	for (var i=0; i<NUM_PIECES; i++) {
+ 		sim_res[i] = Array(6);
+ 	}
  	level_init(PHYSICAL_LVL);
 }
  
@@ -104,15 +109,20 @@ function Server::send(data, client)
  
 function Server::step()
 {	
-	var sim_res;
-	static var pos = KING_POS;
-	static var rot =  [0.0, 0.0, 0.0];
+	var pos;
+	var rot;
+	
+	manager_psx.Simulate(DELTA_T);
+	GetPhysicsResults(&sim_res);
+	pos = [sim_res[KING_ID][0], sim_res[KING_ID][1], sim_res[KING_ID][2]];
+	rot = [sim_res[KING_ID][3], sim_res[KING_ID][4], sim_res[KING_ID][5]];
+	
+	outputln(sim_res[KING_ID]);
 	
 	pkt_piece.payload.pos = pos;
 	pkt_piece.payload.rot = rot;
 	pkt_piece.payload.id = KING_ID;
 	send(pkt_piece, CLIENT_1);
-	pos+= [0.0, 0.1, 0.0];
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {
 		var data = recv(CLIENT_2);
@@ -120,8 +130,6 @@ function Server::step()
 			send(data, CLIENT_1);
 		}	
 	}
-	manager_psx.Simulate(DELTA_T);
-	sim_res = GetPhysicsResults();
 	
 	
 }	

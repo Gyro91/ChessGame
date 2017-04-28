@@ -1,0 +1,1 @@
+XVRGlut.exe .\player2\XVRProject\Player2Main.s3d.bin

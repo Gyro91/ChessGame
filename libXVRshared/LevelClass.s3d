@@ -33,25 +33,25 @@
 #define PIECE_DENSITY	1
 
 /* Pieces meshes */
-#define CHESSBOARD_MESH	"../../../meshes/chessboard.aam"
+#define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
 
 #ifdef	HI_RES
 
-#define KING_MESH		"../../../meshes/king.aam"
-#define QUEEN_MESH		"../../../meshes/queen.aam"
-#define ROOK_MESH		"../../../meshes/rook.aam"
-#define KNIGHT_MESH		"../../../meshes/knight.aam"
-#define BISHOP_MESH		"../../../meshes/bishop.aam"
-#define PAWN_MESH		"../../../meshes/pawn.aam"
+#define KING_MESH		"../../meshes/king.aam"
+#define QUEEN_MESH		"../../meshes/queen.aam"
+#define ROOK_MESH		"../../meshes/rook.aam"
+#define KNIGHT_MESH		"../../meshes/knight.aam"
+#define BISHOP_MESH		"../../meshes/bishop.aam"
+#define PAWN_MESH		"../../meshes/pawn.aam"
 
 #else 
 /* LOW_RES */
-#define KING_MESH		"../../../meshes/king_low.aam"
-#define QUEEN_MESH		"../../../meshes/queen_low.aam"
-#define ROOK_MESH		"../../../meshes/rook_low.aam"
-#define KNIGHT_MESH		"../../../meshes/knight_low.aam"
-#define BISHOP_MESH		"../../../meshes/bishop_low.aam"
-#define PAWN_MESH		"../../../meshes/pawn_low.aam"
+#define KING_MESH		"../../meshes/king_low.aam"
+#define QUEEN_MESH		"../../meshes/queen_low.aam"
+#define ROOK_MESH		"../../meshes/rook_low.aam"
+#define KNIGHT_MESH		"../../meshes/knight_low.aam"
+#define BISHOP_MESH		"../../meshes/bishop_low.aam"
+#define PAWN_MESH		"../../meshes/pawn_low.aam"
 
 #endif
 
@@ -110,16 +110,15 @@ var manager_psx;
 var rigidMaterial;
 
 function InitPhysicsEngine() {
-	setLocalDir("..\\..\\..\\physics\\lib");
+	setLocalDir("..\\..\\physics\\lib");
 	manager_psx = CVmPhManager();  
 	manager_psx.InitPhysics();	
 	rigidMaterial = manager_psx.NewMaterial(0.5, 1, 0.6);
 	setLocalDir();
 }
 
-function GetPhysicsResults() {
+function GetPhysicsResults(res) {
 	var pos, rot, angle, axis, quat;
-	var res = Array(NUM_PIECES);
 	//outputln(len(manager_psx.Array_PhObj));
 	PhysXVR.GetPhysicsResults();
 	/* The first element in the array is the chessboard */

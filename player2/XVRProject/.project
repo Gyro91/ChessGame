@@ -38,7 +38,7 @@
 				</dictionary>
 				<dictionary>
 					<key>MAIN</key>
-					<value>XVRProject.s3d</value>
+					<value>Player2Main.s3d</value>
 				</dictionary>
 				<dictionary>
 					<key>MAIN_HTML</key>
@@ -58,7 +58,7 @@
 		<link>
 			<name>libXVRshared</name>
 			<type>2</type>
-			<locationURI>copy_PARENT12/libXVRshared</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/libXVRshared</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
