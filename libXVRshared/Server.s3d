@@ -106,9 +106,9 @@ function Server::compare(old, new)
 	for (var i=0; i<NUM_PIECES; i++) {
 		if (old[i] != new[i]) {
 			pkt_piece.payload.id = i;
-			pkt_piece.payload.pos = [new[0], new[1], new[2]];
-			pkt_piece.payload.angle = new[3];
-			pkt_piece.payload.axis = [new[4], new[5], new[6]];
+			pkt_piece.payload.pos = [new[i][0], new[i][1], new[i][2]];
+			pkt_piece.payload.angle = new[i][3];
+			pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
 			
 			send(pkt_piece, CLIENT_1);
 			send(pkt_piece, CLIENT_2);
@@ -120,6 +120,8 @@ function Server::step()
 {	
 	my_level.step();
 	compare(my_level.GetTable(), my_level.GetPhysxResults());
+	my_level.UpdateTable();
+	
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {
 		var data = recv(CLIENT_2);

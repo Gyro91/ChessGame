@@ -135,6 +135,7 @@ class Level {
 	Step();
 	GetTable();
 	GetPhysxResults();
+	UpdateTable();
 #endif
 	
 	
@@ -219,14 +220,15 @@ function Level::Level() {
 	/* PHYSICAL_LVL */
 	var pos;
 	table = Array(NUM_PIECES);
-	
+	sim_res = Array(NUM_PIECES);
 	for (var i=0; i<NUM_PIECES; i++) {
-			table[i] = Array(6);
+			table[i] = Array(7);
+			sim_res[i] = Array(7);
 			pos = pieces[i].GetPosition();
 			pieces[i].GetRotation(&angle, &axis);
 			table[i] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
+			sim_res[i] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
 	}
-	sim_res = table;
 	#endif
 }
 
@@ -246,6 +248,12 @@ function Level::GetTable() {
 	return table;
 }
 
+function Level::UpdateTable() {
+	for(var i=0; i<NUM_PIECES; i++) {
+		table[i] = sim_res[i];
+	}
+}
+
 function Level::GetPhysxResults() {
 	return sim_res;
 }
@@ -254,6 +262,7 @@ function Level::Step() {
 	var pos, angle, axis;
 	angle = 0.0;
 	axis = Vector(3);
+	manager_psx.Simulate(DELTA_T);
 	PhysXVR.GetPhysicsResults();
 	/* The first element in the array is the chessboard */
 	for(var i = 1; i < len(manager_psx.Array_PhObj); i++){		

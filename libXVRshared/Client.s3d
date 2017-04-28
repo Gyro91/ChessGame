@@ -100,7 +100,8 @@
 					remote_hand_l.push_raw_data(data.payload.raw_data);
 				break;
 			case TYPE_PIECE_PAYLOAD:
-				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.rot);
+				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.angle,
+					data.payload.axis);
 				break;	
 			}
 		}
