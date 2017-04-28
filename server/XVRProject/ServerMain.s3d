@@ -3,6 +3,7 @@
 #include <Camera.s3d.h>
 
 #define CAM_STEP	0.05
+#define PHYSX
 
 /* Include shared libraries */
 #include "../../libXVRshared/Server.s3d"

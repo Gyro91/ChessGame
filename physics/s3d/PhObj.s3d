@@ -1036,7 +1036,10 @@ function CVmPhObj::NewCvShape(pos, rot, mesh, isStatic, density, segs, mat, mng)
 	}
 		
 	this.mesh = mesh;
-	this.mesh.CenterBoundingBox();
+	/* This instruction has been commented in order to compute the mesh bounding
+	 * box and  the mesh local reference frame before calling this function.
+	 */
+	//this.mesh.CenterBoundingBox();
 	cookIndex = mng.CookConvexMesh(this.mesh);
 	if(type == PHX_FIXED){
 		actor = PhysXVR.NewStaticConvexShape(cookIndex, pos, quat, mat.handler);

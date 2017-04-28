@@ -58,7 +58,7 @@
 	remote_hand_r.init(1);
  	remote_hand_l.init(0);
 	
-	level_init(GRAPHICAL_LVL);		
+	level_init();		
  }
  
 

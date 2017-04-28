@@ -4,13 +4,10 @@
  */
 #include "Packet.s3d"
 #include "HandClass.s3d"
- 
-#define PHYSX
 #include "LevelClass.s3d"
  
 #define CLIENT_1 0
 #define CLIENT_2 1
-
 
 
 class Server {
@@ -21,7 +18,6 @@ class Server {
  	var id_channel_client1, id_channel_client2;
  	var pkt_hand;
  	var pkt_piece;
- 	var sim_res;
  	
  	conf(s_address, s_port1, s_port2, c_address1, 
  		c_port1, c_address2, c_port2
@@ -29,6 +25,7 @@ class Server {
  	init();
  	recv(client);
  	send(data, client);
+ 	compare(old, new);
  	step();
  	
 };
@@ -68,11 +65,7 @@ function Server::init()
  	pkt_piece = Packet();
  	init_PiecePayload(pkt_piece);
  	
- 	sim_res = Array(NUM_PIECES);
- 	for (var i=0; i<NUM_PIECES; i++) {
- 		sim_res[i] = Array(6);
- 	}
- 	level_init(PHYSICAL_LVL);
+ 	level_init();
 }
  
  /* This function is used by the Server to receive a packet from a specified
@@ -101,28 +94,32 @@ function Server::recv(client)
   
 function Server::send(data, client)
 {	
+	outputln("Packet Sent!");
  	if (client == CLIENT_1)
  		NetVarSendTo(addr_client1, udp_client1_port, data);
  	else if (client == CLIENT_2)
  		NetVarSendTo(addr_client2, udp_client2_port, data);
 }
+
+function Server::compare(old, new)
+{
+	for (var i=0; i<NUM_PIECES; i++) {
+		if (old[i] != new[i]) {
+			pkt_piece.payload.id = i;
+			pkt_piece.payload.pos = [new[0], new[1], new[2]];
+			pkt_piece.payload.angle = new[3];
+			pkt_piece.payload.axis = [new[4], new[5], new[6]];
+			
+			send(pkt_piece, CLIENT_1);
+			send(pkt_piece, CLIENT_2);
+		}
+	}
+}
  
 function Server::step()
 {	
-	var pos;
-	var rot;
-	
-	manager_psx.Simulate(DELTA_T);
-	GetPhysicsResults(&sim_res);
-	pos = [sim_res[KING_ID][0], sim_res[KING_ID][1], sim_res[KING_ID][2]];
-	rot = [sim_res[KING_ID][3], sim_res[KING_ID][4], sim_res[KING_ID][5]];
-	
-	outputln(sim_res[KING_ID]);
-	
-	pkt_piece.payload.pos = pos;
-	pkt_piece.payload.rot = rot;
-	pkt_piece.payload.id = KING_ID;
-	send(pkt_piece, CLIENT_1);
+	my_level.step();
+	compare(my_level.GetTable(), my_level.GetPhysxResults());
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {
 		var data = recv(CLIENT_2);
@@ -130,6 +127,4 @@ function Server::step()
 			send(data, CLIENT_1);
 		}	
 	}
-	
-	
 }	
