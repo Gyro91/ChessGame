@@ -8,6 +8,7 @@
 #define GRAB_THRESH 4
 
 /* 
+ * 
  * The class manage the status of an hand and it allows object grabbing. 
  * It receives packet from the Server and according with the Architect it
  * modify pieces position. 
@@ -17,7 +18,6 @@
  class Hand_SM {
  	
  	var current_state;
- 	var next_state;
  	var id_piece;
  	var my_name;
  	
@@ -35,6 +35,8 @@
  
  function Hand_SM::step(pkt)
  {
+ 	var next_state;
+ 	
  	/*
  	 * decode the packet
  	 */
