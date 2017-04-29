@@ -94,7 +94,7 @@ function Server::recv(client)
   
 function Server::send(data, client)
 {	
-	outputln("Packet Sent!");
+	//outputln("Packet Sent!");
  	if (client == CLIENT_1)
  		NetVarSendTo(addr_client1, udp_client1_port, data);
  	else if (client == CLIENT_2)
@@ -103,6 +103,7 @@ function Server::send(data, client)
 
 function Server::compare(old, new)
 {
+
 	for (var i=0; i<NUM_PIECES; i++) {
 		if (old[i] != new[i]) {
 			pkt_piece.payload.id = i;

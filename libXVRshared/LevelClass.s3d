@@ -84,7 +84,7 @@
 #define OPP_PAWN_VECT	[0.0, 0.0, OPP_PAWN_Z]
 #define OPP_OTHER_VECT	[0.0, 0.0, OPP_OTHER_Z]
 #define NO_ROT			[0.0, 0.0, 0.0]
-#define OPP_ROT			[0.0, 180, 0.0]
+#define OPP_ROT			[0.0, 180.0, 0.0]
 #define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
 #define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define ROOK1_POS		[SQUARE_SIZE*7.5, Y_OFFSET, SQUARE_SIZE*0.5]
@@ -179,10 +179,15 @@ function level_init() {
 	InitPhysicsEngine();
 	/* Set the gravity */
 	manager_psx.SetSceneGravity([0.0,-9.8,0.0]);
+	output("Loading Physical Objects...");
 #endif
 	
 	/* Initialize the level */
 	my_level = Level();
+	
+#ifdef PHYSX
+	output("OK!");
+#endif
 }
 
 /*
@@ -262,6 +267,7 @@ function Level::Step() {
 	var pos, angle, axis;
 	angle = 0.0;
 	axis = Vector(3);
+
 	manager_psx.Simulate(DELTA_T);
 	PhysXVR.GetPhysicsResults();
 	/* The first element in the array is the chessboard */
@@ -271,7 +277,7 @@ function Level::Step() {
 			manager_psx.Array_PhObj[i].GetRotation(&angle, &axis);
 			if (i % 2 != 0) {
 				/* Player 1 piece */
-				sim_res[PLAYER_1 + (i-1)] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
+				sim_res[PLAYER_1 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
 			} else {
 				/* Player 2 piece */
 				sim_res[PLAYER_2 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
@@ -292,7 +298,7 @@ function Level::Draw() {
  * Piece Class Member Functions
  */
 
-function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
+function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	var p2, bb, rot;
 	
 	/* Check if the piece belongs to player 2 */
@@ -307,8 +313,10 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
 	}
 	pos = init_pos;
 	/* Convert the orientation from euler angles to angle-axis convention */
-	rot = QuaternionToAxisAngle(EulerToQuaternion(init_rot));
-	angle = rot[3];
+	rot = EulerToQuaternion(init_rot);
+	rot = QuaternionToAxisAngle(rot);
+	/* The angle must be converted in degrees */
+	angle = RAD_TO_GRAD*rot[3];
 	axis = [rot[0], rot[1], rot[2]];
 	
 	switch(id) {
@@ -369,16 +377,16 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot, type) {
 	 * Instanciate the physical object
 	 */
 	if (id == CHESSBOARD_ID) {
-		psx = manager_psx.AddPhConvexShape(pos, rot, mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
+		psx = manager_psx.AddPhConvexShape(pos, init_rot, mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
 	} else {
-		psx = manager_psx.AddPhConvexShape(pos, rot, mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		psx = manager_psx.AddPhConvexShape(pos, init_rot, mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
 	} 
 #else
 	/* GRAPHICAL_LVL 
 	 * Instanciate the graphical object 
 	 */
 	obj = CVmObj(mesh);
-	this.Update(pos,rot);
+	Update(pos, angle, axis);
 #endif
 }
 

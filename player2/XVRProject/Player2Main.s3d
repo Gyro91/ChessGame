@@ -4,6 +4,7 @@
 #include <Camera.s3d.h>
 #include "../../libXVRshared/Client.s3d"
 
+#define CAM_STEP	0.1
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
@@ -32,6 +33,7 @@ var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
 
 /* Function declarations */
 function CameraMoveMouse();
+function CameraMoveKeyboard();
 function DrawGrid(col, size);
 
 
@@ -80,9 +82,11 @@ function OnInit(params)
 function OnFrame()
 {	
 	CameraMoveMouse();
+	CameraMoveKeyboard();
 	
 	client_t.step(hand_r, hand_l);
-	SceneBegin();	
+	
+	SceneBegin(VR_SHOW_STATS);	
 	DrawGrid([0.5, 0.5, 0.5], 100);	
 	
 	hand_r.update();
@@ -134,6 +138,42 @@ function CameraMoveMouse()
 
 }
 
+/* Camera Manager (Using Keyboard) */
+function CameraMoveKeyboard() {
+	var cam;
+	var x_trasl, y_trasl, z_trasl;
+	
+	/* Get the actual camera. */
+	cam = CameraGetCurrent();
+	
+	/* Get the actual camera axes. */
+	x_trasl = cam.GetXAxis()*CAM_STEP;
+	y_trasl = cam.GetYAxis()*CAM_STEP;
+	z_trasl = cam.GetZAxis()*CAM_STEP;
+	
+	/* W,A,S,D keys control the camera movements as in FPS games.
+	 * Keys Q and Z are used to adjust the camera height (w.r.t.
+	 * the camera Y axis).
+	 */
+	if (keypressed("W")) {
+		cam.SetPosition(cam.GetPosition() - z_trasl);
+	}
+	if (keypressed("S")) {
+		cam.SetPosition(cam.GetPosition() + z_trasl);
+	}
+	if (keypressed("A")) {
+		cam.SetPosition(cam.GetPosition() - x_trasl);
+	}
+	if (keypressed("D")) {
+		cam.SetPosition(cam.GetPosition() + x_trasl);
+	}
+	if (keypressed("Q")) {
+		cam.SetPosition(cam.GetPosition() + y_trasl);
+	}
+	if (keypressed("Z")) {
+		cam.SetPosition(cam.GetPosition() - y_trasl);
+	}
+}
 
 
 function DrawGrid(col, size)
