@@ -2,7 +2,14 @@
 #define NUM_COORD 3
 #define NUM_JOINTS 5
 #define MM_TO_M 0.01
-#define LENGTH_RAW_DATA 81
+#define LENGTH_RAW_DATA 81 
+#define F_TP 4
+#define F_THUMB 0
+#define F_INDEX 1
+#define F_MIDDLE 2
+#define F_RING 3
+#define F_PINKY 4
+
 
 GLOBAL var leapDll;
 
@@ -35,6 +42,7 @@ class Hand {
 	var palm_mesh;
 	var palm_mat;
 	var hand_obj;
+	var first_time_not_active; // to avoid time-out management on server part
 	
 	init(is_right_param);
 	get_raw_data();
@@ -52,6 +60,7 @@ function Hand::init(is_right_param)
 	fingers = Array(NUM_FINGERS);
 	is_right = is_right_param;
 	is_active = 0;
+	first_time_not_active = false;
 	
 	for(var i = 0; i < NUM_COORD; i++) {
 		palm_position[i] = 0;
@@ -97,7 +106,9 @@ function Hand::update()
 	
 	if (is_data == 1) 
 		is_active = 0; // The hand is not present
+
 	else {
+		first_time_not_active = true;
 		is_active = 1;
 		// Changing frame base
 		raw_data = tmp_raw_data;

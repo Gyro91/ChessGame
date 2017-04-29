@@ -7,9 +7,15 @@
  
 #define PHYSX
 #include "LevelClass.s3d"
+#include "Hand_SM.s3d"
  
 #define CLIENT_1 0
 #define CLIENT_2 1
+#define NUM_REMOTE_HANDS 4
+#define PL1_HND_R 0
+#define PL1_HND_L 1
+#define PL2_HND_R 2
+#define PL2_HND_L 3
 
 
 
@@ -22,6 +28,8 @@ class Server {
  	var pkt_hand;
  	var pkt_piece;
  	
+ 	var remote_hands;
+ 	
  	conf(s_address, s_port1, s_port2, c_address1, 
  		c_port1, c_address2, c_port2
  	);
@@ -29,6 +37,7 @@ class Server {
  	recv(client);
  	send(data, client);
  	step();
+ 	toHandSM(pkt,client);
  	
 };
  
@@ -68,6 +77,17 @@ function Server::init()
  	init_PiecePayload(pkt_piece);
  	
  	level_init(PHYSICAL_LVL);
+ 	
+ 	remote_hands = Array(NUM_REMOTE_HANDS); 
+ 	
+ 	for (var i = 0; i < NUM_REMOTE_HANDS; i++) {
+		remote_hands[i] =  Hand_SM();
+	}
+	remote_hands[PL1_HND_R].init(PLAYER_1);
+	remote_hands[PL1_HND_L].init(PLAYER_1);
+	remote_hands[PL2_HND_R].init(PLAYER_2);
+	remote_hands[PL2_HND_L].init(PLAYER_2);	
+	
 }
  
  /* This function is used by the Server to receive a packet from a specified
@@ -78,15 +98,27 @@ function Server::recv(client)
 {	
  	var pkt = Packet();
  	
+ 	/*
+ 	 * Elaborate the packet
+ 	 */
+
+ 	
  	if (client == CLIENT_1) {
  		pkt = NetVarReceiveFrom(id_channel_client1, addr_client1);
- 		if (pkt != NULL)
- 			return pkt;
+
+ 		if (pkt != NULL) {
+ 			if (pkt.type == TYPE_HAND_PAYLOAD)
+ 				toHandSM(pkt,client);
+ 			return pkt;	
+		}
  	}
  	else if (client == CLIENT_2) {
  		pkt = NetVarReceiveFrom(id_channel_client2, addr_client2);
- 		if (pkt != NULL)
- 			return pkt;
+ 		if (pkt != NULL) {
+ 			if (pkt.type == TYPE_HAND_PAYLOAD)
+ 				toHandSM(pkt,client);
+ 			return pkt;	
+		}
  	}
 }
  
@@ -120,8 +152,41 @@ function Server::step()
 			send(data, CLIENT_1);
 		}	
 	}
+	while (NetDataReady(id_channel_client1) == TRUE) {
+		var data = recv(CLIENT_1);
+		if (data != NULL) {
+			send(data, CLIENT_2);
+		}	
+	}
+	
 	manager_psx.Simulate(DELTA_T);
 	sim_res = GetPhysicsResults();
 	
 	
 }	
+
+/*
+ * This function elaborate data from real hand and steps its correspondent Hand_SM 
+ */
+function Server::toHandSM(pkt,client)
+{
+	var smPaketTemp = smPaket();
+	smPaketTemp.init(pkt);
+	
+	/*
+	 * Routing data from the packet
+	*/
+	if (pkt.payload.is_right == 1) {
+		if (client == CLIENT_1)
+			remote_hands[PL1_HND_R].step(smPaketTemp);
+		else
+			remote_hands[PL2_HND_R].step(smPaketTemp);
+	} else {
+		if (client == CLIENT_1)
+			remote_hands[PL1_HND_L].step(smPaketTemp);
+		else
+			remote_hands[PL2_HND_L].step(smPaketTemp);		
+	}
+	
+}
+

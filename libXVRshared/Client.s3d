@@ -81,12 +81,27 @@
 	if (hand_r.is_active == 1) {
 		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
 		pkt_hand_r.payload.is_right = 1;
+		pkt_hand_r.payload.status_hand = 1;
+		send(pkt_hand_r);
+	} 
+	if (hand_r.is_active == 0 && hand_r.first_time_not_active == true) {
+		hand_r.first_time_not_active = false;
+		pkt_hand_r.payload.raw_data = 0;
+		pkt_hand_r.payload.is_right = 1;
+		pkt_hand_r.payload.status_hand = 0;
 		send(pkt_hand_r);
 	}
-	
 	if (hand_l.is_active == 1) {
 		pkt_hand_l.payload.raw_data = hand_l.get_raw_data();
 		pkt_hand_l.payload.is_right = 0;
+		pkt_hand_l.payload.status_hand = 1;
+		send(pkt_hand_l);
+	}
+	if (hand_l.is_active == 0 && hand_l.first_time_not_active == true) {
+		hand_l.first_time_not_active = false;
+		pkt_hand_l.payload.raw_data = 0;
+		pkt_hand_l.payload.is_right = 0;
+		pkt_hand_l.payload.status_hand = 0;
 		send(pkt_hand_l);
 	}
 	while (NetDataReady(id_channel) == TRUE) {
