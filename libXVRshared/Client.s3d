@@ -2,6 +2,8 @@
   *  This library implements all the classes and functions for the Client side
   * 
   */
+ //#define HI_RES 
+  
  #include "Packet.s3d"
  #include "HandClass.s3d"
  #include "LevelClass.s3d"

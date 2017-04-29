@@ -119,9 +119,12 @@ function Server::compare(old, new)
  
 function Server::step()
 {	
+	/* Update the simulation status */
 	my_level.step();
-	compare(my_level.GetTable(), my_level.GetPhysxResults());
-	my_level.UpdateTable();
+	/* Check if the status of any piece has changed */
+	compare(my_level.GetStatus(), my_level.GetPhysxResults());
+	/* Update the piece status table */
+	my_level.UpdateStatus();
 	
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {

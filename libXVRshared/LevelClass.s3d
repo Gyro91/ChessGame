@@ -1,7 +1,9 @@
 #ifdef PHYSX
 
 #include "..\physics\s3d\PhManager.s3d"
-#define DELTA_T 0.001
+
+/* Simulation step time */
+#define DELTA_T TIMER_STEP
 
 #endif
 
@@ -36,7 +38,7 @@
 #define CHESSBOARD_MESH	"../../meshes/chessboard.aam"
 
 #ifdef	HI_RES
-
+/* HIGH RESOLUTION MESHES */
 #define KING_MESH		"../../meshes/king.aam"
 #define QUEEN_MESH		"../../meshes/queen.aam"
 #define ROOK_MESH		"../../meshes/rook.aam"
@@ -45,7 +47,7 @@
 #define PAWN_MESH		"../../meshes/pawn.aam"
 
 #else 
-/* LOW_RES */
+/* LOW RESOLUTION MESHES */
 #define KING_MESH		"../../meshes/king_low.aam"
 #define QUEEN_MESH		"../../meshes/queen_low.aam"
 #define ROOK_MESH		"../../meshes/rook_low.aam"
@@ -63,7 +65,7 @@
 #define CHESSBOARD_SIZE		SIM_SCALE * 0.3
 #define SQUARE_SIZE			SIM_SCALE * 0.0375
 #define SQUARE_VECT			[SQUARE_SIZE, 0.0, 0.0]
-/* The pawn has a diameter of about 3.4 meters. usually
+/* The pawn has a diameter of about 3.4 meters. Usually
  * a square in the chessboard has a side size which is
  * twice the pawn base diameter. So, in our case we want
  * a pawn with a base diameter of 1.87 centimeters.
@@ -94,6 +96,9 @@
 #define BISHOP1_POS		[SQUARE_SIZE*5.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET, SQUARE_SIZE*0.5]
+
+#define PLANE_NORM		[0.0, 1.0, 0.0]
+#define PLANE_DIST		0
 
 #define PHYSICAL_LVL	0
 #define GRAPHICAL_LVL	1
@@ -129,13 +134,13 @@ class Level {
 	var chessboard;
 #ifdef PHYSX	
 	/* PHYSICAL_LVL */
-	var table;
+	var status;
 	var sim_res;
 	
 	Step();
-	GetTable();
+	GetStatus();
 	GetPhysxResults();
-	UpdateTable();
+	UpdateStatus();
 #endif
 	
 	
@@ -184,10 +189,6 @@ function level_init() {
 	
 	/* Initialize the level */
 	my_level = Level();
-	
-#ifdef PHYSX
-	output("OK!");
-#endif
 }
 
 /*
@@ -224,16 +225,19 @@ function Level::Level() {
 	#ifdef PHYSX
 	/* PHYSICAL_LVL */
 	var pos;
-	table = Array(NUM_PIECES);
+	status = Array(NUM_PIECES);
 	sim_res = Array(NUM_PIECES);
 	for (var i=0; i<NUM_PIECES; i++) {
-			table[i] = Array(7);
+			status[i] = Array(7);
 			sim_res[i] = Array(7);
 			pos = pieces[i].GetPosition();
 			pieces[i].GetRotation(&angle, &axis);
-			table[i] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
+			status[i] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
 			sim_res[i] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
 	}
+	
+	/* Add an invisible plane under the chessboard */
+	manager_psx.AddPhPlane(PLANE_NORM, PLANE_DIST, rigidMaterial);
 	#endif
 }
 
@@ -242,20 +246,20 @@ function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) {
 	
 #ifdef PHYSX
 	/* PHYSICAL_LVL */
-	table[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, p_axis[0], p_axis[1], 
+	status[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, p_axis[0], p_axis[1], 
 		p_axis[2]];
 #endif
 }
 
 #ifdef PHYSX
 /* PHYSICAL_LVL */
-function Level::GetTable() {
-	return table;
+function Level::GetStatus() {
+	return status;
 }
 
-function Level::UpdateTable() {
+function Level::UpdateStatus() {
 	for(var i=0; i<NUM_PIECES; i++) {
-		table[i] = sim_res[i];
+		status[i] = sim_res[i];
 	}
 }
 
