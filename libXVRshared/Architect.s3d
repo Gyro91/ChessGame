@@ -18,18 +18,37 @@ class Architect {
 	
 };
 
-function Architect::Architect() {
+function Architect::Architect() 
+{
 	is_grabbed = Array(NUM_PIECES);
 	
-	for (var i=0; i<NUM_PIECES; i++) {
+	for (var i = 0; i < NUM_PIECES; i++) {
 		is_grabbed[i] = false;
 	}
 }
 
-function Architect::grab_request(cc, player_id) {
+function Architect::grab_request(cc, player_id) 
+{	
+	var piece, bb_piece, id;
 	
+	// Checking every pieces of the player
+	for(i = 0; i < (NUM_PIECES / 2); i++) {
+		piece = my_level.GetPiece(player_id + i);
+		bb_piece = piece.mesh.GetBoundingBox();
+		// Checking if the cc is inside the Bounding Box
+		if (cc.x >= bb_piece[0] && cc.y >= bb_piece[1] && cc.z >= bb_piece[2] &&
+			cc.x <= bb_piece[3] && cc.y <= bb_piece[4] && cc.z <= bb_piece[5]) {
+				is_grabbed[player_id + i] = true;
+				id = player_id + i;
+				return id;
+			}
+			
+	}
+	
+	return -2;
 }
 
-function Architect::grab_release(player_id, piece_id) {
-	grab_map[player_id + piece_id] = false;
+function Architect::grab_release(player_id, piece_id) 
+{
+	id_grabbed[player_id + piece_id] = false;
 }

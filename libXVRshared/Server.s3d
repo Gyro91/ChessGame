@@ -11,6 +11,7 @@
 
 
 class Server {
+	
 	var server_address;
  	var udp_server_port1, udp_server_port2;
  	var addr_client1, addr_client2;	
