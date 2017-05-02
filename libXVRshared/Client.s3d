@@ -2,6 +2,8 @@
   *  This library implements all the classes and functions for the Client side
   * 
   */
+ //#define HI_RES 
+  
  #include "Packet.s3d"
  #include "HandClass.s3d"
  #include "LevelClass.s3d"
@@ -58,7 +60,7 @@
 	remote_hand_r.init(1);
  	remote_hand_l.init(0);
 	
-	level_init(GRAPHICAL_LVL);		
+	level_init();		
  }
  
 
@@ -115,7 +117,8 @@
 					remote_hand_l.push_raw_data(data.payload.raw_data);
 				break;
 			case TYPE_PIECE_PAYLOAD:
-				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.rot);
+				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.angle,
+					data.payload.axis);
 				break;	
 			}
 		}

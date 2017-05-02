@@ -1,0 +1,93 @@
+/* Include s3d symbols */
+#include <Script3d.h>
+#include <Camera.s3d.h>
+
+#define PHYSX
+#define TIMER_STEP 0.01
+
+/* Include shared libraries */
+#include "../../libXVRshared/Server.s3d"
+
+/* Initialization synchonization */
+var end_init = 0;
+
+
+/* Set global scene parameters */
+SET SCENE_FOV  = 60;
+SET SCENE_NEAR = 0.005;
+SET SCENE_FAR  = 1000;
+
+
+/* COMMUNICATION VARIABLES */
+var server_t;
+
+
+
+function OnDownload()
+{
+	// TODO: download your resources here
+	// E.g.: FileDownload("resource.ext");
+}
+
+
+
+function OnInit(params)
+{
+	SetLocalDir("");
+	
+	SetTimeStep(TIMER_STEP);
+
+	server_t = Server();
+	server_t.conf("127.0.0.1", 5000, 5001, "127.0.0.1",
+		8000, "127.0.0.1", 8001
+	);
+	server_t.init();
+	
+	/*Initialization ended */
+	end_init = 1;
+}
+
+function OnFrame()
+{	
+	SceneBegin();
+	
+	SceneEnd();
+	
+}
+
+
+function DownloadReady(RequestID)
+{
+	// TODO
+}
+
+
+
+function OnTimer()
+{
+	/* Wait the end of the OnInit() */
+	if (end_init == 1) {
+		server_t.step();
+	}
+}
+
+
+
+function OnExit()
+{
+
+}
+
+
+//////// Utility fnctions
+
+
+function OnEvent()
+{
+	
+}
+
+function OnError()
+{
+	
+}

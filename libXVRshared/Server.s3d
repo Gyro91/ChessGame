@@ -4,9 +4,8 @@
  */
 #include "Packet.s3d"
 #include "HandClass.s3d"
- 
-#define PHYSX
 #include "LevelClass.s3d"
+#include "Architect.s3d"
 #include "Hand_SM.s3d"
  
 #define CLIENT_1 0
@@ -18,8 +17,8 @@
 #define PL2_HND_L 3
 
 
-
 class Server {
+	
 	var server_address;
  	var udp_server_port1, udp_server_port2;
  	var addr_client1, addr_client2;	
@@ -36,6 +35,7 @@ class Server {
  	init();
  	recv(client);
  	send(data, client);
+ 	compare(old, new);
  	step();
  	toHandSM(pkt,client);
  	
@@ -76,8 +76,8 @@ function Server::init()
  	pkt_piece = Packet();
  	init_PiecePayload(pkt_piece);
  	
- 	level_init(PHYSICAL_LVL);
- 	
+	level_init();
+	
  	remote_hands = Array(NUM_REMOTE_HANDS); 
  	
  	for (var i = 0; i < NUM_REMOTE_HANDS; i++) {
@@ -87,7 +87,6 @@ function Server::init()
 	remote_hands[PL1_HND_L].init(PLAYER_1);
 	remote_hands[PL2_HND_R].init(PLAYER_2);
 	remote_hands[PL2_HND_L].init(PLAYER_2);	
-	
 }
  
  /* This function is used by the Server to receive a packet from a specified
@@ -128,23 +127,38 @@ function Server::recv(client)
   
 function Server::send(data, client)
 {	
+	//outputln("Packet Sent!");
  	if (client == CLIENT_1)
  		NetVarSendTo(addr_client1, udp_client1_port, data);
  	else if (client == CLIENT_2)
  		NetVarSendTo(addr_client2, udp_client2_port, data);
 }
+
+function Server::compare(old, new)
+{
+
+	for (var i=0; i<NUM_PIECES; i++) {
+		if (old[i] != new[i]) {
+			pkt_piece.payload.id = i;
+			pkt_piece.payload.pos = [new[i][0], new[i][1], new[i][2]];
+			pkt_piece.payload.angle = new[i][3];
+			pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
+			
+			send(pkt_piece, CLIENT_1);
+			send(pkt_piece, CLIENT_2);
+		}
+	}
+}
  
 function Server::step()
 {	
-	var sim_res;
-	static var pos = KING_POS;
-	static var rot =  [0.0, 0.0, 0.0];
+	/* Update the simulation status */
+	my_level.step();
+	/* Check if the status of any piece has changed */
+	compare(my_level.GetStatus(), my_level.GetPhysxResults());
+	/* Update the piece status table */
+	my_level.UpdateStatus();
 	
-	pkt_piece.payload.pos = pos;
-	pkt_piece.payload.rot = rot;
-	pkt_piece.payload.id = KING_ID;
-	send(pkt_piece, CLIENT_1);
-	pos+= [0.0, 0.1, 0.0];
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {
 		var data = recv(CLIENT_2);
@@ -152,21 +166,17 @@ function Server::step()
 			send(data, CLIENT_1);
 		}	
 	}
+
 	while (NetDataReady(id_channel_client1) == TRUE) {
 		var data = recv(CLIENT_1);
 		if (data != NULL) {
 			send(data, CLIENT_2);
 		}	
-	}
-	
-	manager_psx.Simulate(DELTA_T);
-	sim_res = GetPhysicsResults();
-	
-	
+	}	
 }	
 
 /*
- * This function elaborate data from real hand and steps its correspondent Hand_SM 
+ * This function elaborates data from real hand and steps its correspondent Hand_SM 
  */
 function Server::toHandSM(pkt,client)
 {
@@ -187,6 +197,5 @@ function Server::toHandSM(pkt,client)
 		else
 			remote_hands[PL2_HND_L].step(smPaketTemp);		
 	}
-	
 }
 

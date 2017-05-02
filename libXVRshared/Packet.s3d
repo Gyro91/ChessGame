@@ -20,7 +20,8 @@ class PiecePayload {
 	
 	var id;
 	var pos;
-	var rot;
+	var angle;
+	var axis;
 };
 
 class HandPayload {
