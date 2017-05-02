@@ -99,7 +99,9 @@ function smPaket::init(pkt)
  	  */
  	if (is_hand == 0) {
  		current_state = SM_STATE_WAIT;
- 		outputln("SM_STATE_WAIT");
+ 		output(my_name);
+ 		outputln(" SM_STATE_WAIT");
+ 		
  		/*
  		 * Unlock the object if grabbed
  		 */
@@ -112,12 +114,14 @@ function smPaket::init(pkt)
 		case SM_STATE_WAIT:
 	      	if (lenght >= GRAB_THRESH) {
 	      		current_state = SM_STATE_OPEN;
-	      		outputln("SM_STATE_OPEN");
+	      		output(my_name);
+	      		outputln(" SM_STATE_OPEN");
       		}
 	    	break;
 		case SM_STATE_OPEN:
 			if (lenght < GRAB_THRESH) {
 				current_state = SM_STATE_CLOSED;
+				output(my_name);
 				outputln("SM_STATE_CLOSED");
 				/*
 				 * Request to the Architect
@@ -134,7 +138,8 @@ function smPaket::init(pkt)
 		case SM_STATE_CLOSED:
 	      	if (lenght >= GRAB_THRESH) {
 	      		current_state = SM_STATE_OPEN;
-	      		outputln("SM_STATE_OPEN");
+	      		output(my_name);
+	      		outputln(" SM_STATE_OPEN");
       		}
 	    	break;
 		case SM_STATE_GRABBED:

@@ -2,6 +2,7 @@
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
+#define PLAYER_1_TRASL
 #include "../../libXVRshared/Client.s3d"
 
 #define CAM_STEP	0.1
@@ -28,7 +29,7 @@ var p_adversary;
 var client_t;
 
 /* Camera globals */
-var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
+var CamPos = [14.5822 , 9.4691 , -47.8944]; 	// camera position
 
 
 /* Function declarations */
@@ -51,7 +52,7 @@ function OnInit(params)
 {
 	/* initialize camera */
 	CameraGetCurrent().SetPosition(CamPos);
-
+	CameraGetCurrent().SetRotation(180, [0.0, 1, 0.0]);
 	// TODO: put your initialization code here
 	SetLocalDir("");
 	

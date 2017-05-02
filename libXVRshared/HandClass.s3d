@@ -1,7 +1,8 @@
 #define NUM_FINGERS 5
 #define NUM_COORD 3
 #define NUM_JOINTS 5
-#define MM_TO_M 0.01
+#define NUM_VECTORS 27
+#define JOINT_RADIUS 0.005
 #define LENGTH_RAW_DATA 81 
 #define F_TP 4
 #define F_THUMB 0
@@ -9,7 +10,11 @@
 #define F_MIDDLE 2
 #define F_RING 3
 #define F_PINKY 4
-
+#define TIMEOUT_TRSH 10
+#define HAND_SCALE (0.001 * SIM_SCALE)
+#define XT (4 * SQUARE_SIZE)
+#define YT (-0.1 * SIM_SCALE)
+#define ZT (4 * SQUARE_SIZE)
 
 GLOBAL var leapDll;
 
@@ -42,11 +47,13 @@ class Hand {
 	var palm_mesh;
 	var palm_mat;
 	var hand_obj;
+	var timeout;
 	var first_time_not_active; // to avoid time-out management on server part
 	
 	init(is_right_param);
 	get_raw_data();
-	push_raw_data(tmp_raw_data);	
+	push_raw_data(tmp_raw_data);
+	trans(data);	
 	update();
 	draw();
 };
@@ -75,10 +82,11 @@ function Hand::init(is_right_param)
    palm_mat = CVmMaterial();
    palm_mat.diffuse =  [1.0,1.0,1.0];
    // Loading palm mesh
-   palm_mesh = CVmNewMesh(VRP_SPHERE, 10);
+   palm_mesh = CVmNewMesh(VRP_SPHERE, JOINT_RADIUS * SIM_SCALE);
    palm_mesh.SubsetSetMaterial(0, palm_mat);
    hand_obj = CVmObj(palm_mesh);
-   hand_obj.SetScale(0.1);
+
+   timeout = 0;	
 }
 
 /*
@@ -104,13 +112,17 @@ function Hand::update()
 	
 	// Checking is_data value
 	
-	if (is_data == 1) 
-		is_active = 0; // The hand is not present
-
+	if (is_data == 1) {
+		timeout++;
+		if (timeout == TIMEOUT_TRSH)
+			is_active = 0; // The hand is not present
+	}
 	else {
+		timeout = 0;
 		first_time_not_active = true;
 		is_active = 1;
 		// Changing frame base
+		trans(&tmp_raw_data);
 		raw_data = tmp_raw_data;
 		
 		write_vector(&palm_position, &tmp_raw_data, 0);
@@ -120,7 +132,7 @@ function Hand::update()
 			fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
 		
 		// Updating the obj hand position
-		hand_obj.SetPosition(palm_position * MM_TO_M);
+		hand_obj.SetPosition(palm_position);
 		// Scaling from mm to m
 	}		 
 }
@@ -144,7 +156,7 @@ function FingerClass::init()
 	joints = Array(NUM_JOINTS);
 	fingers_obj = Array(NUM_FINGERS);
 	
-	fingers_mesh = CVmNewMesh(VRP_SPHERE, 10);
+	fingers_mesh = CVmNewMesh(VRP_SPHERE, JOINT_RADIUS * SIM_SCALE);
 	fingers_mat = CVmMaterial();
     fingers_mat.diffuse =  [1.0, 0.0, 0.0];
     fingers_mesh.SubsetSetMaterial(0, fingers_mat);
@@ -155,8 +167,8 @@ function FingerClass::init()
 			joints[i][j] = 0;	
 		
 		fingers_obj[i] = CVmObj(fingers_mesh);
-    	fingers_obj[i].SetScale(0.1);
-	}	
+	}
+
 }
 
 /* This function updates the finger data mapping from raw data 
@@ -168,7 +180,7 @@ function FingerClass::update(raw_data, offset)
  	for(var i = 0; i < NUM_JOINTS; i++) {
 		write_vector(&joints[i], raw_data, offset + (i * NUM_COORD));
 		// Updating the obj fingers position
-		fingers_obj[i].SetPosition(joints[i] * MM_TO_M);	
+		fingers_obj[i].SetPosition(joints[i]);	
 	}
 }
 
@@ -211,8 +223,28 @@ function Hand::push_raw_data(tmp_raw_data) {
 		fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
 	
 	// Updating the obj hand position
-	hand_obj.SetPosition(palm_position * MM_TO_M);
+	hand_obj.SetPosition(palm_position);
 	// Scaling from mm to m
 	// outputln(hand_obj.GetPosition());
+}
+
+/* This function translates the Hand raw data */
+
+function Hand::trans(data)
+{	
+	for(var i = 0; i < NUM_VECTORS; i++) {		
+		#ifdef PLAYER_1_TRASL
+		data[3 * i] = -HAND_SCALE * data[3 * i] + XT;
+		data[(3 * i) + 1] = HAND_SCALE * data[(3 * i) + 1] + YT;
+		data[(3 * i) + 2] = -HAND_SCALE * data[(3 * i) + 2] + ZT;
+		#endif
+		
+		#ifdef PLAYER_2_TRASL
+		data[3 * i] = HAND_SCALE * data[3 * i] + XT;
+		data[(3 * i) + 1] = HAND_SCALE * data[(3 * i) + 1] + YT;
+		data[(3 * i) + 2] = HAND_SCALE * data[(3 * i) + 2] + ZT;
+		#endif
+	}
+	
 }
  
