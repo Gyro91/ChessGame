@@ -4,7 +4,6 @@
  * 
  */
  
- #include "LevelClass.s3d"
 
 class Architect {
 	/* Map for the grab state of the pieces. 
@@ -32,7 +31,7 @@ function Architect::grab_request(cc, player_id)
 	var piece, bb_piece, id;
 	
 	// Checking every pieces of the player
-	for(i = 0; i < (NUM_PIECES / 2); i++) {
+	for(var i = 0; i < (NUM_PIECES / 2); i++) {
 		piece = my_level.GetPiece(player_id + i);
 		bb_piece = piece.mesh.GetBoundingBox();
 		// Checking if the cc is inside the Bounding Box
@@ -42,7 +41,6 @@ function Architect::grab_request(cc, player_id)
 				id = player_id + i;
 				return id;
 			}
-			
 	}
 	
 	return -2;
@@ -50,5 +48,5 @@ function Architect::grab_request(cc, player_id)
 
 function Architect::grab_release(player_id, piece_id) 
 {
-	id_grabbed[player_id + piece_id] = false;
+	is_grabbed[player_id + piece_id] = false;
 }

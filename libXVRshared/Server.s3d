@@ -5,7 +5,8 @@
 #include "Packet.s3d"
 #include "HandClass.s3d"
 #include "LevelClass.s3d"
- 
+#include "Architect.s3d"
+
 #define CLIENT_1 0
 #define CLIENT_2 1
 
