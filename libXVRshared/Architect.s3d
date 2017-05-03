@@ -36,7 +36,8 @@ function Architect::grab_request(cc, player_id)
 		bb_piece = piece.mesh.GetBoundingBox();
 		// Checking if the cc is inside the Bounding Box
 		if (cc.x >= bb_piece[0] && cc.y >= bb_piece[1] && cc.z >= bb_piece[2] &&
-			cc.x <= bb_piece[3] && cc.y <= bb_piece[4] && cc.z <= bb_piece[5]) {
+			cc.x <= bb_piece[3] && cc.y <= bb_piece[4] && cc.z <= bb_piece[5] &&
+			is_grabbed[player_id + i] == false) {
 				is_grabbed[player_id + i] = true;
 				id = player_id + i;
 				return id;

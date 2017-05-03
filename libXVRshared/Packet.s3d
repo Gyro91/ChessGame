@@ -1,6 +1,16 @@
 #define TYPE_PIECE_PAYLOAD 0
 #define TYPE_HAND_PAYLOAD 1
 
+#define LOOPBACK_ADDR "127.0.0.1"
+#define SERVER_ADDR 
+#define CLIENT_1_ADDR 
+#define CLIENT_2_ADDR
+#define SERVER_UDP_PORT_CLIENT_1 5000
+#define SERVER_UDP_PORT_CLIENT_2 5001
+#define CLIENT_1_UDP_PORT 8000
+#define CLIENT_2_UDP_PORT 8001
+#define NETWORK_LOOPBACK
+
 /* 
  * Type 0 Packet: 6DoF and piece id;
  * Type 1 Packet: Data Hand;.

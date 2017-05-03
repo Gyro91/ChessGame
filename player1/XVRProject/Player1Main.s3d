@@ -56,7 +56,7 @@ function OnInit(params)
 	// TODO: put your initialization code here
 	SetLocalDir("");
 	
- 	leapDll = CVmExternDLL( "../DLL_Leap_MotionXVR/Debug/DLL_Leap_MotionXVR.dll" );
+ 	leapDll = CVmExternDLL(DLL_PATH);
 
 	leapDll.__AddFunction(C_VOID, "get_seq_number", C_PFLOAT);
 	leapDll.__AddFunction(C_INT, "get_right_hand", C_PFLOAT);
@@ -70,8 +70,17 @@ function OnInit(params)
 	
 	
 	client_t = Client();
-	client_t.conf("127.0.0.1", 5000, 8000);
+	#ifdef NETWORK_LOOPBACK
+	client_t.conf(LOOPBACK_ADDR, SERVER_UDP_PORT_CLIENT_1, 
+		CLIENT_1_UDP_PORT);
+	#else
+	client_t.conf(CLIENT_1_ADDR, SERVER_UDP_PORT_CLIENT_1, 
+		CLIENT_1_UDP_PORT);
+	#endif
+	
 	client_t.init();
+	
+	client_t.sync();
 
 }
 

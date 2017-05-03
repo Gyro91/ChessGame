@@ -7,6 +7,8 @@
  #include "Packet.s3d"
  #include "LevelClass.s3d"
  #include "HandClass.s3d"
+ 
+ #define DLL_PATH "../../libXVRshared/DLL_Leap_MotionXVR.dll"
   
  class Client {
  	
@@ -18,9 +20,12 @@
  	var pkt_piece;
  	var remote_hand_r; 
  	var remote_hand_l; 
+ 	var cnt_hands;
+ 	var cnt_pieces;
  	
  	conf(s_address, s_port, c_port);
  	init();
+ 	sync();
  	step(hand_r, hand_l);
  	send(data);
  	recv();
@@ -41,6 +46,10 @@
  
  function Client::init()
  {	
+ 	cnt_hands = Array(2);
+ 	cnt_hands = [0, 0];
+ 	cnt_pieces = 0;
+ 	
  	id_channel = NetCreateChannel(udp_client_port, 
  									server_address, VR_NO_BLOCKING);
  	if (id_channel == -1)
@@ -65,7 +74,10 @@
  
 
  function Client::send(data)
- {
+ {	
+ 	if (data != NULL)
+ 		data.seq_remote_id++;
+ 
 	NetVarSendTo(server_address, udp_server_port, data);
  }
 
@@ -74,8 +86,24 @@
  	var pkt = Packet();
  	
  	pkt = NetVarReceiveFrom(id_channel, server_address);
- 	if (pkt != NULL)
- 		return pkt;
+ 	if (pkt != NULL){
+ 		if (pkt.type == TYPE_HAND_PAYLOAD) {
+ 			if (pkt.seq_remote_id < cnt_hands[pkt.payload.is_right])
+ 				pkt = NULL;
+ 			else {
+ 				cnt_hands[pkt.payload.is_right] = pkt.seq_remote_id;
+ 			}
+ 			
+ 		}
+ 		else if (pkt.type == TYPE_PIECE_PAYLOAD) {
+ 			if (pkt.seq_remote_id < cnt_pieces)
+ 				pkt = NULL;
+ 			else {
+ 				cnt_pieces = pkt.seq_remote_id;
+ 			}
+ 		}
+ 	}
+ 	return pkt;
  }
  
  function Client::step(hand_r, hand_l)
@@ -125,6 +153,7 @@
 				}
 				break;
 			case TYPE_PIECE_PAYLOAD:
+				outputln(data.seq_remote_id);
 				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.angle,
 					data.payload.axis);
 				break;	
@@ -143,4 +172,9 @@
 	remote_hand_r.draw();
 	
 	my_level.Draw();
+ }
+ 
+ function Client::sync()
+ {
+ 	send(NULL);
  }

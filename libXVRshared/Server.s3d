@@ -9,7 +9,7 @@
 #include "Hand_SM.s3d"
  
 #define CLIENT_1 0
-#define CLIENT_2 1
+#define CLIENT_2 2
 #define NUM_REMOTE_HANDS 4
 #define PL1_HND_R 0
 #define PL1_HND_L 1
@@ -26,7 +26,7 @@ class Server {
  	var id_channel_client1, id_channel_client2;
  	var pkt_hand;
  	var pkt_piece;
- 	
+ 	var cnt_client;
  	var remote_hands;
  	
  	
@@ -34,6 +34,7 @@ class Server {
  		c_port1, c_address2, c_port2
  	);
  	init();
+ 	sync();
  	recv(client);
  	send(data, client);
  	compare(old, new);
@@ -63,7 +64,10 @@ function Server::conf(s_address, s_port1, s_port2, c_address1,
  */
   
 function Server::init()
-{
+{	
+	cnt_client = Array(4);
+	cnt_client = [0, 0, 0 , 0];
+	
  	id_channel_client1 = NetCreateChannel(udp_server_port1, 
  										addr_client1, VR_NO_BLOCKING);
  	if (id_channel_client1 == -1)
@@ -99,7 +103,7 @@ function Server::init()
 function Server::recv(client)
 {	
  	var pkt = Packet();
- 	
+ 	var actual_cnt;
  	/*
  	 * Elaborate the packet
  	 */
@@ -110,8 +114,13 @@ function Server::recv(client)
 
  		if (pkt != NULL) {
  			if (pkt.type == TYPE_HAND_PAYLOAD) {
- 				toHandSM(pkt, client);
- 				return pkt;
+ 				toHandSM(pkt, client); 					
+ 				if (pkt.seq_remote_id < cnt_client[client + pkt.payload.is_right])
+ 					return NULL;
+ 				else {
+ 					cnt_client[client + pkt.payload.is_right] = pkt.seq_remote_id;
+ 					return pkt;
+ 				}
  			}
 		}
  	}
@@ -120,7 +129,12 @@ function Server::recv(client)
  		if (pkt != NULL) {
  			if (pkt.type == TYPE_HAND_PAYLOAD) {
  				toHandSM(pkt, client);
- 				return pkt;
+ 				if (pkt.seq_remote_id < cnt_client[client + pkt.payload.is_right])
+ 					return NULL;
+ 				else {
+ 					cnt_client[client + pkt.payload.is_right] = pkt.seq_remote_id;
+ 					return pkt;
+ 				}
  			}
 		}
  	}
@@ -132,7 +146,6 @@ function Server::recv(client)
   
 function Server::send(data, client)
 {	
-	//outputln("Packet Sent!");
  	if (client == CLIENT_1)
  		NetVarSendTo(addr_client1, udp_client1_port, data);
  	else if (client == CLIENT_2)
@@ -148,7 +161,7 @@ function Server::compare(old, new)
 			pkt_piece.payload.pos = [new[i][0], new[i][1], new[i][2]];
 			pkt_piece.payload.angle = new[i][3];
 			pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
-			
+			pkt_piece.seq_remote_id++;
 			send(pkt_piece, CLIENT_1);
 			send(pkt_piece, CLIENT_2);
 		}
@@ -204,3 +217,17 @@ function Server::toHandSM(pkt,client)
 	}
 }
 
+/* Function to synch the server with the client. It waits until the Clients are online */
+
+function Server::sync()
+{	
+	output("Waiting for Players...");
+	
+	while (TRUE) {
+		if (NetDataReady(id_channel_client1) == TRUE &&
+			NetDataReady(id_channel_client2) == TRUE)
+			break;
+	}
+	
+	outputln("Ok, Ready!");
+}
