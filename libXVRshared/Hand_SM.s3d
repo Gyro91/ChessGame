@@ -6,6 +6,7 @@
 #define SM_STATE_GRABBED 3
 
 #define GRAB_THRESH 30
+#define LPF_TRESH 10
 /*
  * 
  */
@@ -69,19 +70,26 @@ function smPaket::init(pkt)
  	var id_piece;
  	var my_name;
  	var currPkt;
+ 	var my_player;
+ 	
+ 	var lpf_close_to_open; // low pass filter
+ 	var lpf_grabbed_to_open;
  	
  	step(pkt);
- 	init(nm);
+ 	init(nm,pl);
  	
  };
  
- function Hand_SM::init(nm) 
+ function Hand_SM::init(nm,pl) 
  {
  	current_state = -1;
  	current_state = SM_STATE_WAIT;
  	my_name = nm;
  	id_piece = -1;
  	//currPkt = smPaket();
+ 	lpf_close_to_open = LPF_TRESH;
+ 	lpf_grabbed_to_open = LPF_TRESH;
+ 	my_player = pl;
  }
  
  function Hand_SM::step(pkt)
@@ -105,10 +113,10 @@ function smPaket::init(pkt)
  		/*
  		 * Unlock the object if grabbed
  		 */
- 		/* 
- 		if (id_piece >= 0)
- 			ARCHITETTO.grab_release(id_piece, my_name);
-		*/
+
+	 		if (id_piece >= 0)
+				my_level.architect_service.grab_release(id_piece, my_player);
+ 
 	} else {
 		switch (current_state) {
 		case SM_STATE_WAIT:
@@ -127,6 +135,7 @@ function smPaket::init(pkt)
 				 * Request to the Architect
 				 */
 				 
+				 id_piece = my_level.architect_service.grab_request(position, my_player);
 				//id_piece = ARCHITETTO.grab_request(position, my_name)
 
 				if (id_piece >= 0) {
@@ -137,28 +146,41 @@ function smPaket::init(pkt)
 	    	break;
 		case SM_STATE_CLOSED:
 	      	if (lenght >= GRAB_THRESH) {
-	      		current_state = SM_STATE_OPEN;
-	      		output(my_name);
-	      		outputln(" SM_STATE_OPEN");
+	      		lpf_close_to_open--;
+	      		/*
+	      		 * Low pass filter to give more robustness to closed state
+	      		 */
+		      	if (lpf_close_to_open == 0) {
+		      		lpf_close_to_open = LPF_TRESH;
+		      		current_state = SM_STATE_OPEN;
+		      		output(my_name);
+		      		outputln(" SM_STATE_OPEN");
+	      		}
       		}
 	    	break;
 		case SM_STATE_GRABBED:
 	      	if (lenght >= GRAB_THRESH) {
-	      		current_state = SM_STATE_OPEN;
+	      		lpf_grabbed_to_open--;
+		      	if (lpf_grabbed_to_open == 0) {
+		      		lpf_grabbed_to_open = LPF_TRESH;
+		      		current_state = SM_STATE_OPEN;
+		      		output(my_name);
+		      		outputln(" SM_STATE_OPEN");
 	      		
-	      		/*
-	      		 * unlock the object
-	      		 */
-	      		 
-	      		//ARCHITETTO.grab_release(id_piece, my_name);	
+		      		/*
+		      		 * unlock the object
+		      		 */
+		      		 
+		      		my_level.architect_service.grab_release(id_piece, my_player);
+	
+	      		}
 	      		
       		} else {
       			
       			/*
       			 * Update piece position
       			 */
-      			 
-      			//LIVELLO.UpdatePosition(my_name, id_piece, position);
+      			my_level.PieceUpdate(id_piece, position, NULL, NULL);
       		}
 	    	break;
 	    default :

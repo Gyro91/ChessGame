@@ -106,7 +106,10 @@
 /* Global Level object */
 var my_level;
 
+
 #ifdef PHYSX
+
+#include "Architect.s3d"
 /*
  * PHYSX CODE
  */
@@ -130,6 +133,8 @@ function InitPhysicsEngine() {
 
 /* Level class declaration. */
 class Level {
+	var architect_service;
+	
 	var pieces;
 	var chessboard;
 #ifdef PHYSX	
@@ -189,6 +194,7 @@ function level_init() {
 	
 	/* Initialize the level */
 	my_level = Level();
+	
 }
 
 /*
@@ -238,6 +244,8 @@ function Level::Level() {
 	
 	/* Add an invisible plane under the chessboard */
 	manager_psx.AddPhPlane(PLANE_NORM, PLANE_DIST, rigidMaterial);
+	
+	architect_service = Architect();
 	#endif
 }
 
