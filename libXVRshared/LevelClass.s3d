@@ -109,7 +109,6 @@ var my_level;
 
 #ifdef PHYSX
 
-#include "Architect.s3d"
 /*
  * PHYSX CODE
  */
@@ -133,7 +132,6 @@ function InitPhysicsEngine() {
 
 /* Level class declaration. */
 class Level {
-	var architect_service;
 	
 	var pieces;
 	var chessboard;
@@ -245,8 +243,11 @@ function Level::Level() {
 	/* Add an invisible plane under the chessboard */
 	manager_psx.AddPhPlane(PLANE_NORM, PLANE_DIST, rigidMaterial);
 	
-	architect_service = Architect();
 	#endif
+}
+
+function Level::GetPiece(piece_id) {
+	return pieces[piece_id];
 }
 
 function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) {

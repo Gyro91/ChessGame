@@ -5,7 +5,8 @@
 #define SM_STATE_CLOSED 2
 #define SM_STATE_GRABBED 3
 
-#define GRAB_THRESH 30
+//#define GRAB_THRESH 30
+#define GRAB_THRESH 0.03*SIM_SCALE
 #define LPF_TRESH 10
 /*
  * 
@@ -71,6 +72,7 @@ function smPaket::init(pkt)
  	var my_name;
  	var currPkt;
  	var my_player;
+ 	var architect_service;
  	
  	var lpf_close_to_open; // low pass filter
  	var lpf_grabbed_to_open;
@@ -82,7 +84,6 @@ function smPaket::init(pkt)
  
  function Hand_SM::init(nm,pl) 
  {
- 	current_state = -1;
  	current_state = SM_STATE_WAIT;
  	my_name = nm;
  	id_piece = -1;
@@ -90,6 +91,7 @@ function smPaket::init(pkt)
  	lpf_close_to_open = LPF_TRESH;
  	lpf_grabbed_to_open = LPF_TRESH;
  	my_player = pl;
+ 	architect_service = Architect();
  }
  
  function Hand_SM::step(pkt)
@@ -115,7 +117,7 @@ function smPaket::init(pkt)
  		 */
 
 	 		if (id_piece >= 0)
-				my_level.architect_service.grab_release(id_piece, my_player);
+				architect_service.grab_release(id_piece, my_player);
  
 	} else {
 		switch (current_state) {
@@ -135,7 +137,7 @@ function smPaket::init(pkt)
 				 * Request to the Architect
 				 */
 				 
-				 id_piece = my_level.architect_service.grab_request(position, my_player);
+				 id_piece = architect_service.grab_request(position, my_player);
 				//id_piece = ARCHITETTO.grab_request(position, my_name)
 
 				if (id_piece >= 0) {
@@ -171,7 +173,7 @@ function smPaket::init(pkt)
 		      		 * unlock the object
 		      		 */
 		      		 
-		      		my_level.architect_service.grab_release(id_piece, my_player);
+		      		architect_service.grab_release(id_piece, my_player);
 	
 	      		}
 	      		
@@ -187,8 +189,4 @@ function smPaket::init(pkt)
 	      current_state = SM_STATE_WAIT;
 		}
 	} 
-
-	
  }
- 
- 

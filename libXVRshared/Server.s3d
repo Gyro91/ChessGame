@@ -5,6 +5,7 @@
  */
 #include "Packet.s3d"
 #include "LevelClass.s3d"
+#include "Architect.s3d"
 #include "HandClass.s3d"
 #include "Hand_SM.s3d"
  
@@ -88,11 +89,12 @@ function Server::init()
  	for (var i = 0; i < NUM_REMOTE_HANDS; i++) {
 		remote_hands[i] =  Hand_SM();
 	}
+	
+	// State Machine objects
 	remote_hands[PL1_HND_R].init(PL1_HND_R,PLAYER_1);
 	remote_hands[PL1_HND_L].init(PL1_HND_L,PLAYER_1);
 	remote_hands[PL2_HND_R].init(PL2_HND_R,PLAYER_2);
-	remote_hands[PL2_HND_L].init(PL2_HND_L,PLAYER_2);	
-	
+	remote_hands[PL2_HND_L].init(PL2_HND_L,PLAYER_2);
 	
 }
  
@@ -103,7 +105,6 @@ function Server::init()
 function Server::recv(client)
 {	
  	var pkt = Packet();
- 	var actual_cnt;
  	/*
  	 * Elaborate the packet
  	 */
