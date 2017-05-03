@@ -159,6 +159,8 @@ function smPaket::init(pkt)
 		      		outputln(" SM_STATE_OPEN");
 	      		}
       		}
+      		else
+	      		lpf_close_to_open = LPF_TRESH;
 	    	break;
 		case SM_STATE_GRABBED:
 	      	if (lenght >= GRAB_THRESH) {
