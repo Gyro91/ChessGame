@@ -38,10 +38,21 @@ function OnInit(params)
 	SetTimeStep(TIMER_STEP);
 
 	server_t = Server();
-	server_t.conf("127.0.0.1", 5000, 5001, "127.0.0.1",
-		8000, "127.0.0.1", 8001
+	#ifdef NETWORK_LOOPBACK
+	server_t.conf(LOOPBACK_ADDR, SERVER_UDP_PORT_CLIENT_1, 
+		SERVER_UDP_PORT_CLIENT_2, LOOPBACK_ADDR,
+		CLIENT_1_UDP_PORT, LOOPBACK_ADDR, CLIENT_2_UDP_PORT
 	);
+	#else
+	server_t.conf(SERVER_ADDR, SERVER_UDP_PORT_CLIENT_1, 
+		SERVER_UDP_PORT_CLIENT_2, CLIENT_1_ADDR,
+		CLIENT_1_UDP_PORT, CLIENT_2_ADDR, CLIENT_2_UDP_PORT
+	);
+	#endif
+	
 	server_t.init();
+	
+	server_t.sync();
 	
 	/*Initialization ended */
 	end_init = 1;
