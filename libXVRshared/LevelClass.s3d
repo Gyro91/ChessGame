@@ -97,6 +97,8 @@
 #define KING_POS		[SQUARE_SIZE*3.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define QUEEN_POS		[SQUARE_SIZE*4.5, Y_OFFSET, SQUARE_SIZE*0.5]
 
+#define PIECE_BAY		[0.0, bb[4], 0.0]
+
 #define PLANE_NORM		[0.0, 1.0, 0.0]
 #define PLANE_DIST		0
 
@@ -405,6 +407,7 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 		psx = manager_psx.AddPhConvexShape(pos, init_rot, mesh, PHX_FIXED, PIECE_DENSITY, 10, rigidMaterial);
 	} else {
 		psx = manager_psx.AddPhConvexShape(pos, init_rot, mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
+		psx.SetBarycenterREL(PIECE_BARY);
 	} 
 #else
 	/* GRAPHICAL_LVL 
