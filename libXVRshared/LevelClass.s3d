@@ -103,6 +103,10 @@
 #define PHYSICAL_LVL	0
 #define GRAPHICAL_LVL	1
 
+#define P1_COLOR		[1.0, 1.0, 1.0]
+#define P2_COLOR		[1.0, 0.0, 0.0]
+#define SEL_COLOR		[0.0, 1.0, 0.0]
+
 /* Global Level object */
 var my_level;
 
@@ -166,12 +170,14 @@ class Piece {
 	/* PHYSICAL_LVL */
 	var psx;
 	
+	SetVelocity(v);
 	setKinematic();
 	setDynamic();
 #else
 	/* GRAPHICAL_LVL */
 	var obj;
 	GetObj();
+	ChangeColor(color);
 #endif
 	
 	GetPosition();
@@ -386,7 +392,10 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	mesh.Translate([0.0, bb[4], 0.0]);
 	
 	if (p2 == 1) {
-		mesh.ModulateMaterials([1,0.0,0.0]);
+		mesh.ModulateMaterials(P2_COLOR);
+	}
+	else if (p2 == 0) {
+		mesh.ModulateMaterials(P1_COLOR);
 	}
 #ifdef PHYSX
 	/* PHYSICAL_LVL
@@ -420,6 +429,10 @@ function Piece::GetRotation(p_angle, p_axis) {
 function Piece::GetObj() {
 	return obj;
 }
+
+function Piece::ChangeColor(color) {
+	mesh.modulateMaterials(color);
+}
 #else
 function Piece::SetKinematic() {
 	psx.MakeKinematic();
@@ -429,6 +442,9 @@ function Piece::SetDynamic() {
 	psx.MakeDynamic();
 }
 
+function Piece::SetVelocity(v) {
+	psx.SetVelocity(v);
+}
 #endif
 
 function Piece::Update(p_pos, p_angle, p_axis) {		
@@ -445,3 +461,12 @@ function Piece::Update(p_pos, p_angle, p_axis) {
 #endif
 }
 
+function check_collision(cc, bb_piece, pos)
+{
+	if ((cc.x >= (bb_piece[0] + pos.x)) && (cc.y >= (bb_piece[1] + pos.y))
+			&& (cc.z >= (bb_piece[2] + pos.z)) && (cc.x <= (bb_piece[3] + pos.x)) 
+			&& (cc.y <= (bb_piece[4] + pos.y)) && (cc.z <= (bb_piece[5] + pos.z))) 
+		return true;
+	else
+		return false;
+}

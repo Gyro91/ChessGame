@@ -3,7 +3,7 @@
  * change the physic type.
  * 
  */
- 
+#define  RELEASE_SPEED [0.0, -0.01, 0.0]
 
 class Architect {
 	/* Map for the grab state of the pieces. 
@@ -35,9 +35,7 @@ function Architect::grab_request(cc, player_id)
 		piece = my_level.GetPiece(player_id + i);
 		bb_piece = piece.mesh.GetBoundingBox();
 		// Checking if the cc is inside the Bounding Box
-		if ((cc.x >= (bb_piece[0] + piece.GetPosition().x)) && (cc.y >= (bb_piece[1] + piece.GetPosition().y))
-			&& (cc.z >= (bb_piece[2] + piece.GetPosition().z)) && (cc.x <= (bb_piece[3] + piece.GetPosition().x)) 
-			&& (cc.y <= (bb_piece[4] + piece.GetPosition().y)) && (cc.z <= (bb_piece[5] + piece.GetPosition().z))
+		if (check_collision(cc, bb_piece, piece.GetPosition()) == true
 			&& is_grabbed[player_id + i] == false) {
 				is_grabbed[player_id + i] = true;
 				id = player_id + i;
@@ -54,6 +52,7 @@ function Architect::grab_release(piece_id)
 	var piece = my_level.GetPiece(piece_id);
 	
 	piece.SetDynamic();
-
+	piece.SetVelocity(RELEASE_SPEED);
+	
 	is_grabbed[piece_id] = false;
 }

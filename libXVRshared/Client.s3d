@@ -22,12 +22,14 @@
  	var remote_hand_l; 
  	var cnt_hands;
  	var cnt_pieces;
+ 	var is_selected;
  	
  	conf(s_address, s_port, c_port);
  	init();
  	sync();
- 	step(hand_r, hand_l);
+ 	step(hand_r, hand_l, player_id);
  	send(data);
+ 	selection(cc, player_id);
  	recv();
  	draw();
  	
@@ -46,10 +48,15 @@
  
  function Client::init()
  {	
+ 	var i;
  	cnt_hands = Array(2);
  	cnt_hands = [0, 0];
  	cnt_pieces = 0;
  	
+ 	is_selected = Array(NUM_PIECES / 2);
+ 	for (i = 0; i < (NUM_PIECES / 2); i++) {
+ 		is_selected[i] = false;
+ 	}
  	id_channel = NetCreateChannel(udp_client_port, 
  									server_address, VR_NO_BLOCKING);
  	if (id_channel == -1)
@@ -106,9 +113,10 @@
  	return pkt;
  }
  
- function Client::step(hand_r, hand_l)
+ function Client::step(hand_r, hand_l, player_id)
  {	
 	if (hand_r.is_active == 1) {
+		selection(hand_r.cc_position, player_id);
 		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
 		pkt_hand_r.payload.is_right = 1;
 		pkt_hand_r.payload.status_hand = 1;
@@ -122,6 +130,7 @@
 		send(pkt_hand_r);
 	}
 	if (hand_l.is_active == 1) {
+		selection(hand_l.cc_position, player_id);
 		pkt_hand_l.payload.raw_data = hand_l.get_raw_data();
 		pkt_hand_l.payload.is_right = 0;
 		pkt_hand_l.payload.status_hand = 1;
@@ -134,6 +143,10 @@
 		pkt_hand_l.payload.status_hand = 0;
 		send(pkt_hand_l);
 	}
+	
+	// Checking collision (selecting piece)
+
+	
 	while (NetDataReady(id_channel) == TRUE) {
 		var data = recv();
 		if (data != NULL) {
@@ -179,9 +192,33 @@
  }
  
  function Client::sync()
+ {	
+ 	send(NULL);
+ }
+
+ function Client::selection(cc, player_id)
  {
- 	var i;
- 	
- 	for (i = 0; i < 50; i++)
- 		send(NULL);
+ 	var piece, bb_piece, id, ret;
+	
+	// Checking every pieces of the player
+	for(var i = 0; i < (NUM_PIECES / 2); i++) {
+		piece = my_level.GetPiece(player_id + i);
+		bb_piece = piece.mesh.GetBoundingBox();
+		// Checking if the cc is inside the Bounding Box
+		ret = check_collision(cc, bb_piece, piece.GetPosition());
+		
+		if (ret == true && is_selected[i] == false) {
+			is_selected[i] = true;
+			piece.ChangeColor(SEL_COLOR);	
+		}
+		else if (ret == false && is_selected[i] == true) {
+			is_selected[i] = false;
+			if (player_id == PLAYER_1) {
+				piece.ChangeColor(P1_COLOR);
+				}
+			else {
+				piece.ChangeColor(P2_COLOR);	
+			}
+		}	
+	}
  }

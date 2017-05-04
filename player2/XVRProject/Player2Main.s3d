@@ -93,7 +93,7 @@ function OnFrame()
 {	
 	CameraMoveMouse();
 	CameraMoveKeyboard();
-	
+	client_t.step(hand_r, hand_l, PLAYER_2);
 	
 	SceneBegin(VR_SHOW_STATS);	
 	DrawGrid([0.5, 0.5, 0.5], 100);	
@@ -102,7 +102,7 @@ function OnFrame()
 	hand_l.update();
 	hand_r.draw();
 	hand_l.draw();
-	client_t.step(hand_r, hand_l);
+	
 	
 	client_t.Draw();
 

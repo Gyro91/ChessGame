@@ -15,6 +15,7 @@
 #define XT (4 * SQUARE_SIZE)
 #define YT (-0.1 * SIM_SCALE)
 #define ZT (4 * SQUARE_SIZE)
+#define DIS_CC (0.0556 * SIM_SCALE)
 
 GLOBAL var leapDll;
 
@@ -132,11 +133,13 @@ function Hand::update()
 		first_time_not_active = true;
 		is_active = 1;
 		// Changing frame base
+			
 		trans(&tmp_raw_data);
 		raw_data = tmp_raw_data;
 		
 		write_vector(&palm_position, &tmp_raw_data, 0);
 		write_vector(&palm_normal, &tmp_raw_data, 3);
+		
 		
 		for(var i = 0; i < NUM_FINGERS; i++)
 			fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
@@ -245,7 +248,9 @@ function Hand::push_raw_data(tmp_raw_data) {
 
 function Hand::trans(data)
 {	
-	for(var i = 0; i < NUM_VECTORS; i++) {		
+	for(var i = 0; i < NUM_VECTORS; i++) {	
+		// Translation except for the palm normal 
+		if (i != 1) {	
 		#ifdef PLAYER_1_TRASL
 		data[3 * i] = -HAND_SCALE * data[3 * i] + XT;
 		data[(3 * i) + 1] = HAND_SCALE * data[(3 * i) + 1] + YT;
@@ -257,6 +262,14 @@ function Hand::trans(data)
 		data[(3 * i) + 1] = HAND_SCALE * data[(3 * i) + 1] + YT;
 		data[(3 * i) + 2] = HAND_SCALE * data[(3 * i) + 2] + ZT;
 		#endif
+		}
+		else {
+		#ifdef PLAYER_1_TRASL
+		data[3 * i] = -data[3 * i];
+		data[(3 * i) + 2] = -data[(3 * i) + 2];
+		#endif
+			
+		}
 	}
 	
 }
@@ -267,11 +280,13 @@ function Hand::get_cc()
  	var middleTip = Vector(NUM_COORD);
 	
 	if (is_active == 1) {
-		write_vector(&thumbTip, &raw_data, 6 + (F_THUMB *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
+		//write_vector(&thumbTip, &raw_data, 6 + (F_THUMB *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
 		
-		write_vector(&middleTip, &raw_data, 6 + (F_MIDDLE *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
+		//write_vector(&middleTip, &raw_data, 6 + (F_MIDDLE *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
  
-		cc_position = (middleTip + thumbTip)/2;
+		//cc_position = (middleTip + thumbTip)/2;
+		cc_position = palm_position + (palm_normal * DIS_CC);
 	}
+	
 }
  

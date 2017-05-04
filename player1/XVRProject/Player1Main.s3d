@@ -90,7 +90,7 @@ function OnInit(params)
 
 function OnFrame()
 {	
-	client_t.step(hand_r, hand_l);
+	client_t.step(hand_r, hand_l, PLAYER_1);
 	
 	CameraMoveMouse();
 	CameraMoveKeyboard();

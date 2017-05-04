@@ -23,36 +23,29 @@ function smPaket::init(pkt)
 {
 	position = Vector(NUM_COORD);
 	lenght = 0;
- 	//var smPaketTemp = smPaket();
- 	//smPaketTemp.init();
+
  	var thumbTip = Vector(NUM_COORD);
  	var middleTip = Vector(NUM_COORD);
+ 	var palm_normal = Vector(NUM_COORD);
+ 	var palm_position = Vector(NUM_COORD);
  	
  	status_hand = pkt.payload.status_hand;
  	
  	if (status_hand == 1)
  	{
-		/*
-		 * thumb 
-		 */
-		write_vector(&thumbTip, &pkt.payload.raw_data, 6 + (F_THUMB *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
-		//outputln(thumbTip);
-		/*
-		 * middle
-		 */
-		write_vector(&middleTip, &pkt.payload.raw_data, 6 + (F_MIDDLE *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
-		//outputln(middleTip);
-		/*
-		 * lenght
-		 */
-		lenght = modulus(middleTip - thumbTip);
-		//outputln(lenght);
-		 
-		 
-		position = (middleTip + thumbTip)/2;
-		//outputln(position);
-	}
+		write_vector(&thumbTip, &pkt.payload.raw_data, 
+			6 + (F_THUMB *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD)
+		);
+		write_vector(&middleTip, &pkt.payload.raw_data, 
+			6 + (F_MIDDLE *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD)
+		);
+		write_vector(&palm_normal, &pkt.payload.raw_data, 3);
+		write_vector(&palm_position, &pkt.payload.raw_data, 0);
 
+		lenght = modulus(middleTip - thumbTip);
+	 
+		position = palm_position + (palm_normal * DIS_CC);
+	}
 }
 
 
