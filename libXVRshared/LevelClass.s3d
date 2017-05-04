@@ -165,6 +165,9 @@ class Piece {
 #ifdef PHYSX
 	/* PHYSICAL_LVL */
 	var psx;
+	
+	setKinematic();
+	setDynamic();
 #else
 	/* GRAPHICAL_LVL */
 	var obj;
@@ -417,6 +420,15 @@ function Piece::GetRotation(p_angle, p_axis) {
 function Piece::GetObj() {
 	return obj;
 }
+#else
+function Piece::SetKinematic() {
+	psx.MakeKinematic();
+}
+
+function Piece::SetDynamic() {
+	psx.MakeDynamic();
+}
+
 #endif
 
 function Piece::Update(p_pos, p_angle, p_axis) {		
@@ -428,5 +440,8 @@ function Piece::Update(p_pos, p_angle, p_axis) {
 	/* GRAPHICAL_LVL */
 	obj.SetPosition(pos);
 	obj.SetRotation(p_angle, p_axis);
+#else
+	psx.SetPosition(pos);
 #endif
 }
+

@@ -13,7 +13,7 @@ class Architect {
 	var is_grabbed;
 	
 	grab_request(cc, player_id); // This function has to return the id piece
-	grab_release(piece_id, player_id); 
+	grab_release(piece_id); 
 	
 };
 
@@ -35,11 +35,13 @@ function Architect::grab_request(cc, player_id)
 		piece = my_level.GetPiece(player_id + i);
 		bb_piece = piece.mesh.GetBoundingBox();
 		// Checking if the cc is inside the Bounding Box
-		if (cc.x >= bb_piece[0] && cc.y >= bb_piece[1] && cc.z >= bb_piece[2] &&
-			cc.x <= bb_piece[3] && cc.y <= bb_piece[4] && cc.z <= bb_piece[5] &&
-			is_grabbed[player_id + i] == false) {
+		if ((cc.x >= (bb_piece[0] + piece.GetPosition().x)) && (cc.y >= (bb_piece[1] + piece.GetPosition().y))
+			&& (cc.z >= (bb_piece[2] + piece.GetPosition().z)) && (cc.x <= (bb_piece[3] + piece.GetPosition().x)) 
+			&& (cc.y <= (bb_piece[4] + piece.GetPosition().y)) && (cc.z <= (bb_piece[5] + piece.GetPosition().z))
+			&& is_grabbed[player_id + i] == false) {
 				is_grabbed[player_id + i] = true;
 				id = player_id + i;
+				piece.SetKinematic();
 				return id;
 			}
 	}
@@ -47,7 +49,11 @@ function Architect::grab_request(cc, player_id)
 	return -2;
 }
 
-function Architect::grab_release(player_id, piece_id) 
-{
-	is_grabbed[player_id + piece_id] = false;
+function Architect::grab_release(piece_id) 
+{	
+	var piece = my_level.GetPiece(piece_id);
+	
+	piece.SetDynamic();
+
+	is_grabbed[piece_id] = false;
 }

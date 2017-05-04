@@ -6,7 +6,7 @@
 #define SM_STATE_GRABBED 3
 
 //#define GRAB_THRESH 30
-#define GRAB_THRESH 0.03*SIM_SCALE
+#define GRAB_THRESH 0.05*SIM_SCALE
 #define LPF_TRESH 10
 /*
  * 
@@ -116,8 +116,8 @@ function smPaket::init(pkt)
  		 * Unlock the object if grabbed
  		 */
 
-	 		if (id_piece >= 0)
-				architect_service.grab_release(id_piece, my_player);
+		if (id_piece >= 0)
+			architect_service.grab_release(id_piece);
  
 	} else {
 		switch (current_state) {
@@ -138,6 +138,7 @@ function smPaket::init(pkt)
 				 */
 				 
 				 id_piece = architect_service.grab_request(position, my_player);
+				 outputln(id_piece);
 				//id_piece = ARCHITETTO.grab_request(position, my_name)
 
 				if (id_piece >= 0) {
@@ -184,7 +185,9 @@ function smPaket::init(pkt)
       			/*
       			 * Update piece position
       			 */
-      			my_level.PieceUpdate(id_piece, position, NULL, NULL);
+      			output("position: ");
+      			outputln(position);
+      			my_level.PieceUpdate(id_piece, position, 0, [0.0, 0.0, 0.0]);
       		}
 	    	break;
 	    default :

@@ -18,6 +18,8 @@
 
 GLOBAL var leapDll;
 
+
+
 function write_vector(dest, src, start);
 
 class FingerClass {
@@ -47,6 +49,9 @@ class Hand {
 	var palm_mesh;
 	var palm_mat;
 	var hand_obj;
+	var cc_obj;
+	var cc_mesh;
+	var cc_position;
 	var timeout;
 	var first_time_not_active; // to avoid time-out management on server part
 	
@@ -55,6 +60,7 @@ class Hand {
 	push_raw_data(tmp_raw_data);
 	trans(data);	
 	update();
+	get_cc();
 	draw();
 };
 
@@ -64,6 +70,7 @@ function Hand::init(is_right_param)
 {
 	palm_position = Vector(NUM_COORD);
 	palm_normal = Vector(NUM_COORD);
+	cc_position = Vector(NUM_COORD);
 	fingers = Array(NUM_FINGERS);
 	is_right = is_right_param;
 	is_active = 0;
@@ -83,9 +90,12 @@ function Hand::init(is_right_param)
    palm_mat.diffuse =  [1.0,1.0,1.0];
    // Loading palm mesh
    palm_mesh = CVmNewMesh(VRP_SPHERE, JOINT_RADIUS * SIM_SCALE);
+   cc_mesh = CVmNewMesh(VRP_SPHERE, JOINT_RADIUS * SIM_SCALE);
+   cc_mesh.SubsetSetMaterial(0, palm_mat);
+   cc_mesh.ModulateMaterials([0.0, 0.0, 1.0]);
    palm_mesh.SubsetSetMaterial(0, palm_mat);
    hand_obj = CVmObj(palm_mesh);
-
+   cc_obj = CVmObj(cc_mesh);	
    timeout = 0;	
 }
 
@@ -131,6 +141,8 @@ function Hand::update()
 		for(var i = 0; i < NUM_FINGERS; i++)
 			fingers[i].update(&tmp_raw_data, 6 + (i * NUM_COORD * NUM_JOINTS));
 		
+		get_cc();
+		cc_obj.SetPosition(cc_position);
 		// Updating the obj hand position
 		hand_obj.SetPosition(palm_position);
 		// Scaling from mm to m
@@ -143,6 +155,7 @@ function Hand::draw()
 {	
 	if (is_active == 1) {
 		hand_obj.draw();
+		cc_obj.draw();
 		
 		for(var i = 0; i < NUM_FINGERS; i++)
 			fingers[i].draw();
@@ -246,5 +259,19 @@ function Hand::trans(data)
 		#endif
 	}
 	
+}
+
+function Hand::get_cc()
+{	
+	var thumbTip = Vector(NUM_COORD);
+ 	var middleTip = Vector(NUM_COORD);
+	
+	if (is_active == 1) {
+		write_vector(&thumbTip, &raw_data, 6 + (F_THUMB *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
+		
+		write_vector(&middleTip, &raw_data, 6 + (F_MIDDLE *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
+ 
+		cc_position = (middleTip + thumbTip)/2;
+	}
 }
  

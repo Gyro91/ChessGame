@@ -153,7 +153,11 @@
 				}
 				break;
 			case TYPE_PIECE_PAYLOAD:
-				outputln(data.seq_remote_id);
+				output("id: ");
+				output(data.payload.id);
+				output(" ");
+				outputln(data.payload.pos);
+				
 				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.angle,
 					data.payload.axis);
 				break;	
@@ -176,5 +180,8 @@
  
  function Client::sync()
  {
- 	send(NULL);
+ 	var i;
+ 	
+ 	for (i = 0; i < 50; i++)
+ 		send(NULL);
  }
