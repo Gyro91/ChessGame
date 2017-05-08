@@ -22,8 +22,6 @@ var seq_number = 0;
 var hand_r;
 var hand_l;
 
-var pkt_hand;
-var p_adversary;
 
 /* Communication variables */
 

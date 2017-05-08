@@ -17,12 +17,8 @@ SET SCENE_FAR  = 1000;
 /* Hand Variables */
 var seq_number = 0;
 
-
 var hand_r;
 var hand_l;
-
-var pkt_hand;
-var p_adversary;
 
 /* Communication variables */
 
@@ -80,7 +76,7 @@ function OnInit(params)
 	
 	client_t.init();
 	
-	client_t.sync();
+//	client_t.sync();
 
 }
 
@@ -96,7 +92,11 @@ function OnFrame()
 	CameraMoveKeyboard();
 	
 	SceneBegin(VR_SHOW_STATS);	
-	DrawGrid([0.5, 0.5, 0.5], 100);	
+	DrawGrid([0.5, 0.5, 0.5], 100);
+	hand_r.update();
+	hand_l.update();
+	hand_r.draw();
+	hand_l.draw();	
 	client_t.draw();
 	SceneEnd();
 	
