@@ -3,7 +3,7 @@
 #include <Camera.s3d.h>
 
 #define PHYSX
-#define TIMER_STEP 0.01
+#define TIMER_STEP 10
 
 /* Include shared libraries */
 #include "../../libXVRshared/Server.s3d"
