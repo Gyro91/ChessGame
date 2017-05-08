@@ -69,13 +69,11 @@ function Server::init()
 	cnt_client = Array(4);
 	cnt_client = [0, 0, 0 , 0];
 	
- 	id_channel_client1 = NetCreateChannel(udp_server_port1, 
- 										addr_client1, VR_NO_BLOCKING);
+ 	id_channel_client1 = NetCreateChannel(udp_server_port1, 0, VR_NO_BLOCKING);
  	if (id_channel_client1 == -1)
  		outputln("Error creating channel client1");	
  		
-	 id_channel_client2 = NetCreateChannel(udp_server_port2, 
- 											addr_client2, VR_NO_BLOCKING);
+	 id_channel_client2 = NetCreateChannel(udp_server_port2, 0, VR_NO_BLOCKING);
  	if (id_channel_client2 == -1)
  		outputln("Error creating channel client2");	 
  
@@ -188,7 +186,9 @@ function Server::step()
 
 	while (NetDataReady(id_channel_client1) == TRUE) {
 		var data = recv(CLIENT_1);
+		outputln("data received from player 1");
 		if (data != NULL) {
+			outputln("data not null");
 			send(data, CLIENT_2);
 		}	
 	}	

@@ -58,7 +58,7 @@
  		is_selected[i] = false;
  	}
  	id_channel = NetCreateChannel(udp_client_port, 
- 									server_address, VR_NO_BLOCKING);
+ 									0, VR_NO_BLOCKING);
  	if (id_channel == -1)
  		outputln("Error creating channel");	
  		

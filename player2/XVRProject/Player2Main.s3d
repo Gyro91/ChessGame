@@ -81,7 +81,7 @@ function OnInit(params)
 	
 	client_t.init();
 	
-	client_t.sync();
+//	client_t.sync();
 	
 }
 

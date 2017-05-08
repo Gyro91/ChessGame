@@ -52,7 +52,7 @@ function OnInit(params)
 	
 	server_t.init();
 	
-	server_t.sync();
+//	server_t.sync();
 	
 	/*Initialization ended */
 	end_init = 1;
