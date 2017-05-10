@@ -86,7 +86,7 @@
 #define OPP_PAWN_VECT	[0.0, 0.0, OPP_PAWN_Z]
 #define OPP_OTHER_VECT	[0.0, 0.0, OPP_OTHER_Z]
 #define NO_ROT			[0.0, 0.0, 0.0]
-#define OPP_ROT			[0.0, 180.0, 0.0]
+#define OPP_ROT			[0.0, 180, 0.0]
 #define	PAWN0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*1.5]
 #define ROOK0_POS		[SQUARE_SIZE*0.5, Y_OFFSET, SQUARE_SIZE*0.5]
 #define ROOK1_POS		[SQUARE_SIZE*7.5, Y_OFFSET, SQUARE_SIZE*0.5]
@@ -264,11 +264,11 @@ function Level::GetPiece(piece_id) {
 function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) {
 	pieces[piece_id].Update(p_pos, p_angle, p_axis);
 	
-#ifdef PHYSX
-	/* PHYSICAL_LVL */
-	status[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, p_axis[0], p_axis[1], 
-		p_axis[2]];
-#endif
+//#ifdef PHYSX
+//	/* PHYSICAL_LVL */
+//	status[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, p_axis[0], p_axis[1], 
+//		p_axis[2]];
+//#endif
 }
 
 #ifdef PHYSX
@@ -463,16 +463,6 @@ function Piece::Update(p_pos, p_angle, p_axis) {
 	obj.SetRotation(p_angle, p_axis);
 #else
 	psx.SetPosition(pos);
+	//psx.SetRotation(p_angle, p_axis);
 #endif
 }
-
-function check_collision(cc, bb_piece, pos)
-{
-	if ((cc.x >= (bb_piece[0] + pos.x)) && (cc.y >= (bb_piece[1] + pos.y))
-			&& (cc.z >= (bb_piece[2] + pos.z)) && (cc.x <= (bb_piece[3] + pos.x)) 
-			&& (cc.y <= (bb_piece[4] + pos.y)) && (cc.z <= (bb_piece[5] + pos.z))) 
-		return true;
-	else
-		return false;
-}
-

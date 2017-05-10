@@ -6,10 +6,12 @@
 #define TIMER_STEP 10
 
 /* Include shared libraries */
-#include "../../libXVRshared/Server.s3d"
+
 
 /* Initialization synchonization */
 var end_init = 0;
+/* COMMUNICATION VARIABLES */
+var server_t;
 
 
 /* Set global scene parameters */
@@ -18,9 +20,7 @@ SET SCENE_NEAR = 0.005;
 SET SCENE_FAR  = 1000;
 
 
-/* COMMUNICATION VARIABLES */
-var server_t;
-
+#include "../../libXVRshared/Server.s3d"
 
 
 function OnDownload()

@@ -5,10 +5,10 @@
  */
 #include "Packet.s3d"
 #include "LevelClass.s3d"
-#include "Architect.s3d"
 #include "HandClass.s3d"
 #include "Hand_SM.s3d"
  
+#define RELEASE_SPEED [0.0, -0.01, 0.0]
 #define CLIENT_1 0
 #define CLIENT_2 2
 #define NUM_REMOTE_HANDS 4
@@ -17,6 +17,7 @@
 #define PL2_HND_R 2
 #define PL2_HND_L 3
 
+var remote_hands;
 
 class Server {
 	
@@ -28,8 +29,7 @@ class Server {
  	var pkt_hand;
  	var pkt_piece;
  	var cnt_client;
- 	var remote_hands;
- 	
+ 	var is_grabbed;	
  	
  	conf(s_address, s_port1, s_port2, c_address1, 
  		c_port1, c_address2, c_port2
@@ -41,6 +41,8 @@ class Server {
  	compare(old, new);
  	step();
  	toHandSM(pkt,client);
+ 	grab_request(cc, player_id, palm);
+ 	grab_release(piece_id);
  	
 };
  
@@ -88,11 +90,17 @@ function Server::init()
 		remote_hands[i] =  Hand_SM();
 	}
 	
+	is_grabbed = Array(NUM_PIECES);
+	
+	for (var i = 0; i < NUM_PIECES; i++) {
+		is_grabbed[i] = false;
+	}
+	
 	// State Machine objects
-	remote_hands[PL1_HND_R].init(PL1_HND_R,PLAYER_1);
-	remote_hands[PL1_HND_L].init(PL1_HND_L,PLAYER_1);
-	remote_hands[PL2_HND_R].init(PL2_HND_R,PLAYER_2);
-	remote_hands[PL2_HND_L].init(PL2_HND_L,PLAYER_2);
+	remote_hands[PL1_HND_R].init(PL1_HND_R, PLAYER_1);
+	remote_hands[PL1_HND_L].init(PL1_HND_L, PLAYER_1);
+	remote_hands[PL2_HND_R].init(PL2_HND_R, PLAYER_2);
+	remote_hands[PL2_HND_L].init(PL2_HND_L, PLAYER_2);
 	
 }
  
@@ -153,7 +161,6 @@ function Server::send(data, client)
 
 function Server::compare(old, new)
 {
-
 	for (var i=0; i<NUM_PIECES; i++) {
 		if (old[i] != new[i]) {
 			pkt_piece.payload.id = i;
@@ -163,7 +170,16 @@ function Server::compare(old, new)
 			pkt_piece.seq_remote_id++;
 			send(pkt_piece, CLIENT_1);
 			send(pkt_piece, CLIENT_2);
-		}
+		} 
+//		else if (is_grabbed[i] == true) {
+//			pkt_piece.payload.id = i;
+//			pkt_piece.payload.pos = [old[i][0], old[i][1], old[i][2]];
+//			pkt_piece.payload.angle = old[i][3];
+//			pkt_piece.payload.axis = [old[i][4], old[i][5], old[i][6]];
+//			pkt_piece.seq_remote_id++;
+//			send(pkt_piece, CLIENT_1);
+//			send(pkt_piece, CLIENT_2);
+//		}
 	}
 }
  
@@ -226,4 +242,35 @@ function Server::sync()
 	}
 	
 	outputln("Ok, Ready!");
+}
+
+function Server::grab_request(cc, player_id, palm) 
+{	
+	var piece, piece_obj, id;
+	
+	// Checking every pieces of the player
+	for(var i = 0; i < (NUM_PIECES / 2); i++) {
+		piece = my_level.GetPiece(player_id + i);
+		piece_obj = piece.psx.getObj();
+		// Checking if the cc is inside the Bounding Box
+		if (piece_obj.IsCollidingBBoxOnly(palm, cc) == true
+			&& is_grabbed[player_id + i] == false) {
+				is_grabbed[player_id + i] = true;
+				id = player_id + i;
+				piece.SetKinematic();
+				return id;
+			}
+	}
+	
+	return -2;
+}
+
+function Server::grab_release(piece_id) 
+{	
+	var piece = my_level.GetPiece(piece_id);
+	
+	piece.SetDynamic();
+	piece.SetVelocity(RELEASE_SPEED);
+	
+	is_grabbed[piece_id] = false;
 }
