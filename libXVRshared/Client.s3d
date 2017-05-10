@@ -29,7 +29,7 @@
  	sync();
  	step(hand_r, hand_l, player_id);
  	send(data);
- 	selection(cc, player_id);
+ 	selection(cc, player_id, palm);
  	recv();
  	draw();
  	
@@ -116,7 +116,7 @@
  function Client::step(hand_r, hand_l, player_id)
  {	
 	if (hand_r.is_active == 1) {
-		selection(hand_r.cc_position, player_id);
+		selection(hand_r.cc_position, player_id, hand_r.palm_position);
 		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
 		pkt_hand_r.payload.is_right = 1;
 		pkt_hand_r.payload.status_hand = 1;
@@ -130,7 +130,7 @@
 		send(pkt_hand_r);
 	}
 	if (hand_l.is_active == 1) {
-		selection(hand_l.cc_position, player_id);
+		selection(hand_l.cc_position, player_id, hand_l.palm_position);
 		pkt_hand_l.payload.raw_data = hand_l.get_raw_data();
 		pkt_hand_l.payload.is_right = 0;
 		pkt_hand_l.payload.status_hand = 1;
@@ -196,16 +196,16 @@
  	send(NULL);
  }
 
- function Client::selection(cc, player_id)
+ function Client::selection(cc, player_id, palm)
  {
- 	var piece, bb_piece, id, ret;
+ 	var piece, piece_obj, id, ret;
 	
 	// Checking every pieces of the player
 	for(var i = 0; i < (NUM_PIECES / 2); i++) {
 		piece = my_level.GetPiece(player_id + i);
-		bb_piece = piece.mesh.GetBoundingBox();
+		piece_obj = piece.GetObj();
 		// Checking if the cc is inside the Bounding Box
-		ret = check_collision(cc, bb_piece, piece.GetPosition());
+		ret = piece_obj.IsCollidingBBoxOnly(palm, cc);
 		
 		if (ret == true && is_selected[i] == false) {
 			is_selected[i] = true;

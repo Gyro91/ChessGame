@@ -12,7 +12,7 @@ class Architect {
 	 */
 	var is_grabbed;
 	
-	grab_request(cc, player_id); // This function has to return the id piece
+	grab_request(cc, player_id, palm); // This function has to return the id piece
 	grab_release(piece_id); 
 	
 };
@@ -26,16 +26,16 @@ function Architect::Architect()
 	}
 }
 
-function Architect::grab_request(cc, player_id) 
+function Architect::grab_request(cc, player_id, palm) 
 {	
-	var piece, bb_piece, id;
+	var piece, piece_obj, id;
 	
 	// Checking every pieces of the player
 	for(var i = 0; i < (NUM_PIECES / 2); i++) {
 		piece = my_level.GetPiece(player_id + i);
-		bb_piece = piece.mesh.GetBoundingBox();
+		piece_obj = piece.psx.getObj();
 		// Checking if the cc is inside the Bounding Box
-		if (check_collision(cc, bb_piece, piece.GetPosition()) == true
+		if (piece_obj.IsCollidingBBoxOnly(palm, cc) == true
 			&& is_grabbed[player_id + i] == false) {
 				is_grabbed[player_id + i] = true;
 				id = player_id + i;

@@ -14,6 +14,7 @@
 class smPaket {
 	var lenght;
 	var position;
+	var palm;
 	var status_hand;
 	
 	init(pkt);
@@ -45,6 +46,8 @@ function smPaket::init(pkt)
 		lenght = modulus(middleTip - thumbTip);
 	 
 		position = palm_position + (palm_normal * DIS_CC);
+		
+		palm = palm_position;
 	}
 }
 
@@ -130,7 +133,7 @@ function smPaket::init(pkt)
 				 * Request to the Architect
 				 */
 				 
-				 id_piece = architect_service.grab_request(position, my_player);
+				 id_piece = architect_service.grab_request(position, my_player, pkt.palm);
 				 outputln(id_piece);
 				//id_piece = ARCHITETTO.grab_request(position, my_name)
 

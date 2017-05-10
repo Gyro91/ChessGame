@@ -298,7 +298,9 @@ function Level::Step() {
 	for(var i = 1; i < len(manager_psx.Array_PhObj); i++){		
 		if(manager_psx.Array_PhObj[i].type != PHX_FIXED){
 			pos = manager_psx.Array_PhObj[i].GetPosition();
+			manager_psx.Array_PhObj[i].GetObj().SetPosition(pos);
 			manager_psx.Array_PhObj[i].GetRotation(&angle, &axis);
+			manager_psx.Array_PhObj[i].GetObj().SetRotation(angle, axis);
 			if (i % 2 != 0) {
 				/* Player 1 piece */
 				sim_res[PLAYER_1 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
@@ -473,3 +475,4 @@ function check_collision(cc, bb_piece, pos)
 	else
 		return false;
 }
+
