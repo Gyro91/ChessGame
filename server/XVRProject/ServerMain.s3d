@@ -86,7 +86,8 @@ function OnTimer()
 
 function OnExit()
 {
-
+	NetClose(server_t.id_channel_client1);
+	NetClose(server_t.id_channel_client2);
 }
 
 

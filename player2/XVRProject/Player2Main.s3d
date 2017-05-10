@@ -134,6 +134,7 @@ function OnTimer()
 function OnExit()
 {
 	// TODO: put your cleanup code here
+	NetClose(client_t.id_channel);
 }
 
 

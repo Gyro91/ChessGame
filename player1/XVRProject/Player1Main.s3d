@@ -86,18 +86,21 @@ function OnInit(params)
 
 function OnFrame()
 {	
-	client_t.step(hand_r, hand_l, PLAYER_1);
-	
 	CameraMoveMouse();
 	CameraMoveKeyboard();
+	client_t.step(hand_r, hand_l, PLAYER_1);
 	
 	SceneBegin(VR_SHOW_STATS);	
-	DrawGrid([0.5, 0.5, 0.5], 100);
+	DrawGrid([0.5, 0.5, 0.5], 100);	
+	
 	hand_r.update();
 	hand_l.update();
 	hand_r.draw();
-	hand_l.draw();	
-	client_t.draw();
+	hand_l.draw();
+	
+	
+	client_t.Draw();
+
 	SceneEnd();
 	
 }
@@ -128,6 +131,7 @@ function OnTimer()
 function OnExit()
 {
 	// TODO: put your cleanup code here
+	NetClose(client_t.id_channel);
 }
 
 

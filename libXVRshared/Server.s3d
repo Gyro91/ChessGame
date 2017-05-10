@@ -178,19 +178,14 @@ function Server::step()
 	
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {
-		var data = recv(CLIENT_2);
-		if (data != NULL) {
-			send(data, CLIENT_1);
-		}	
+			var data = recv(CLIENT_2);
+			if (data != NULL) 
+				send(data, CLIENT_1);			
 	}
-
 	while (NetDataReady(id_channel_client1) == TRUE) {
-		var data = recv(CLIENT_1);
-		outputln("data received from player 1");
-		if (data != NULL) {
-			outputln("data not null");
-			send(data, CLIENT_2);
-		}	
+			var data = recv(CLIENT_1);
+			if (data != NULL) 
+				send(data, CLIENT_2);			
 	}	
 }	
 
