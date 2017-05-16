@@ -209,7 +209,7 @@ function Server::step()
 			var data = recv(CLIENT_1);
 			if (data != NULL) 
 				send(data, CLIENT_2);			
-	}	
+	}
 //	var a = 1;
 	/* Update the simulation status */
 	my_level.step();
@@ -217,6 +217,7 @@ function Server::step()
 	
 	/* Check if the status of any piece has changed */
 	compare(old_status, new_res);
+
 	/* Update the piece status table */
 	//my_level.UpdateStatus();
 //	output("new");

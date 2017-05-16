@@ -73,7 +73,7 @@ function OnInit(params)
 	client_t.conf(LOOPBACK_ADDR, SERVER_UDP_PORT_CLIENT_2, 
 		CLIENT_2_UDP_PORT);
 	#else
-	client_t.conf(CLIENT_2_ADDR, SERVER_UDP_PORT_CLIENT_2, 
+	client_t.conf(SERVER_ADDR, SERVER_UDP_PORT_CLIENT_2, 
 		CLIENT_2_UDP_PORT);
 	#endif
 	
