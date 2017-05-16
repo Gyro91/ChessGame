@@ -166,11 +166,11 @@
 				}
 				break;
 			case TYPE_PIECE_PAYLOAD:
-				output("id: ");
-				output(data.payload.id);
-				output(" ");
-				outputln(data.payload.pos);
-				
+//				output("id: ");
+//				output(data.payload.id);
+//				output(" ");
+//				outputln(data.payload.pos);
+//				
 				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.angle,
 					data.payload.axis);
 				break;	

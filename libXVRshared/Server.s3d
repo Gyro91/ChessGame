@@ -29,7 +29,8 @@ class Server {
  	var pkt_hand;
  	var pkt_piece;
  	var cnt_client;
- 	var is_grabbed;	
+ 	var is_grabbed;
+ 	var old_status;
  	
  	conf(s_address, s_port1, s_port2, c_address1, 
  		c_port1, c_address2, c_port2
@@ -102,6 +103,9 @@ function Server::init()
 	remote_hands[PL2_HND_R].init(PL2_HND_R, PLAYER_2);
 	remote_hands[PL2_HND_L].init(PL2_HND_L, PLAYER_2);
 	
+	old_status = Array(NUM_PIECES);
+	for (var i=0; i < NUM_PIECES; i++)
+		old_status[i] = [0, 0, 0, 0, 0, 0, 0];
 }
  
  /* This function is used by the Server to receive a packet from a specified
@@ -163,10 +167,19 @@ function Server::compare(old, new)
 {
 	for (var i=0; i<NUM_PIECES; i++) {
 		if (old[i] != new[i]) {
+			outputln(new[i]);
 			pkt_piece.payload.id = i;
 			pkt_piece.payload.pos = [new[i][0], new[i][1], new[i][2]];
-			pkt_piece.payload.angle = new[i][3];
-			pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
+			pkt_piece.payload.axis = [0, 1, 0];
+			//if (is_grabbed[i] == true) {
+				//if (i < PLAYER_2)
+					//pkt_piece.payload.angle = 0.0;
+				//else
+				//	pkt_piece.payload.angle = 180.0;
+			//} else { 
+				pkt_piece.payload.angle = new[i][3];
+				pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
+			//}
 			pkt_piece.seq_remote_id++;
 			send(pkt_piece, CLIENT_1);
 			send(pkt_piece, CLIENT_2);
@@ -185,13 +198,7 @@ function Server::compare(old, new)
  
 function Server::step()
 {	
-	/* Update the simulation status */
-	my_level.step();
-	/* Check if the status of any piece has changed */
-	compare(my_level.GetStatus(), my_level.GetPhysxResults());
-	/* Update the piece status table */
-	my_level.UpdateStatus();
-	
+	var new_res;
 	
 	while (NetDataReady(id_channel_client2) == TRUE) {
 			var data = recv(CLIENT_2);
@@ -203,6 +210,27 @@ function Server::step()
 			if (data != NULL) 
 				send(data, CLIENT_2);			
 	}	
+//	var a = 1;
+	/* Update the simulation status */
+	my_level.step();
+	new_res = my_level.GetPhysxResults();
+	
+	/* Check if the status of any piece has changed */
+	compare(old_status, new_res);
+	/* Update the piece status table */
+	//my_level.UpdateStatus();
+//	output("new");
+//	outputln(new_res);
+//	output("old");
+//	outputln(old_status);
+//	
+//	a--;
+//	outputln(1/a);
+	for(var i=0; i<NUM_PIECES; i++) {
+		old_status[i] = new_res[i];
+	}
+	
+
 }	
 
 /*

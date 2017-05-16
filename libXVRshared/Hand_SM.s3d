@@ -102,41 +102,38 @@ function smPaket::init(pkt)
  	  */
  	if (is_hand == 0) {
  		current_state = SM_STATE_WAIT;
- 		output(my_name);
- 		outputln(" SM_STATE_WAIT");
  		
  		/*
  		 * Unlock the object if grabbed
  		 */
 
-		if (id_piece >= 0)
+		if (id_piece >= 0) {
 			server_t.grab_release(id_piece);
+			if (my_player == PLAYER_1)
+      			my_level.PieceUpdate(id_piece, position, 0, [0.0, 1.0, 0.0]);
+      		else 
+      			my_level.PieceUpdate(id_piece, position, 180, [0.0, 1.0, 0.0]);	
+		}
  
 	} else {
 		switch (current_state) {
 		case SM_STATE_WAIT:
 	      	if (lenght >= GRAB_THRESH) {
 	      		current_state = SM_STATE_OPEN;
-	      		output(my_name);
-	      		outputln(" SM_STATE_OPEN");
       		}
 	    	break;
 		case SM_STATE_OPEN:
 			if (lenght < GRAB_THRESH) {
 				current_state = SM_STATE_CLOSED;
-				output(my_name);
-				outputln("SM_STATE_CLOSED");
 				/*
 				 * Request to the Architect
 				 */
 				 
 				 id_piece = server_t.grab_request(position, my_player, pkt.palm);
-				 outputln(id_piece);
 				//id_piece = ARCHITETTO.grab_request(position, my_name)
 
 				if (id_piece >= 0) {
-					current_state = SM_STATE_GRABBED;
-					outputln("SM_STATE_GRABBED");	
+					current_state = SM_STATE_GRABBED;	
 				}
 			}				
 	    	break;
@@ -149,8 +146,6 @@ function smPaket::init(pkt)
 		      	if (lpf_close_to_open == 0) {
 		      		lpf_close_to_open = LPF_TRESH;
 		      		current_state = SM_STATE_OPEN;
-		      		output(my_name);
-		      		outputln(" SM_STATE_OPEN");
 	      		}
       		}
       		else
@@ -162,15 +157,16 @@ function smPaket::init(pkt)
 		      	if (lpf_grabbed_to_open == 0) {
 		      		lpf_grabbed_to_open = LPF_TRESH;
 		      		current_state = SM_STATE_OPEN;
-		      		output(my_name);
-		      		outputln(" SM_STATE_OPEN");
 	      		
 		      		/*
 		      		 * unlock the object
 		      		 */
 		      		 
 		      		server_t.grab_release(id_piece, my_player);
-	
+					if (my_player == PLAYER_1)
+      					my_level.PieceUpdate(id_piece, position, 0, [0.0, 1.0, 0.0]);
+      				else 
+      					my_level.PieceUpdate(id_piece, position, 180, [0.0, 1.0, 0.0]);
 	      		}
 	      		
       		} else {
@@ -178,8 +174,6 @@ function smPaket::init(pkt)
       			/*
       			 * Update piece position
       			 */
-      			output("position: ");
-      			outputln(position);
       			if (my_player == PLAYER_1)
       				my_level.PieceUpdate(id_piece, position, 0, [0.0, 1.0, 0.0]);
       			else 

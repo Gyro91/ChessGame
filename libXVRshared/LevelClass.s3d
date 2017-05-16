@@ -263,7 +263,13 @@ function Level::GetPiece(piece_id) {
 
 function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) {
 	pieces[piece_id].Update(p_pos, p_angle, p_axis);
+#ifdef PHYSX	
+	sim_res[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, 0, 1, 0];
 	
+	//pieces[piece_id].psx.GetObj().SetPosition(p_pos);
+	//psx.GetObj().SetRotation(angle, axis);
+	//outputln(sim_res[piece_id]);
+#endif
 //#ifdef PHYSX
 //	/* PHYSICAL_LVL */
 //	status[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, p_axis[0], p_axis[1], 
@@ -301,12 +307,14 @@ function Level::Step() {
 			manager_psx.Array_PhObj[i].GetObj().SetPosition(pos);
 			manager_psx.Array_PhObj[i].GetRotation(&angle, &axis);
 			manager_psx.Array_PhObj[i].GetObj().SetRotation(angle, axis);
-			if (i % 2 != 0) {
-				/* Player 1 piece */
-				sim_res[PLAYER_1 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
-			} else {
-				/* Player 2 piece */
-				sim_res[PLAYER_2 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
+			if(manager_psx.Array_PhObj[i].type == PHX_DYNAMIC) {
+				if (i % 2 != 0) {
+					/* Player 1 piece */
+					sim_res[PLAYER_1 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
+				} else {
+					/* Player 2 piece */
+					sim_res[PLAYER_2 + (i-1)/2] = [pos[0], pos[1], pos[2], angle, axis[0], axis[1], axis[2]];
+				}
 			}
 		}
 	}
@@ -344,6 +352,8 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	/* The angle must be converted in degrees */
 	angle = RAD_TO_GRAD*rot[3];
 	axis = [rot[0], rot[1], rot[2]];
+	outputln(axis);
+	outputln(angle);
 	
 	switch(id) {
 		case CHESSBOARD_ID: 
@@ -453,16 +463,16 @@ function Piece::SetVelocity(v) {
 #endif
 
 function Piece::Update(p_pos, p_angle, p_axis) {		
-	pos = p_pos;
-	angle = p_angle;
-	axis = p_axis;
+//	pos = p_pos;
+//	angle = p_angle;
+//	axis = p_axis;
 
 #ifndef PHYSX
 	/* GRAPHICAL_LVL */
-	obj.SetPosition(pos);
+	obj.SetPosition(p_pos);
 	obj.SetRotation(p_angle, p_axis);
 #else
-	psx.SetPosition(pos);
-	//psx.SetRotation(p_angle, p_axis);
+	psx.SetPosition(p_pos);
+	psx.SetRotation(p_angle, p_axis);
 #endif
 }
