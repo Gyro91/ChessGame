@@ -28,8 +28,8 @@ var hand_l;
 var client_t;
 
 /* Camera globals */
-var CamPos = [14.5822 , 9.4691 , 47.8944]; 	// camera position
-
+var CamPos = [14.278 , 23.6358 , 51.3575]; 	// camera position
+var CamRot = [0.999997 , -0.00112902 , 0.00216698 , 0 , 1.13687e-012 , 0.886849 , 0.462058 , 0 , -0.00244346 , -0.462056 , 0.886847 , 0 , 0 , 0 , 0 , 1];
 
 /* Function declarations */
 function CameraMoveMouse();
@@ -51,7 +51,7 @@ function OnInit(params)
 {
 	/* initialize camera */
 	CameraGetCurrent().SetPosition(CamPos);
-
+	CameraGetCurrent().SetRotationMatrix(CamRot);
 	// TODO: put your initialization code here
 	SetLocalDir("");
 	
@@ -79,8 +79,6 @@ function OnInit(params)
 	
 	client_t.init();
 	
-//	client_t.sync();
-	
 }
 
 
@@ -100,13 +98,11 @@ function OnFrame()
 	hand_l.update();
 	hand_r.draw();
 	hand_l.draw();
-	
-	
+
 	client_t.Draw();
 
 	SceneEnd();
-	
-	
+
 }
 
 
@@ -123,10 +119,7 @@ function DownloadReady(RequestID)
 function OnTimer()
 {
 	// TODO:
-	
-	
-  
-	//outputln(pkt_hand.sequence_remote_id);
+
 }
 
 

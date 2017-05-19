@@ -8,7 +8,12 @@
  #include "LevelClass.s3d"
  #include "HandClass.s3d"
  
+ #define RIGHT_HAND 1
+ #define LEFT_HAND 0
+ 
+ 
  #define DLL_PATH "../../libXVRshared/DLL_Leap_MotionXVR.dll"
+ #define FRANCO_DLL_PATH "FrancoDll.dll"
   
  class Client {
  	
@@ -29,7 +34,7 @@
  	sync();
  	step(hand_r, hand_l, player_id);
  	send(data);
- 	selection(cc, player_id, palm);
+ 	selection(cc, player_id, palm, hand_type);
  	recv();
  	draw();
  	
@@ -55,7 +60,7 @@
  	
  	is_selected = Array(NUM_PIECES / 2);
  	for (i = 0; i < (NUM_PIECES / 2); i++) {
- 		is_selected[i] = false;
+ 		is_selected[i] = -1;
  	}
  	id_channel = NetCreateChannel(udp_client_port, 
  									0, VR_NO_BLOCKING);
@@ -73,8 +78,8 @@
 	init_HandPayload(pkt_hand_l);
 	init_PiecePayload(pkt_piece);
 	
-	remote_hand_r.init(1);
- 	remote_hand_l.init(0);
+	remote_hand_r.init(RIGHT_HAND);
+ 	remote_hand_l.init(LEFT_HAND);
 	
 	level_init();		
  }
@@ -116,7 +121,7 @@
  function Client::step(hand_r, hand_l, player_id)
  {	
 	if (hand_r.is_active == 1) {
-		selection(hand_r.cc_position, player_id, hand_r.palm_position);
+		selection(hand_r.cc_position, player_id, hand_r.palm_position, RIGHT_HAND);
 		pkt_hand_r.payload.raw_data = hand_r.get_raw_data();
 		pkt_hand_r.payload.is_right = 1;
 		pkt_hand_r.payload.status_hand = 1;
@@ -130,7 +135,7 @@
 		send(pkt_hand_r);
 	}
 	if (hand_l.is_active == 1) {
-		selection(hand_l.cc_position, player_id, hand_l.palm_position);
+		selection(hand_l.cc_position, player_id, hand_l.palm_position, LEFT_HAND);
 		pkt_hand_l.payload.raw_data = hand_l.get_raw_data();
 		pkt_hand_l.payload.is_right = 0;
 		pkt_hand_l.payload.status_hand = 1;
@@ -165,12 +170,7 @@
 						remote_hand_l.is_active = 0;
 				}
 				break;
-			case TYPE_PIECE_PAYLOAD:
-//				output("id: ");
-//				output(data.payload.id);
-//				output(" ");
-//				outputln(data.payload.pos);
-//				
+			case TYPE_PIECE_PAYLOAD:				
 				my_level.PieceUpdate(data.payload.id, data.payload.pos, data.payload.angle,
 					data.payload.axis);
 				break;	
@@ -186,8 +186,7 @@
  function Client::draw()
  {
  	remote_hand_l.draw();
-	remote_hand_r.draw();
-	
+	remote_hand_r.draw();	
 	my_level.Draw();
  }
  
@@ -196,7 +195,7 @@
  	send(NULL);
  }
 
- function Client::selection(cc, player_id, palm)
+ function Client::selection(cc, player_id, palm, hand_type)
  {
  	var piece, piece_obj, id, ret;
 	
@@ -207,12 +206,12 @@
 		// Checking if the cc is inside the Bounding Box
 		ret = piece_obj.IsCollidingBBoxOnly(palm, cc);
 		
-		if (ret == true && is_selected[i] == false) {
-			is_selected[i] = true;
+		if (ret == true && is_selected[i] == -1) {
+			is_selected[i] = hand_type;
 			piece.ChangeColor(SEL_COLOR);	
 		}
-		else if (ret == false && is_selected[i] == true) {
-			is_selected[i] = false;
+		else if (ret == false && is_selected[i] == hand_type) {
+			is_selected[i] = -1;
 			if (player_id == PLAYER_1) {
 				piece.ChangeColor(P1_COLOR);
 				}

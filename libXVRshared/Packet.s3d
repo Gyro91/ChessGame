@@ -11,7 +11,7 @@
 #define SERVER_UDP_PORT_CLIENT_2 5001
 #define CLIENT_1_UDP_PORT 8000
 #define CLIENT_2_UDP_PORT 8001
-//#define NETWORK_LOOPBACK
+#define NETWORK_LOOPBACK
 
 /* 
  * Type 0 Packet: 6DoF and piece id;
