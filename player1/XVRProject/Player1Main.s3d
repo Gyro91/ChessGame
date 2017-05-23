@@ -8,7 +8,7 @@
 #define CAM_STEP	0.1
 
 /* Uncomment to show the XVR grid */
-//#define GRID_ON
+#define GRID_ON
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;

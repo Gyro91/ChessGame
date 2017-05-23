@@ -201,7 +201,7 @@ function DrawGrid(col, size)
 
 function OnEvent()
 {
-	
+
 }
 
 function OnError()
