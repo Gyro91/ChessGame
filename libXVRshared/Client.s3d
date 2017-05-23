@@ -209,7 +209,7 @@
 			is_selected[i] = -1;
 			if (player_id == PLAYER_1) {
 				piece.ChangeColor(P1_COLOR);
-				}
+			}
 			else {
 				piece.ChangeColor(P2_COLOR);	
 			}

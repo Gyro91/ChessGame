@@ -148,7 +148,6 @@ function Hand::update()
 		cc_obj.SetPosition(cc_position);
 		// Updating the obj hand position
 		hand_obj.SetPosition(palm_position);
-		// Scaling from mm to m
 	}		 
 }
 
@@ -227,7 +226,8 @@ function Hand::get_raw_data() {
 
 /* This function updates hand with input data */
 
-function Hand::push_raw_data(tmp_raw_data) {
+function Hand::push_raw_data(tmp_raw_data) 
+{
 	is_active = 1;
 	// Changing frame base
 	raw_data = tmp_raw_data;
@@ -240,8 +240,6 @@ function Hand::push_raw_data(tmp_raw_data) {
 	
 	// Updating the obj hand position
 	hand_obj.SetPosition(palm_position);
-	// Scaling from mm to m
-	// outputln(hand_obj.GetPosition());
 }
 
 /* This function translates the Hand raw data */
@@ -280,11 +278,6 @@ function Hand::get_cc()
  	var middleTip = Vector(NUM_COORD);
 	
 	if (is_active == 1) {
-		//write_vector(&thumbTip, &raw_data, 6 + (F_THUMB *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
-		
-		//write_vector(&middleTip, &raw_data, 6 + (F_MIDDLE *  NUM_COORD * NUM_JOINTS) + (F_TP * NUM_COORD));
- 
-		//cc_position = (middleTip + thumbTip)/2;
 		cc_position = palm_position + (palm_normal * DIS_CC);
 	}
 	

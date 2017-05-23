@@ -49,9 +49,7 @@ function smPaket::init(pkt)
 
 /* 
  * 
- * The class manage the status of an hand and it allows object grabbing. 
- * It receives packet from the Server and according with the Architect it
- * modify pieces position. 
+ * The class manages the status of an hand and it allows object grabbing. 
  * 
  */
  

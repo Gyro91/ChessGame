@@ -214,8 +214,10 @@ function level_init() {
  * Level Class Member Functions
  */
  
-function Level::Level() {
+function Level::Level() 
+{
 	var angle, axis;
+	
 	angle = 0.0;
 	axis = Vector(3);
 	pieces = Array(NUM_PIECES);
@@ -265,7 +267,8 @@ function Level::GetPiece(piece_id) {
 	return pieces[piece_id];
 }
 
-function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) {
+function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) 
+{
 	pieces[piece_id].Update(p_pos, p_angle, p_axis);
 #ifdef PHYSX	
 	sim_res[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, 0, 1, 0];

@@ -9,7 +9,12 @@
 using namespace std;
 
 #define SIZE_BUFF 163
-
+#define Y_OFFSET_RIGHT_HAND 2
+#define Y_OFFSET_LEFT_HAND 83
+#define FLOAT_SIZE 4
+#define START_RIGHT_HAND 1
+#define START_LEFT_HAND 82
+#define NUM_FLOAT_HAND 81
 
 float x[SIZE_BUFF];
 unsigned char* mybuffer;
@@ -63,14 +68,14 @@ extern "C" __declspec(dllexport) char * __XVR_INIT (void *XVR_pointer)
 	//New feature from 0141. This function is optional. If you declare it XVR will execute it after loading the DLL
 	//You can use it to do initialisation code, as well as to get internal parameters from the XVR virtual machine	
 	
-	mybuffer = OpenSharedMemoryBuffer("LeapBuffer", 48);
+	mybuffer = OpenSharedMemoryBuffer("LeapBuffer", (4*SIZE_BUFF));
 
 	return(NULL); 
 } 
 
 extern "C" __declspec(dllexport) void get_seq_number(float* out)
 {	
-	memcpy(out, &mybuffer[0], 4);
+	memcpy(out, &mybuffer[0], FLOAT_SIZE);
 }
 
 /*
@@ -81,12 +86,14 @@ extern "C" __declspec(dllexport) int get_right_hand(float* out)
 {	
 	float test;
 	
-	memcpy(&test, &mybuffer[(2*4)], 4);
+	memcpy(&test, &mybuffer[(Y_OFFSET_RIGHT_HAND * FLOAT_SIZE)],
+		FLOAT_SIZE);
 	
 	if (test == 0) 
 		return 1;
 	
-	memcpy(out, &mybuffer[1*4], 324);
+	memcpy(out, &mybuffer[START_RIGHT_HAND * FLOAT_SIZE], 
+		(FLOAT_SIZE * NUM_FLOAT_HAND));
 	
 	return 0;
 }
@@ -95,12 +102,14 @@ extern "C" __declspec(dllexport) int get_left_hand(float* out)
 {	
 	float test;
 	
-	memcpy(&test, &mybuffer[(83*4)], 4);
+	memcpy(&test, &mybuffer[(Y_OFFSET_LEFT_HAND * FLOAT_SIZE)], 
+		FLOAT_SIZE);
 	
 	if (test == 0) 
 		return 1;
 	
-	memcpy(out, &mybuffer[82*4], 324);
+	memcpy(out, &mybuffer[START_LEFT_HAND * FLOAT_SIZE], 
+		(FLOAT_SIZE * NUM_FLOAT_HAND));
 	
 	return 0;
 }
