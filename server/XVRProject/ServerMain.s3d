@@ -25,8 +25,7 @@ SET SCENE_FAR  = 1000;
 
 function OnDownload()
 {
-	// TODO: download your resources here
-	// E.g.: FileDownload("resource.ext");
+	
 }
 
 
@@ -69,7 +68,7 @@ function OnFrame()
 
 function DownloadReady(RequestID)
 {
-	// TODO
+
 }
 
 
@@ -90,8 +89,6 @@ function OnExit()
 	NetClose(server_t.id_channel_client2);
 }
 
-
-//////// Utility fnctions
 
 
 function OnEvent()

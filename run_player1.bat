@@ -1,1 +1,1 @@
-XVRGlut.exe .\player1\XVRProject\Player1Main.s3d.bin -ms
+XVRGlut.exe .\player1\XVRProject\Player1Main.s3d.bin -ms -noConsole

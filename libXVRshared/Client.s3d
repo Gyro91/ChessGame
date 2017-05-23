@@ -2,6 +2,8 @@
   *  This library implements all the classes and functions for the Client side
   * 
   */
+  
+ /* Uncomment to display high quality meshes */
  //#define HI_RES 
   
  #include "Packet.s3d"
@@ -10,8 +12,7 @@
  
  #define RIGHT_HAND 1
  #define LEFT_HAND 0
- 
- 
+
  #define DLL_PATH "../../libXVRshared/DLL_Leap_MotionXVR.dll"
  #define FRANCO_DLL_PATH "FrancoDll.dll"
   
@@ -149,9 +150,6 @@
 		send(pkt_hand_l);
 	}
 	
-	// Checking collision (selecting piece)
-
-	
 	while (NetDataReady(id_channel) == TRUE) {
 		var data = recv();
 		if (data != NULL) {
@@ -177,9 +175,6 @@
 			}
 		}
 	}	
-	
-	// It has to be inserted a timeout due to the ghost effect
-
  }
  
  
@@ -197,7 +192,7 @@
 
  function Client::selection(cc, player_id, palm, hand_type)
  {
- 	var piece, piece_obj, id, ret;
+ 	var piece, piece_obj, ret;
 	
 	// Checking every pieces of the player
 	for(var i = 0; i < (NUM_PIECES / 2); i++) {

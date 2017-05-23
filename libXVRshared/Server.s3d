@@ -167,32 +167,14 @@ function Server::compare(old, new)
 {
 	for (var i=0; i<NUM_PIECES; i++) {
 		if (old[i] != new[i]) {
-			outputln(new[i]);
 			pkt_piece.payload.id = i;
 			pkt_piece.payload.pos = [new[i][0], new[i][1], new[i][2]];
-			pkt_piece.payload.axis = [0, 1, 0];
-			//if (is_grabbed[i] == true) {
-				//if (i < PLAYER_2)
-					//pkt_piece.payload.angle = 0.0;
-				//else
-				//	pkt_piece.payload.angle = 180.0;
-			//} else { 
-				pkt_piece.payload.angle = new[i][3];
-				pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
-			//}
+			pkt_piece.payload.angle = new[i][3];
+			pkt_piece.payload.axis = [new[i][4], new[i][5], new[i][6]];
 			pkt_piece.seq_remote_id++;
 			send(pkt_piece, CLIENT_1);
 			send(pkt_piece, CLIENT_2);
 		} 
-//		else if (is_grabbed[i] == true) {
-//			pkt_piece.payload.id = i;
-//			pkt_piece.payload.pos = [old[i][0], old[i][1], old[i][2]];
-//			pkt_piece.payload.angle = old[i][3];
-//			pkt_piece.payload.axis = [old[i][4], old[i][5], old[i][6]];
-//			pkt_piece.seq_remote_id++;
-//			send(pkt_piece, CLIENT_1);
-//			send(pkt_piece, CLIENT_2);
-//		}
 	}
 }
  
@@ -210,7 +192,7 @@ function Server::step()
 			if (data != NULL) 
 				send(data, CLIENT_2);			
 	}
-//	var a = 1;
+	
 	/* Update the simulation status */
 	my_level.step();
 	new_res = my_level.GetPhysxResults();
@@ -219,19 +201,9 @@ function Server::step()
 	compare(old_status, new_res);
 
 	/* Update the piece status table */
-	//my_level.UpdateStatus();
-//	output("new");
-//	outputln(new_res);
-//	output("old");
-//	outputln(old_status);
-//	
-//	a--;
-//	outputln(1/a);
 	for(var i=0; i<NUM_PIECES; i++) {
 		old_status[i] = new_res[i];
 	}
-	
-
 }	
 
 /*
@@ -290,7 +262,6 @@ function Server::grab_request(cc, player_id, palm)
 				return id;
 			}
 	}
-	
 	return -2;
 }
 

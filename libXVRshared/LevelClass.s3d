@@ -204,6 +204,10 @@ function level_init() {
 	/* Initialize the level */
 	my_level = Level();
 	
+#ifdef PHYSX
+	outputln("OK!");
+#endif
+	
 }
 
 /*
@@ -265,16 +269,7 @@ function Level::PieceUpdate(piece_id, p_pos, p_angle, p_axis) {
 	pieces[piece_id].Update(p_pos, p_angle, p_axis);
 #ifdef PHYSX	
 	sim_res[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, 0, 1, 0];
-	
-	//pieces[piece_id].psx.GetObj().SetPosition(p_pos);
-	//psx.GetObj().SetRotation(angle, axis);
-	//outputln(sim_res[piece_id]);
 #endif
-//#ifdef PHYSX
-//	/* PHYSICAL_LVL */
-//	status[piece_id] = [p_pos[0], p_pos[1], p_pos[2], p_angle, p_axis[0], p_axis[1], 
-//		p_axis[2]];
-//#endif
 }
 
 #ifdef PHYSX
@@ -334,6 +329,7 @@ function Level::Draw() {
 
 function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	var p2, bb, rot;
+	static var i = 0.0;
 	
 	/* Check if the piece belongs to player 2 */
 	if (p_id >= PLAYER_2) {
@@ -352,8 +348,6 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	/* The angle must be converted in degrees */
 	angle = RAD_TO_GRAD*rot[3];
 	axis = [rot[0], rot[1], rot[2]];
-	outputln(axis);
-	outputln(angle);
 	
 	switch(id) {
 		case CHESSBOARD_ID: 
@@ -420,7 +414,12 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	} else {
 		psx = manager_psx.AddPhConvexShape(pos, init_rot, mesh, PHX_DYNAMIC, PIECE_DENSITY, 10, rigidMaterial);
 		psx.SetBarycenterREL(PIECE_BARY);
-	} 
+	}
+	
+	output((i/NUM_PIECES)*100);
+	output("%");
+	output("...");
+	
 #else
 	/* GRAPHICAL_LVL 
 	 * Instanciate the graphical object 
@@ -428,6 +427,7 @@ function Piece::Piece(p_id, p_mesh, init_pos, init_rot) {
 	obj = CVmObj(mesh);
 	Update(pos, angle, axis);
 #endif
+	i++;
 }
 
 function Piece::GetPosition() {
@@ -462,10 +462,7 @@ function Piece::SetVelocity(v) {
 }
 #endif
 
-function Piece::Update(p_pos, p_angle, p_axis) {		
-//	pos = p_pos;
-//	angle = p_angle;
-//	axis = p_axis;
+function Piece::Update(p_pos, p_angle, p_axis) {
 
 #ifndef PHYSX
 	/* GRAPHICAL_LVL */

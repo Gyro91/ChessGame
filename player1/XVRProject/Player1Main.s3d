@@ -1,27 +1,26 @@
-
 /* Include s3d symbols */
 #include <Script3d.h>
 #include <Camera.s3d.h>
+
 #define PLAYER_1_TRASL
 #include "../../libXVRshared/Client.s3d"
 
 #define CAM_STEP	0.1
+
+/* Uncomment to show the XVR grid */
+//#define GRID_ON
 
 /* Set global scene parameters */
 SET SCENE_FOV  = 60;
 SET SCENE_NEAR = 0.5;
 SET SCENE_FAR  = 1000;
 
-
-// TODO: put your global variables here
 /* Hand Variables */
 var seq_number = 0;
-
 var hand_r;
 var hand_l;
 
 /* Communication variables */
-
 var client_t;
 
 /* Camera globals */
@@ -34,24 +33,20 @@ function CameraMoveKeyboard();
 function DrawGrid(col, size);
 
 
-
-
 function OnDownload()
 {
-	// TODO: download your resources here
-	// E.g.: FileDownload("resource.ext");
-}
 
+}
 
 
 function OnInit(params)
 {
 	/* initialize camera */
 	CameraGetCurrent().SetPosition(CamPos);
-	//CameraGetCurrent().SetRotation(180, [0.0, 1, 0.0]);
-	// TODO: put your initialization code here
+
 	SetLocalDir("");
 	
+	/* Load Oculus DK2 dll */
 	global var HMD = CVmExternDLL(FRANCO_DLL_PATH);
  	HMD.__AddFunction( C_VOID, "SceneBegin");
 	HMD.__AddFunction( C_VOID, "frame_left");
@@ -67,6 +62,7 @@ function OnInit(params)
 	HMD.__AddFunction( C_INT, "IsTouchpadPressed",C_INT);
 	HMD.__AddFunction( C_VOID, "VibrateController",C_INT, C_INT);
  	
+ 	/* Load Leap Motion dll */
  	leapDll = CVmExternDLL(DLL_PATH);
 	leapDll.__AddFunction(C_VOID, "get_seq_number", C_PFLOAT);
 	leapDll.__AddFunction(C_INT, "get_right_hand", C_PFLOAT);
@@ -78,8 +74,8 @@ function OnInit(params)
 	hand_r.init(1);
 	hand_l.init(0);
 	
-	
 	client_t = Client();
+	
 	#ifdef NETWORK_LOOPBACK
 	client_t.conf(LOOPBACK_ADDR, SERVER_UDP_PORT_CLIENT_1, 
 		CLIENT_1_UDP_PORT);
@@ -104,64 +100,59 @@ function OnFrame()
 	CameraMoveKeyboard();
 	client_t.step(hand_r, hand_l, PLAYER_1);
 	
-	SceneBegin(VR_SHOW_STATS);
+	SceneBegin();
 
-		DrawGrid([0.5, 0.5, 0.5], 100);	
+#ifdef GRID_ON
+	DrawGrid([0.5, 0.5, 0.5], 100);
+#endif
 	
-		hand_r.update();
-		hand_l.update();
+	hand_r.update();
+	hand_l.update();
 		
-		HMD.SceneBegin();
+	HMD.SceneBegin();
 		
-		HMD.frame_left();
-		glRotate(180, 0, 1, 0);
-		glTranslate(-0.1,0.7,0.3);
-		//glTranslate();
-		glScale(0.010, 0.010, 0.010);
-		hand_r.draw();
-		hand_l.draw();
-		client_t.Draw();
-		HMD.frame_right();
-		glRotate(180, 0, 1, 0);
-		glTranslate(-0.1,0.7,0.3);
-		glScale(0.010, 0.010, 0.010);
+	HMD.frame_left();
+	glRotate(180, 0, 1, 0);
+	glTranslate(-0.1,0.7,0.3);
+	//glTranslate();
+	glScale(0.010, 0.010, 0.010);
+	hand_r.draw();
+	hand_l.draw();
+	client_t.Draw();
 	
-		hand_r.draw();
-		hand_l.draw();
-		client_t.Draw();
-		HMD.SceneEnd();
+	HMD.frame_right();
+	glRotate(180, 0, 1, 0);
+	glTranslate(-0.1,0.7,0.3);
+	glScale(0.010, 0.010, 0.010);
 
-	SceneEnd();
+	hand_r.draw();
+	hand_l.draw();
+	client_t.Draw();
+	
+	HMD.SceneEnd();
+
+SceneEnd();
 	
 
 }
 
 
-
-
-
 function DownloadReady(RequestID)
 {
-	// TODO
+
 }
 
 
 
 function OnTimer()
 {
-	// TODO:
-	
-	
-	
-  
-	//outputln(pkt_hand.sequence_remote_id);
+
 }
 
 
 
 function OnExit()
 {
-	// TODO: put your cleanup code here
 	NetClose(client_t.id_channel);
 }
 
@@ -240,7 +231,6 @@ function DrawGrid(col, size)
 	/* polite restoration of previous OpenGL status */
 	glPopAttrib();
 }
-
 
 
 function OnEvent()

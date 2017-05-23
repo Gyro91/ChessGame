@@ -57,5 +57,3 @@ function init_HandPayload(pkt)
 	pkt.seq_remote_id = 0;
 	pkt.payload = HandPayload();
 }
-
-

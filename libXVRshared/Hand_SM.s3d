@@ -1,13 +1,10 @@
-//#include "Packet.s3d"
-
 #define SM_STATE_WAIT 0
 #define SM_STATE_OPEN 1
 #define SM_STATE_CLOSED 2
 #define SM_STATE_GRABBED 3
 
-//#define GRAB_THRESH 30
 #define GRAB_THRESH 0.05*SIM_SCALE
-#define LPF_TRESH 10
+#define LPF_THRESH 10
 
 
 class smPaket {
@@ -50,8 +47,6 @@ function smPaket::init(pkt)
 	}
 }
 
-
-
 /* 
  * 
  * The class manage the status of an hand and it allows object grabbing. 
@@ -81,9 +76,8 @@ function smPaket::init(pkt)
  	current_state = SM_STATE_WAIT;
  	my_name = nm;
  	id_piece = -1;
- 	//currPkt = smPaket();
- 	lpf_close_to_open = LPF_TRESH;
- 	lpf_grabbed_to_open = LPF_TRESH;
+ 	lpf_close_to_open = LPF_THRESH;
+ 	lpf_grabbed_to_open = LPF_THRESH;
  	my_player = pl;
  }
  
@@ -106,7 +100,6 @@ function smPaket::init(pkt)
  		/*
  		 * Unlock the object if grabbed
  		 */
-
 		if (id_piece >= 0) {
 			server_t.grab_release(id_piece);
 			if (my_player == PLAYER_1)
@@ -125,12 +118,8 @@ function smPaket::init(pkt)
 		case SM_STATE_OPEN:
 			if (lenght < GRAB_THRESH) {
 				current_state = SM_STATE_CLOSED;
-				/*
-				 * Request to the Architect
-				 */
-				 
-				 id_piece = server_t.grab_request(position, my_player, pkt.palm);
-				//id_piece = ARCHITETTO.grab_request(position, my_name)
+				/* Check if a piece is grabbed */
+				id_piece = server_t.grab_request(position, my_player, pkt.palm);
 
 				if (id_piece >= 0) {
 					current_state = SM_STATE_GRABBED;	
@@ -144,36 +133,31 @@ function smPaket::init(pkt)
 	      		 * Low pass filter to give more robustness to closed state
 	      		 */
 		      	if (lpf_close_to_open == 0) {
-		      		lpf_close_to_open = LPF_TRESH;
+		      		lpf_close_to_open = LPF_THRESH;
 		      		current_state = SM_STATE_OPEN;
 	      		}
       		}
       		else
-	      		lpf_close_to_open = LPF_TRESH;
+	      		lpf_close_to_open = LPF_THRESH;
 	    	break;
 		case SM_STATE_GRABBED:
 	      	if (lenght >= GRAB_THRESH) {
 	      		lpf_grabbed_to_open--;
 		      	if (lpf_grabbed_to_open == 0) {
-		      		lpf_grabbed_to_open = LPF_TRESH;
+		      		lpf_grabbed_to_open = LPF_THRESH;
 		      		current_state = SM_STATE_OPEN;
-	      		
-		      		/*
-		      		 * unlock the object
-		      		 */
-		      		 
+	      			
+	      			/* Release the piece */
 		      		server_t.grab_release(id_piece, my_player);
+		      		
 					if (my_player == PLAYER_1)
       					my_level.PieceUpdate(id_piece, position, 0, [0.0, 1.0, 0.0]);
       				else 
       					my_level.PieceUpdate(id_piece, position, 180, [0.0, 1.0, 0.0]);
 	      		}
-	      		
       		} else {
       			
-      			/*
-      			 * Update piece position
-      			 */
+				/* Update the piece position */
       			if (my_player == PLAYER_1)
       				my_level.PieceUpdate(id_piece, position, 0, [0.0, 1.0, 0.0]);
       			else 
